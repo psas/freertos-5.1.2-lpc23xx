@@ -84,7 +84,6 @@
 #include "BlockQ.h"
 #include "death.h"
 #include "blocktim.h"
-#include "LCD/portlcd.h"
 #include "flash.h"
 #include "partest.h"
 #include "GenQTest.h"

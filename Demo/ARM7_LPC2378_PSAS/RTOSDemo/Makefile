@@ -63,7 +63,6 @@ CFLAGS= $(DEBUG) \
 THUMB_SOURCE= \
 		main.c \
 		./ParTest/ParTest.c \
-		./LCD/portlcd.c \
 		$(DEMO_COMMON_DIR)/BlockQ.c \
 		$(DEMO_COMMON_DIR)/blocktim.c \
 		$(DEMO_COMMON_DIR)/flash.c \
