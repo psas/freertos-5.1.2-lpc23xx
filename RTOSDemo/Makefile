@@ -29,10 +29,10 @@
 #	***************************************************************************
 
 
-RTOS_SOURCE_DIR=../../../Source
-DEMO_COMMON_DIR=../../Common/Minimal
-DEMO_INCLUDE_DIR=../../Common/include
-LPCUSB_COMMON_DIR=../../Common/drivers/LPC/usb
+RTOS_SOURCE_DIR=../Source
+DEMO_COMMON_DIR=../Common/Minimal
+DEMO_INCLUDE_DIR=../Common/include
+LPCUSB_COMMON_DIR=../Common/drivers/LPC/usb
 
 CC=arm-elf-gcc
 OBJCOPY=arm-elf-objcopy

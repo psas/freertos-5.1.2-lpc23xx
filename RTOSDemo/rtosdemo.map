@@ -3,23 +3,23 @@ Archive member included because of file (symbol)
 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_udivsi3.o)
                               serial/serial.o (__udivsi3)
 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_divsi3.o)
-                              ../../Common/Minimal/integer.o (__divsi3)
+                              ../Common/Minimal/integer.o (__divsi3)
 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_dvmd_tls.o)
                               /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_udivsi3.o) (__div0)
 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-memcpy.o)
-                              ../../../Source/queue.o (memcpy)
+                              ../Source/queue.o (memcpy)
 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-memset.o)
-                              ../../../Source/tasks.o (memset)
+                              ../Source/tasks.o (memset)
 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-sprintf.o)
-                              ../../../Source/tasks.o (sprintf)
+                              ../Source/tasks.o (sprintf)
 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-strcat.o)
-                              ../../../Source/tasks.o (strcat)
+                              ../Source/tasks.o (strcat)
 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-strcpy.o)
                               /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-strcat.o) (strcpy)
 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-strlen.o)
-                              ../../../Source/tasks.o (strlen)
+                              ../Source/tasks.o (strlen)
 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-strncpy.o)
-                              ../../../Source/tasks.o (strncpy)
+                              ../Source/tasks.o (strncpy)
 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-vfprintf.o)
                               /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-sprintf.o) (_vfprintf_r)
 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-wcrtomb.o)
@@ -135,18 +135,18 @@ Allocating common symbols
 Common symbol       size              file
 
 errno               0x4               /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-reent.o)
-xHighPriorityTask   0x4               ../../Common/Minimal/QPeek.o
+xHighPriorityTask   0x4               ../Common/Minimal/QPeek.o
 xMediumPriorityTask
-                    0x4               ../../Common/Minimal/QPeek.o
+                    0x4               ../Common/Minimal/QPeek.o
 outputIsocDataBuffer
                     0x400             main.o
 inputIsocDataBuffer
                     0x4               main.o
 xHighestPriorityTask
-                    0x4               ../../Common/Minimal/QPeek.o
+                    0x4               ../Common/Minimal/QPeek.o
 xLCDQueue           0x4               main.o
 xSuspendedTestQueue
-                    0x4               ../../Common/Minimal/dynamic.o
+                    0x4               ../Common/Minimal/dynamic.o
 
 Memory Configuration
 
@@ -161,26 +161,26 @@ Linker script and memory map
 
 LOAD serial/serial.o
 LOAD serial/serialISR.o
-LOAD ../../../Source/portable/GCC/ARM7_LPC23xx/portISR.o
-LOAD ../../Common/drivers/LPC/usb/usbcontrol.o
-LOAD ../../Common/drivers/LPC/usb/usbhw_lpc.o
-LOAD ../../Common/drivers/LPC/usb/usbinit.o
-LOAD ../../Common/drivers/LPC/usb/usbstdreq.o
+LOAD ../Source/portable/GCC/ARM7_LPC23xx/portISR.o
+LOAD ../Common/drivers/LPC/usb/usbcontrol.o
+LOAD ../Common/drivers/LPC/usb/usbhw_lpc.o
+LOAD ../Common/drivers/LPC/usb/usbinit.o
+LOAD ../Common/drivers/LPC/usb/usbstdreq.o
 LOAD main.o
 LOAD ./ParTest/ParTest.o
-LOAD ../../Common/Minimal/BlockQ.o
-LOAD ../../Common/Minimal/blocktim.o
-LOAD ../../Common/Minimal/flash.o
-LOAD ../../Common/Minimal/integer.o
-LOAD ../../Common/Minimal/GenQTest.o
-LOAD ../../Common/Minimal/QPeek.o
-LOAD ../../Common/Minimal/dynamic.o
-LOAD ../../../Source/list.o
-LOAD ../../../Source/queue.o
-LOAD ../../../Source/tasks.o
-LOAD ../../../Source/portable/GCC/ARM7_LPC23xx/port.o
-LOAD ../../../Source/portable/MemMang/heap_2.o
-LOAD /tmp/ccwheBMc.o
+LOAD ../Common/Minimal/BlockQ.o
+LOAD ../Common/Minimal/blocktim.o
+LOAD ../Common/Minimal/flash.o
+LOAD ../Common/Minimal/integer.o
+LOAD ../Common/Minimal/GenQTest.o
+LOAD ../Common/Minimal/QPeek.o
+LOAD ../Common/Minimal/dynamic.o
+LOAD ../Source/list.o
+LOAD ../Source/queue.o
+LOAD ../Source/tasks.o
+LOAD ../Source/portable/GCC/ARM7_LPC23xx/port.o
+LOAD ../Source/portable/MemMang/heap_2.o
+LOAD /tmp/ccpyJHbl.o
 START GROUP
 LOAD /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a
 LOAD /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a
@@ -191,7 +191,7 @@ END GROUP
 
 startup         0x00000000       0x44
  *(.startup)
- .startup       0x00000000       0x44 /tmp/ccwheBMc.o
+ .startup       0x00000000       0x44 /tmp/ccpyJHbl.o
 
 prog            0x00000044     0xb7e8
  *(.text)
@@ -205,7 +205,7 @@ prog            0x00000044     0xb7e8
                 0x00000638                vUART_ISR
                 0x000007b8                vSerialISRCreateQueues
                 0x000004b8                vUART_ISR1
- .text          0x00000898      0x258 ../../../Source/portable/GCC/ARM7_LPC23xx/portISR.o
+ .text          0x00000898      0x258 ../Source/portable/GCC/ARM7_LPC23xx/portISR.o
                 0x00000984                vPreemptiveTick
                 0x00000940                vPortExitCritical
                 0x00000a44                vPortYieldProcessor
@@ -213,10 +213,10 @@ prog            0x00000044     0xb7e8
                 0x00000898                vPortISRStartFirstTask
                 0x000008fc                vPortEnableInterruptsFromThumb
                 0x00000914                vPortEnterCritical
- .text          0x00000af0      0x250 ../../Common/drivers/LPC/usb/usbcontrol.o
+ .text          0x00000af0      0x250 ../Common/drivers/LPC/usb/usbcontrol.o
                 0x00000bb0                USBHandleControlTransfer
                 0x00000b2c                USBRegisterRequestHandler
- .text          0x00000d40      0x8a0 ../../Common/drivers/LPC/usb/usbhw_lpc.o
+ .text          0x00000d40      0x8a0 ../Common/drivers/LPC/usb/usbhw_lpc.o
                 0x00001078                USBHwEPRead
                 0x00001244                USBHwISR
                 0x000014d8                USBDisableDMAForEndpoint
@@ -238,9 +238,9 @@ prog            0x00000044     0xb7e8
                 0x00000ee4                USBHwRegisterFrameHandler
                 0x00000f80                USBHwEPGetStatus
                 0x00001530                USBInitializeISOCFrameArray
- .text          0x000015e0       0x74 ../../Common/drivers/LPC/usb/usbinit.o
+ .text          0x000015e0       0x74 ../Common/drivers/LPC/usb/usbinit.o
                 0x000015e4                USBInit
- .text          0x00001654      0x36c ../../Common/drivers/LPC/usb/usbstdreq.o
+ .text          0x00001654      0x36c ../Common/drivers/LPC/usb/usbstdreq.o
                 0x00001664                USBGetDescriptor
                 0x000016fc                USBRegisterCustomReqHandler
                 0x00001654                USBRegisterDescriptors
@@ -254,33 +254,33 @@ prog            0x00000044     0xb7e8
                 0x00001bdc                vParTestSetLED
                 0x00001c2c                uxParTextGetLED
                 0x00001bbc                vParTestInitialise
- .text          0x00001c3c      0x23c ../../Common/Minimal/BlockQ.o
+ .text          0x00001c3c      0x23c ../Common/Minimal/BlockQ.o
                 0x00001ca0                vStartBlockingQueueTasks
                 0x00001c3c                xAreBlockingQueuesStillRunning
- .text          0x00001e78      0x3e0 ../../Common/Minimal/blocktim.o
+ .text          0x00001e78      0x3e0 ../Common/Minimal/blocktim.o
                 0x00001e78                xAreBlockTimeTestTasksStillRunning
                 0x00001ed0                vCreateBlockTimeTasks
- .text          0x00002258       0x80 ../../Common/Minimal/flash.o
+ .text          0x00002258       0x80 ../Common/Minimal/flash.o
                 0x00002258                vStartLEDFlashTasks
- .text          0x000022d8       0x98 ../../Common/Minimal/integer.o
+ .text          0x000022d8       0x98 ../Common/Minimal/integer.o
                 0x000022f8                vStartIntegerMathTasks
                 0x000022d8                xAreIntegerMathsTaskStillRunning
- .text          0x00002370      0x4a0 ../../Common/Minimal/GenQTest.o
+ .text          0x00002370      0x4a0 ../Common/Minimal/GenQTest.o
                 0x00002370                xAreGenericQueueTasksStillRunning
                 0x000023c8                vStartGenericQueueTasks
- .text          0x00002810      0x358 ../../Common/Minimal/QPeek.o
+ .text          0x00002810      0x358 ../Common/Minimal/QPeek.o
                 0x00002810                xAreQueuePeekTasksStillRunning
                 0x00002844                vStartQueuePeekTasks
- .text          0x00002b68      0x284 ../../Common/Minimal/dynamic.o
+ .text          0x00002b68      0x284 ../Common/Minimal/dynamic.o
                 0x00002bb4                vStartDynamicPriorityTasks
                 0x00002b68                xAreDynamicPriorityTasksStillRunning
- .text          0x00002dec       0x9c ../../../Source/list.o
+ .text          0x00002dec       0x9c ../Source/list.o
                 0x00002e0c                vListInsertEnd
                 0x00002e68                vListRemove
                 0x00002e04                vListInitialiseItem
                 0x00002dec                vListInitialise
                 0x00002e28                vListInsert
- .text          0x00002e88      0x4c8 ../../../Source/queue.o
+ .text          0x00002e88      0x4c8 ../Source/queue.o
                 0x00003160                xQueueGenericSendFromISR
                 0x000032e4                xQueueCreate
                 0x00002ea8                vQueueDelete
@@ -292,7 +292,7 @@ prog            0x00000044     0xb7e8
                 0x00002e88                uxQueueMessagesWaitingFromISR
                 0x00002e8c                xQueueIsQueueEmptyFromISR
                 0x0000329c                xQueueCreateMutex
- .text          0x00003350      0xcfc ../../../Source/tasks.o
+ .text          0x00003350      0xcfc ../Source/tasks.o
                 0x000038f8                uxTaskPriorityGet
                 0x0000384c                vTaskPrioritySet
                 0x00003de0                vTaskEndScheduler
@@ -323,14 +323,14 @@ prog            0x00000044     0xb7e8
                 0x00003e6c                xTaskCreate
                 0x00003bb4                vTaskDelay
                 0x00003458                vTaskSetTimeOutState
- .text          0x0000404c      0x114 ../../../Source/portable/GCC/ARM7_LPC23xx/port.o
+ .text          0x0000404c      0x114 ../Source/portable/GCC/ARM7_LPC23xx/port.o
                 0x000040f4                xPortStartScheduler
                 0x000040f0                vPortEndScheduler
                 0x0000404c                pxPortInitialiseStack
- .text          0x00004160       0xe4 ../../../Source/portable/MemMang/heap_2.o
+ .text          0x00004160       0xe4 ../Source/portable/MemMang/heap_2.o
                 0x00004160                vPortFree
                 0x00004190                pvPortMalloc
- .text          0x00004244       0xb8 /tmp/ccwheBMc.o
+ .text          0x00004244       0xb8 /tmp/ccpyJHbl.o
                 0x00004244                start
                 0x000042e0                endless_loop
  .text          0x000042fc       0x8c /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_udivsi3.o)
@@ -556,29 +556,29 @@ prog            0x00000044     0xb7e8
                                  0x80 (size before relaxing)
  *fill*         0x0000b5fd        0x3 00
  .rodata.str1.4
-                0x0000b600       0x30 ../../Common/Minimal/BlockQ.o
+                0x0000b600       0x30 ../Common/Minimal/BlockQ.o
  .rodata.str1.4
-                0x0000b630        0xf ../../Common/Minimal/blocktim.o
+                0x0000b630        0xf ../Common/Minimal/blocktim.o
                                  0x10 (size before relaxing)
  *fill*         0x0000b63f        0x1 00
  .rodata.str1.4
-                0x0000b640        0x5 ../../Common/Minimal/flash.o
+                0x0000b640        0x5 ../Common/Minimal/flash.o
                                   0x8 (size before relaxing)
  *fill*         0x0000b645        0x3 00
  .rodata.str1.4
-                0x0000b648        0x8 ../../Common/Minimal/integer.o
+                0x0000b648        0x8 ../Common/Minimal/integer.o
  .rodata.str1.4
-                0x0000b650       0x1f ../../Common/Minimal/GenQTest.o
+                0x0000b650       0x1f ../Common/Minimal/GenQTest.o
                                  0x20 (size before relaxing)
  *fill*         0x0000b66f        0x1 00
  .rodata.str1.4
-                0x0000b670       0x1f ../../Common/Minimal/QPeek.o
+                0x0000b670       0x1f ../Common/Minimal/QPeek.o
                                  0x20 (size before relaxing)
  *fill*         0x0000b68f        0x1 00
  .rodata.str1.4
-                0x0000b690       0x28 ../../Common/Minimal/dynamic.o
+                0x0000b690       0x28 ../Common/Minimal/dynamic.o
  .rodata.str1.4
-                0x0000b6b8       0x1d ../../../Source/tasks.o
+                0x0000b6b8       0x1d ../Source/tasks.o
                                  0x20 (size before relaxing)
  *fill*         0x0000b6d5        0x3 00
  .rodata.str1.4
@@ -605,26 +605,26 @@ prog            0x00000044     0xb7e8
  *(.glue_7)
  .glue_7        0x0000b780        0x0 serial/serial.o
  .glue_7        0x0000b780        0x0 serial/serialISR.o
- .glue_7        0x0000b780        0x0 ../../../Source/portable/GCC/ARM7_LPC23xx/portISR.o
- .glue_7        0x0000b780        0x0 ../../Common/drivers/LPC/usb/usbcontrol.o
- .glue_7        0x0000b780        0x0 ../../Common/drivers/LPC/usb/usbhw_lpc.o
- .glue_7        0x0000b780        0x0 ../../Common/drivers/LPC/usb/usbinit.o
- .glue_7        0x0000b780        0x0 ../../Common/drivers/LPC/usb/usbstdreq.o
+ .glue_7        0x0000b780        0x0 ../Source/portable/GCC/ARM7_LPC23xx/portISR.o
+ .glue_7        0x0000b780        0x0 ../Common/drivers/LPC/usb/usbcontrol.o
+ .glue_7        0x0000b780        0x0 ../Common/drivers/LPC/usb/usbhw_lpc.o
+ .glue_7        0x0000b780        0x0 ../Common/drivers/LPC/usb/usbinit.o
+ .glue_7        0x0000b780        0x0 ../Common/drivers/LPC/usb/usbstdreq.o
  .glue_7        0x0000b780        0x0 main.o
  .glue_7        0x0000b780        0x0 ./ParTest/ParTest.o
- .glue_7        0x0000b780        0x0 ../../Common/Minimal/BlockQ.o
- .glue_7        0x0000b780        0x0 ../../Common/Minimal/blocktim.o
- .glue_7        0x0000b780        0x0 ../../Common/Minimal/flash.o
- .glue_7        0x0000b780        0x0 ../../Common/Minimal/integer.o
- .glue_7        0x0000b780        0x0 ../../Common/Minimal/GenQTest.o
- .glue_7        0x0000b780        0x0 ../../Common/Minimal/QPeek.o
- .glue_7        0x0000b780        0x0 ../../Common/Minimal/dynamic.o
- .glue_7        0x0000b780        0x0 ../../../Source/list.o
- .glue_7        0x0000b780        0x0 ../../../Source/queue.o
- .glue_7        0x0000b780        0x0 ../../../Source/tasks.o
- .glue_7        0x0000b780        0x0 ../../../Source/portable/GCC/ARM7_LPC23xx/port.o
- .glue_7        0x0000b780        0x0 ../../../Source/portable/MemMang/heap_2.o
- .glue_7        0x0000b780        0x0 /tmp/ccwheBMc.o
+ .glue_7        0x0000b780        0x0 ../Common/Minimal/BlockQ.o
+ .glue_7        0x0000b780        0x0 ../Common/Minimal/blocktim.o
+ .glue_7        0x0000b780        0x0 ../Common/Minimal/flash.o
+ .glue_7        0x0000b780        0x0 ../Common/Minimal/integer.o
+ .glue_7        0x0000b780        0x0 ../Common/Minimal/GenQTest.o
+ .glue_7        0x0000b780        0x0 ../Common/Minimal/QPeek.o
+ .glue_7        0x0000b780        0x0 ../Common/Minimal/dynamic.o
+ .glue_7        0x0000b780        0x0 ../Source/list.o
+ .glue_7        0x0000b780        0x0 ../Source/queue.o
+ .glue_7        0x0000b780        0x0 ../Source/tasks.o
+ .glue_7        0x0000b780        0x0 ../Source/portable/GCC/ARM7_LPC23xx/port.o
+ .glue_7        0x0000b780        0x0 ../Source/portable/MemMang/heap_2.o
+ .glue_7        0x0000b780        0x0 /tmp/ccpyJHbl.o
  .glue_7        0x0000b780        0x0 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_udivsi3.o)
  .glue_7        0x0000b780        0x0 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_divsi3.o)
  .glue_7        0x0000b780        0x0 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_dvmd_tls.o)
@@ -702,26 +702,26 @@ prog            0x00000044     0xb7e8
  *(.glue_7t)
  .glue_7t       0x0000b7ec        0x0 serial/serial.o
  .glue_7t       0x0000b7ec        0x0 serial/serialISR.o
- .glue_7t       0x0000b7ec        0x0 ../../../Source/portable/GCC/ARM7_LPC23xx/portISR.o
- .glue_7t       0x0000b7ec        0x0 ../../Common/drivers/LPC/usb/usbcontrol.o
- .glue_7t       0x0000b7ec        0x0 ../../Common/drivers/LPC/usb/usbhw_lpc.o
- .glue_7t       0x0000b7ec        0x0 ../../Common/drivers/LPC/usb/usbinit.o
- .glue_7t       0x0000b7ec        0x0 ../../Common/drivers/LPC/usb/usbstdreq.o
+ .glue_7t       0x0000b7ec        0x0 ../Source/portable/GCC/ARM7_LPC23xx/portISR.o
+ .glue_7t       0x0000b7ec        0x0 ../Common/drivers/LPC/usb/usbcontrol.o
+ .glue_7t       0x0000b7ec        0x0 ../Common/drivers/LPC/usb/usbhw_lpc.o
+ .glue_7t       0x0000b7ec        0x0 ../Common/drivers/LPC/usb/usbinit.o
+ .glue_7t       0x0000b7ec        0x0 ../Common/drivers/LPC/usb/usbstdreq.o
  .glue_7t       0x0000b7ec        0x0 main.o
  .glue_7t       0x0000b7ec        0x0 ./ParTest/ParTest.o
- .glue_7t       0x0000b7ec        0x0 ../../Common/Minimal/BlockQ.o
- .glue_7t       0x0000b7ec        0x0 ../../Common/Minimal/blocktim.o
- .glue_7t       0x0000b7ec        0x0 ../../Common/Minimal/flash.o
- .glue_7t       0x0000b7ec        0x0 ../../Common/Minimal/integer.o
- .glue_7t       0x0000b7ec        0x0 ../../Common/Minimal/GenQTest.o
- .glue_7t       0x0000b7ec        0x0 ../../Common/Minimal/QPeek.o
- .glue_7t       0x0000b7ec        0x0 ../../Common/Minimal/dynamic.o
- .glue_7t       0x0000b7ec        0x0 ../../../Source/list.o
- .glue_7t       0x0000b7ec        0x0 ../../../Source/queue.o
- .glue_7t       0x0000b7ec        0x0 ../../../Source/tasks.o
- .glue_7t       0x0000b7ec        0x0 ../../../Source/portable/GCC/ARM7_LPC23xx/port.o
- .glue_7t       0x0000b7ec        0x0 ../../../Source/portable/MemMang/heap_2.o
- .glue_7t       0x0000b7ec        0x0 /tmp/ccwheBMc.o
+ .glue_7t       0x0000b7ec        0x0 ../Common/Minimal/BlockQ.o
+ .glue_7t       0x0000b7ec        0x0 ../Common/Minimal/blocktim.o
+ .glue_7t       0x0000b7ec        0x0 ../Common/Minimal/flash.o
+ .glue_7t       0x0000b7ec        0x0 ../Common/Minimal/integer.o
+ .glue_7t       0x0000b7ec        0x0 ../Common/Minimal/GenQTest.o
+ .glue_7t       0x0000b7ec        0x0 ../Common/Minimal/QPeek.o
+ .glue_7t       0x0000b7ec        0x0 ../Common/Minimal/dynamic.o
+ .glue_7t       0x0000b7ec        0x0 ../Source/list.o
+ .glue_7t       0x0000b7ec        0x0 ../Source/queue.o
+ .glue_7t       0x0000b7ec        0x0 ../Source/tasks.o
+ .glue_7t       0x0000b7ec        0x0 ../Source/portable/GCC/ARM7_LPC23xx/port.o
+ .glue_7t       0x0000b7ec        0x0 ../Source/portable/MemMang/heap_2.o
+ .glue_7t       0x0000b7ec        0x0 /tmp/ccpyJHbl.o
  .glue_7t       0x0000b7ec        0x0 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_udivsi3.o)
  .glue_7t       0x0000b7ec        0x0 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_divsi3.o)
  .glue_7t       0x0000b7ec        0x0 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_dvmd_tls.o)
@@ -811,27 +811,27 @@ prog            0x00000044     0xb7e8
  *(.data)
  .data          0x40000000        0x0 serial/serial.o
  .data          0x40000000        0x0 serial/serialISR.o
- .data          0x40000000        0x4 ../../../Source/portable/GCC/ARM7_LPC23xx/portISR.o
+ .data          0x40000000        0x4 ../Source/portable/GCC/ARM7_LPC23xx/portISR.o
                 0x40000000                ulCriticalNesting
- .data          0x40000004        0x0 ../../Common/drivers/LPC/usb/usbcontrol.o
- .data          0x40000004        0x0 ../../Common/drivers/LPC/usb/usbhw_lpc.o
- .data          0x40000004        0x0 ../../Common/drivers/LPC/usb/usbinit.o
- .data          0x40000004        0x0 ../../Common/drivers/LPC/usb/usbstdreq.o
+ .data          0x40000004        0x0 ../Common/drivers/LPC/usb/usbcontrol.o
+ .data          0x40000004        0x0 ../Common/drivers/LPC/usb/usbhw_lpc.o
+ .data          0x40000004        0x0 ../Common/drivers/LPC/usb/usbinit.o
+ .data          0x40000004        0x0 ../Common/drivers/LPC/usb/usbstdreq.o
  .data          0x40000004        0x8 main.o
  .data          0x4000000c        0x0 ./ParTest/ParTest.o
- .data          0x4000000c        0x0 ../../Common/Minimal/BlockQ.o
- .data          0x4000000c        0x0 ../../Common/Minimal/blocktim.o
- .data          0x4000000c        0x0 ../../Common/Minimal/flash.o
- .data          0x4000000c        0x0 ../../Common/Minimal/integer.o
- .data          0x4000000c        0x0 ../../Common/Minimal/GenQTest.o
- .data          0x4000000c        0x0 ../../Common/Minimal/QPeek.o
- .data          0x4000000c        0x0 ../../Common/Minimal/dynamic.o
- .data          0x4000000c        0x0 ../../../Source/list.o
- .data          0x4000000c        0x0 ../../../Source/queue.o
- .data          0x4000000c        0x4 ../../../Source/tasks.o
- .data          0x40000010        0x0 ../../../Source/portable/GCC/ARM7_LPC23xx/port.o
- .data          0x40000010        0x0 ../../../Source/portable/MemMang/heap_2.o
- .data          0x40000010        0x0 /tmp/ccwheBMc.o
+ .data          0x4000000c        0x0 ../Common/Minimal/BlockQ.o
+ .data          0x4000000c        0x0 ../Common/Minimal/blocktim.o
+ .data          0x4000000c        0x0 ../Common/Minimal/flash.o
+ .data          0x4000000c        0x0 ../Common/Minimal/integer.o
+ .data          0x4000000c        0x0 ../Common/Minimal/GenQTest.o
+ .data          0x4000000c        0x0 ../Common/Minimal/QPeek.o
+ .data          0x4000000c        0x0 ../Common/Minimal/dynamic.o
+ .data          0x4000000c        0x0 ../Source/list.o
+ .data          0x4000000c        0x0 ../Source/queue.o
+ .data          0x4000000c        0x4 ../Source/tasks.o
+ .data          0x40000010        0x0 ../Source/portable/GCC/ARM7_LPC23xx/port.o
+ .data          0x40000010        0x0 ../Source/portable/MemMang/heap_2.o
+ .data          0x40000010        0x0 /tmp/ccpyJHbl.o
  .data          0x40000010        0x0 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_udivsi3.o)
  .data          0x40000010        0x0 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_divsi3.o)
  .data          0x40000010        0x0 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_dvmd_tls.o)
@@ -910,30 +910,30 @@ prog            0x00000044     0xb7e8
  *(.bss)
  .bss           0x40000834       0x18 serial/serial.o
  .bss           0x4000084c       0x18 serial/serialISR.o
- .bss           0x40000864        0x0 ../../../Source/portable/GCC/ARM7_LPC23xx/portISR.o
- .bss           0x40000864       0x34 ../../Common/drivers/LPC/usb/usbcontrol.o
- .bss           0x40000898       0x48 ../../Common/drivers/LPC/usb/usbhw_lpc.o
- .bss           0x400008e0        0x8 ../../Common/drivers/LPC/usb/usbinit.o
- .bss           0x400008e8        0xc ../../Common/drivers/LPC/usb/usbstdreq.o
+ .bss           0x40000864        0x0 ../Source/portable/GCC/ARM7_LPC23xx/portISR.o
+ .bss           0x40000864       0x34 ../Common/drivers/LPC/usb/usbcontrol.o
+ .bss           0x40000898       0x48 ../Common/drivers/LPC/usb/usbhw_lpc.o
+ .bss           0x400008e0        0x8 ../Common/drivers/LPC/usb/usbinit.o
+ .bss           0x400008e8        0xc ../Common/drivers/LPC/usb/usbstdreq.o
  .bss           0x400008f4       0x14 main.o
                 0x400008f4                isConnectedFlag
                 0x400008f8                bDevStat
                 0x400008fc                delay
  .bss           0x40000908        0x0 ./ParTest/ParTest.o
- .bss           0x40000908       0x18 ../../Common/Minimal/BlockQ.o
- .bss           0x40000920       0x20 ../../Common/Minimal/blocktim.o
- .bss           0x40000940        0x4 ../../Common/Minimal/flash.o
- .bss           0x40000944        0x4 ../../Common/Minimal/integer.o
- .bss           0x40000948       0x20 ../../Common/Minimal/GenQTest.o
- .bss           0x40000968        0xc ../../Common/Minimal/QPeek.o
- .bss           0x40000974       0x28 ../../Common/Minimal/dynamic.o
- .bss           0x4000099c        0x0 ../../../Source/list.o
- .bss           0x4000099c        0x0 ../../../Source/queue.o
- .bss           0x4000099c      0x130 ../../../Source/tasks.o
+ .bss           0x40000908       0x18 ../Common/Minimal/BlockQ.o
+ .bss           0x40000920       0x20 ../Common/Minimal/blocktim.o
+ .bss           0x40000940        0x4 ../Common/Minimal/flash.o
+ .bss           0x40000944        0x4 ../Common/Minimal/integer.o
+ .bss           0x40000948       0x20 ../Common/Minimal/GenQTest.o
+ .bss           0x40000968        0xc ../Common/Minimal/QPeek.o
+ .bss           0x40000974       0x28 ../Common/Minimal/dynamic.o
+ .bss           0x4000099c        0x0 ../Source/list.o
+ .bss           0x4000099c        0x0 ../Source/queue.o
+ .bss           0x4000099c      0x130 ../Source/tasks.o
                 0x4000099c                pxCurrentTCB
- .bss           0x40000acc        0x0 ../../../Source/portable/GCC/ARM7_LPC23xx/port.o
- .bss           0x40000acc     0x4818 ../../../Source/portable/MemMang/heap_2.o
- .bss           0x400052e4        0x0 /tmp/ccwheBMc.o
+ .bss           0x40000acc        0x0 ../Source/portable/GCC/ARM7_LPC23xx/port.o
+ .bss           0x40000acc     0x4818 ../Source/portable/MemMang/heap_2.o
+ .bss           0x400052e4        0x0 /tmp/ccpyJHbl.o
  .bss           0x400052e4        0x0 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_udivsi3.o)
  .bss           0x400052e4        0x0 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_divsi3.o)
  .bss           0x400052e4        0x0 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_dvmd_tls.o)
@@ -1010,11 +1010,11 @@ prog            0x00000044     0xb7e8
                 0x400053d4                outputIsocDataBuffer
                 0x400057d4                inputIsocDataBuffer
                 0x400057d8                xLCDQueue
- COMMON         0x400057dc        0xc ../../Common/Minimal/QPeek.o
+ COMMON         0x400057dc        0xc ../Common/Minimal/QPeek.o
                 0x400057dc                xHighPriorityTask
                 0x400057e0                xMediumPriorityTask
                 0x400057e4                xHighestPriorityTask
- COMMON         0x400057e8        0x4 ../../Common/Minimal/dynamic.o
+ COMMON         0x400057e8        0x4 ../Common/Minimal/dynamic.o
                 0x400057e8                xSuspendedTestQueue
  COMMON         0x400057ec        0x4 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-reent.o)
                 0x400057ec                errno
@@ -1040,26 +1040,26 @@ OUTPUT(RTOSDemo.elf elf32-littlearm)
 .debug_abbrev   0x00000000     0x7147
  .debug_abbrev  0x00000000       0xe6 serial/serial.o
  .debug_abbrev  0x000000e6       0xe4 serial/serialISR.o
- .debug_abbrev  0x000001ca       0x7f ../../../Source/portable/GCC/ARM7_LPC23xx/portISR.o
- .debug_abbrev  0x00000249      0x155 ../../Common/drivers/LPC/usb/usbcontrol.o
- .debug_abbrev  0x0000039e      0x27a ../../Common/drivers/LPC/usb/usbhw_lpc.o
- .debug_abbrev  0x00000618       0xa9 ../../Common/drivers/LPC/usb/usbinit.o
- .debug_abbrev  0x000006c1      0x202 ../../Common/drivers/LPC/usb/usbstdreq.o
+ .debug_abbrev  0x000001ca       0x7f ../Source/portable/GCC/ARM7_LPC23xx/portISR.o
+ .debug_abbrev  0x00000249      0x155 ../Common/drivers/LPC/usb/usbcontrol.o
+ .debug_abbrev  0x0000039e      0x27a ../Common/drivers/LPC/usb/usbhw_lpc.o
+ .debug_abbrev  0x00000618       0xa9 ../Common/drivers/LPC/usb/usbinit.o
+ .debug_abbrev  0x000006c1      0x202 ../Common/drivers/LPC/usb/usbstdreq.o
  .debug_abbrev  0x000008c3      0x178 main.o
  .debug_abbrev  0x00000a3b       0xb0 ./ParTest/ParTest.o
- .debug_abbrev  0x00000aeb      0x12b ../../Common/Minimal/BlockQ.o
- .debug_abbrev  0x00000c16      0x100 ../../Common/Minimal/blocktim.o
- .debug_abbrev  0x00000d16       0xa7 ../../Common/Minimal/flash.o
- .debug_abbrev  0x00000dbd       0xcc ../../Common/Minimal/integer.o
- .debug_abbrev  0x00000e89      0x10d ../../Common/Minimal/GenQTest.o
- .debug_abbrev  0x00000f96      0x12d ../../Common/Minimal/QPeek.o
- .debug_abbrev  0x000010c3      0x11a ../../Common/Minimal/dynamic.o
- .debug_abbrev  0x000011dd       0xfd ../../../Source/list.o
- .debug_abbrev  0x000012da      0x1aa ../../../Source/queue.o
- .debug_abbrev  0x00001484      0x237 ../../../Source/tasks.o
- .debug_abbrev  0x000016bb       0xf1 ../../../Source/portable/GCC/ARM7_LPC23xx/port.o
- .debug_abbrev  0x000017ac      0x13f ../../../Source/portable/MemMang/heap_2.o
- .debug_abbrev  0x000018eb       0x10 /tmp/ccwheBMc.o
+ .debug_abbrev  0x00000aeb      0x12b ../Common/Minimal/BlockQ.o
+ .debug_abbrev  0x00000c16      0x100 ../Common/Minimal/blocktim.o
+ .debug_abbrev  0x00000d16       0xa7 ../Common/Minimal/flash.o
+ .debug_abbrev  0x00000dbd       0xcc ../Common/Minimal/integer.o
+ .debug_abbrev  0x00000e89      0x10d ../Common/Minimal/GenQTest.o
+ .debug_abbrev  0x00000f96      0x12d ../Common/Minimal/QPeek.o
+ .debug_abbrev  0x000010c3      0x11a ../Common/Minimal/dynamic.o
+ .debug_abbrev  0x000011dd       0xfd ../Source/list.o
+ .debug_abbrev  0x000012da      0x1aa ../Source/queue.o
+ .debug_abbrev  0x00001484      0x237 ../Source/tasks.o
+ .debug_abbrev  0x000016bb       0xf1 ../Source/portable/GCC/ARM7_LPC23xx/port.o
+ .debug_abbrev  0x000017ac      0x13f ../Source/portable/MemMang/heap_2.o
+ .debug_abbrev  0x000018eb       0x10 /tmp/ccpyJHbl.o
  .debug_abbrev  0x000018fb       0x14 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_udivsi3.o)
  .debug_abbrev  0x0000190f       0x14 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_divsi3.o)
  .debug_abbrev  0x00001923       0x14 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_dvmd_tls.o)
@@ -1126,206 +1126,206 @@ OUTPUT(RTOSDemo.elf elf32-littlearm)
  .debug_abbrev  0x00006fc3      0x11a /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_fpcmp_parts_df.o)
  .debug_abbrev  0x000070dd       0x6a /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_clz.o)
 
-.debug_info     0x00000000    0x1df0f
+.debug_info     0x00000000    0x1def8
  .debug_info    0x00000000      0x2f8 serial/serial.o
  .debug_info    0x000002f8      0x20f serial/serialISR.o
- .debug_info    0x00000507      0x12b ../../../Source/portable/GCC/ARM7_LPC23xx/portISR.o
- .debug_info    0x00000632      0x2de ../../Common/drivers/LPC/usb/usbcontrol.o
- .debug_info    0x00000910      0x85f ../../Common/drivers/LPC/usb/usbhw_lpc.o
- .debug_info    0x0000116f       0xb8 ../../Common/drivers/LPC/usb/usbinit.o
- .debug_info    0x00001227      0x468 ../../Common/drivers/LPC/usb/usbstdreq.o
+ .debug_info    0x00000507      0x12b ../Source/portable/GCC/ARM7_LPC23xx/portISR.o
+ .debug_info    0x00000632      0x2de ../Common/drivers/LPC/usb/usbcontrol.o
+ .debug_info    0x00000910      0x85f ../Common/drivers/LPC/usb/usbhw_lpc.o
+ .debug_info    0x0000116f       0xb8 ../Common/drivers/LPC/usb/usbinit.o
+ .debug_info    0x00001227      0x468 ../Common/drivers/LPC/usb/usbstdreq.o
  .debug_info    0x0000168f      0x2ba main.o
  .debug_info    0x00001949      0x12c ./ParTest/ParTest.o
- .debug_info    0x00001a75      0x2e9 ../../Common/Minimal/BlockQ.o
- .debug_info    0x00001d5e      0x237 ../../Common/Minimal/blocktim.o
- .debug_info    0x00001f95      0x121 ../../Common/Minimal/flash.o
- .debug_info    0x000020b6      0x15f ../../Common/Minimal/integer.o
- .debug_info    0x00002215      0x273 ../../Common/Minimal/GenQTest.o
- .debug_info    0x00002488      0x257 ../../Common/Minimal/QPeek.o
- .debug_info    0x000026df      0x2ca ../../Common/Minimal/dynamic.o
- .debug_info    0x000029a9      0x2a0 ../../../Source/list.o
- .debug_info    0x00002c49      0x78c ../../../Source/queue.o
- .debug_info    0x000033d5      0xef2 ../../../Source/tasks.o
- .debug_info    0x000042c7      0x156 ../../../Source/portable/GCC/ARM7_LPC23xx/port.o
- .debug_info    0x0000441d      0x271 ../../../Source/portable/MemMang/heap_2.o
- .debug_info    0x0000468e       0x6f /tmp/ccwheBMc.o
- .debug_info    0x000046fd       0x7e /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_udivsi3.o)
- .debug_info    0x0000477b       0x7e /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_divsi3.o)
- .debug_info    0x000047f9       0x7e /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_dvmd_tls.o)
- .debug_info    0x00004877      0x10c /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-memcpy.o)
- .debug_info    0x00004983      0x10e /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-memset.o)
- .debug_info    0x00004a91      0xa04 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-sprintf.o)
- .debug_info    0x00005495       0xe2 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-strcat.o)
- .debug_info    0x00005577      0x109 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-strcpy.o)
- .debug_info    0x00005680       0xd2 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-strlen.o)
- .debug_info    0x00005752      0x123 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-strncpy.o)
- .debug_info    0x00005875     0x112e /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-vfprintf.o)
- .debug_info    0x000069a3      0x9eb /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-wcrtomb.o)
- .debug_info    0x0000738e      0xa7c /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-wcsrtombs.o)
- .debug_info    0x00007e0a      0x9f3 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-wctomb_r.o)
- .debug_info    0x000087fd      0x936 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-wsetup.o)
- .debug_info    0x00009133      0xd55 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-dtoa.o)
- .debug_info    0x00009e88      0x99a /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-fflush.o)
- .debug_info    0x0000a822      0xb65 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-findfp.o)
- .debug_info    0x0000b387      0xbb1 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-freer.o)
- .debug_info    0x0000bf38      0xa75 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-fvwrite.o)
- .debug_info    0x0000c9ad      0xad5 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-fwalk.o)
- .debug_info    0x0000d482      0x91e /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-impure.o)
- .debug_info    0x0000dda0      0xb82 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-locale.o)
- .debug_info    0x0000e922      0xad9 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-makebuf.o)
- .debug_info    0x0000f3fb      0xcb4 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-mallocr.o)
- .debug_info    0x000100af      0x12d /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-memchr.o)
- .debug_info    0x000101dc      0x13b /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-memmove.o)
- .debug_info    0x00010317      0x938 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-mlock.o)
- .debug_info    0x00010c4f     0x1433 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-mprec.o)
- .debug_info    0x00012082      0xbb3 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-reallocr.o)
- .debug_info    0x00012c35       0xd1 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-s_isinfd.o)
- .debug_info    0x00012d06       0xd3 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-s_isnand.o)
- .debug_info    0x00012dd9      0x94a /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-sbrkr.o)
- .debug_info    0x00013723      0xa70 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-stdio.o)
- .debug_info    0x00014193       0xd6 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-strcmp.o)
- .debug_info    0x00014269     0x1711 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-syscalls.o)
- .debug_info    0x0001597a      0x97d /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-writer.o)
- .debug_info    0x000162f7      0x9ff /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-callocr.o)
- .debug_info    0x00016cf6      0x942 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-closer.o)
- .debug_info    0x00017638      0x90f /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-errno.o)
- .debug_info    0x00017f47      0x97e /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-fclose.o)
- .debug_info    0x000188c5      0xaba /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-fstatr.o)
- .debug_info    0x0001937f      0x967 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-lseekr.o)
- .debug_info    0x00019ce6      0x976 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-readr.o)
- .debug_info    0x0001a65c      0xa03 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-reent.o)
- .debug_info    0x0001b05f       0x7e /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_umodsi3.o)
- .debug_info    0x0001b0dd       0x7e /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_modsi3.o)
- .debug_info    0x0001b15b      0x485 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_addsub_df.o)
- .debug_info    0x0001b5e0      0x46b /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_mul_df.o)
- .debug_info    0x0001ba4b      0x3a9 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_div_df.o)
- .debug_info    0x0001bdf4      0x2a6 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_eq_df.o)
- .debug_info    0x0001c09a      0x2a6 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_ne_df.o)
- .debug_info    0x0001c340      0x2a6 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_gt_df.o)
- .debug_info    0x0001c5e6      0x2a6 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_ge_df.o)
- .debug_info    0x0001c88c      0x2a6 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_lt_df.o)
- .debug_info    0x0001cb32      0x20d /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_si_to_df.o)
- .debug_info    0x0001cd3f      0x2da /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_df_to_si.o)
- .debug_info    0x0001d019      0x160 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_thenan_df.o)
- .debug_info    0x0001d179      0x204 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_usi_to_df.o)
- .debug_info    0x0001d37d      0x203 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_muldi3.o)
- .debug_info    0x0001d580      0x123 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_clzsi2.o)
- .debug_info    0x0001d6a3      0x320 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_pack_df.o)
- .debug_info    0x0001d9c3      0x27a /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_unpack_df.o)
- .debug_info    0x0001dc3d      0x214 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_fpcmp_parts_df.o)
- .debug_info    0x0001de51       0xbe /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_clz.o)
+ .debug_info    0x00001a75      0x2e9 ../Common/Minimal/BlockQ.o
+ .debug_info    0x00001d5e      0x237 ../Common/Minimal/blocktim.o
+ .debug_info    0x00001f95      0x121 ../Common/Minimal/flash.o
+ .debug_info    0x000020b6      0x15f ../Common/Minimal/integer.o
+ .debug_info    0x00002215      0x273 ../Common/Minimal/GenQTest.o
+ .debug_info    0x00002488      0x257 ../Common/Minimal/QPeek.o
+ .debug_info    0x000026df      0x2ca ../Common/Minimal/dynamic.o
+ .debug_info    0x000029a9      0x2a0 ../Source/list.o
+ .debug_info    0x00002c49      0x78c ../Source/queue.o
+ .debug_info    0x000033d5      0xef2 ../Source/tasks.o
+ .debug_info    0x000042c7      0x156 ../Source/portable/GCC/ARM7_LPC23xx/port.o
+ .debug_info    0x0000441d      0x271 ../Source/portable/MemMang/heap_2.o
+ .debug_info    0x0000468e       0x58 /tmp/ccpyJHbl.o
+ .debug_info    0x000046e6       0x7e /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_udivsi3.o)
+ .debug_info    0x00004764       0x7e /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_divsi3.o)
+ .debug_info    0x000047e2       0x7e /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_dvmd_tls.o)
+ .debug_info    0x00004860      0x10c /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-memcpy.o)
+ .debug_info    0x0000496c      0x10e /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-memset.o)
+ .debug_info    0x00004a7a      0xa04 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-sprintf.o)
+ .debug_info    0x0000547e       0xe2 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-strcat.o)
+ .debug_info    0x00005560      0x109 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-strcpy.o)
+ .debug_info    0x00005669       0xd2 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-strlen.o)
+ .debug_info    0x0000573b      0x123 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-strncpy.o)
+ .debug_info    0x0000585e     0x112e /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-vfprintf.o)
+ .debug_info    0x0000698c      0x9eb /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-wcrtomb.o)
+ .debug_info    0x00007377      0xa7c /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-wcsrtombs.o)
+ .debug_info    0x00007df3      0x9f3 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-wctomb_r.o)
+ .debug_info    0x000087e6      0x936 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-wsetup.o)
+ .debug_info    0x0000911c      0xd55 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-dtoa.o)
+ .debug_info    0x00009e71      0x99a /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-fflush.o)
+ .debug_info    0x0000a80b      0xb65 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-findfp.o)
+ .debug_info    0x0000b370      0xbb1 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-freer.o)
+ .debug_info    0x0000bf21      0xa75 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-fvwrite.o)
+ .debug_info    0x0000c996      0xad5 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-fwalk.o)
+ .debug_info    0x0000d46b      0x91e /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-impure.o)
+ .debug_info    0x0000dd89      0xb82 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-locale.o)
+ .debug_info    0x0000e90b      0xad9 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-makebuf.o)
+ .debug_info    0x0000f3e4      0xcb4 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-mallocr.o)
+ .debug_info    0x00010098      0x12d /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-memchr.o)
+ .debug_info    0x000101c5      0x13b /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-memmove.o)
+ .debug_info    0x00010300      0x938 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-mlock.o)
+ .debug_info    0x00010c38     0x1433 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-mprec.o)
+ .debug_info    0x0001206b      0xbb3 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-reallocr.o)
+ .debug_info    0x00012c1e       0xd1 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-s_isinfd.o)
+ .debug_info    0x00012cef       0xd3 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-s_isnand.o)
+ .debug_info    0x00012dc2      0x94a /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-sbrkr.o)
+ .debug_info    0x0001370c      0xa70 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-stdio.o)
+ .debug_info    0x0001417c       0xd6 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-strcmp.o)
+ .debug_info    0x00014252     0x1711 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-syscalls.o)
+ .debug_info    0x00015963      0x97d /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-writer.o)
+ .debug_info    0x000162e0      0x9ff /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-callocr.o)
+ .debug_info    0x00016cdf      0x942 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-closer.o)
+ .debug_info    0x00017621      0x90f /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-errno.o)
+ .debug_info    0x00017f30      0x97e /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-fclose.o)
+ .debug_info    0x000188ae      0xaba /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-fstatr.o)
+ .debug_info    0x00019368      0x967 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-lseekr.o)
+ .debug_info    0x00019ccf      0x976 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-readr.o)
+ .debug_info    0x0001a645      0xa03 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-reent.o)
+ .debug_info    0x0001b048       0x7e /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_umodsi3.o)
+ .debug_info    0x0001b0c6       0x7e /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_modsi3.o)
+ .debug_info    0x0001b144      0x485 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_addsub_df.o)
+ .debug_info    0x0001b5c9      0x46b /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_mul_df.o)
+ .debug_info    0x0001ba34      0x3a9 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_div_df.o)
+ .debug_info    0x0001bddd      0x2a6 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_eq_df.o)
+ .debug_info    0x0001c083      0x2a6 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_ne_df.o)
+ .debug_info    0x0001c329      0x2a6 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_gt_df.o)
+ .debug_info    0x0001c5cf      0x2a6 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_ge_df.o)
+ .debug_info    0x0001c875      0x2a6 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_lt_df.o)
+ .debug_info    0x0001cb1b      0x20d /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_si_to_df.o)
+ .debug_info    0x0001cd28      0x2da /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_df_to_si.o)
+ .debug_info    0x0001d002      0x160 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_thenan_df.o)
+ .debug_info    0x0001d162      0x204 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_usi_to_df.o)
+ .debug_info    0x0001d366      0x203 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_muldi3.o)
+ .debug_info    0x0001d569      0x123 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_clzsi2.o)
+ .debug_info    0x0001d68c      0x320 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_pack_df.o)
+ .debug_info    0x0001d9ac      0x27a /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_unpack_df.o)
+ .debug_info    0x0001dc26      0x214 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_fpcmp_parts_df.o)
+ .debug_info    0x0001de3a       0xbe /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_clz.o)
 
-.debug_line     0x00000000     0x61ce
- .debug_line    0x00000000      0x118 serial/serial.o
- .debug_line    0x00000118       0xa0 serial/serialISR.o
- .debug_line    0x000001b8       0x8c ../../../Source/portable/GCC/ARM7_LPC23xx/portISR.o
- .debug_line    0x00000244       0xb5 ../../Common/drivers/LPC/usb/usbcontrol.o
- .debug_line    0x000002f9      0x16e ../../Common/drivers/LPC/usb/usbhw_lpc.o
- .debug_line    0x00000467       0x6b ../../Common/drivers/LPC/usb/usbinit.o
- .debug_line    0x000004d2       0xed ../../Common/drivers/LPC/usb/usbstdreq.o
- .debug_line    0x000005bf       0xe4 main.o
- .debug_line    0x000006a3       0x54 ./ParTest/ParTest.o
- .debug_line    0x000006f7      0x102 ../../Common/Minimal/BlockQ.o
- .debug_line    0x000007f9      0x161 ../../Common/Minimal/blocktim.o
- .debug_line    0x0000095a       0xab ../../Common/Minimal/flash.o
- .debug_line    0x00000a05       0x66 ../../Common/Minimal/integer.o
- .debug_line    0x00000a6b      0x124 ../../Common/Minimal/GenQTest.o
- .debug_line    0x00000b8f       0xe7 ../../Common/Minimal/QPeek.o
- .debug_line    0x00000c76       0xda ../../Common/Minimal/dynamic.o
- .debug_line    0x00000d50       0xdf ../../../Source/list.o
- .debug_line    0x00000e2f      0x214 ../../../Source/queue.o
- .debug_line    0x00001043      0x2de ../../../Source/tasks.o
- .debug_line    0x00001321       0xcb ../../../Source/portable/GCC/ARM7_LPC23xx/port.o
- .debug_line    0x000013ec       0xc0 ../../../Source/portable/MemMang/heap_2.o
- .debug_line    0x000014ac       0x78 /tmp/ccwheBMc.o
- .debug_line    0x00001524       0x79 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_udivsi3.o)
- .debug_line    0x0000159d       0x85 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_divsi3.o)
- .debug_line    0x00001622       0x63 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_dvmd_tls.o)
- .debug_line    0x00001685       0xd7 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-memcpy.o)
- .debug_line    0x0000175c       0xe3 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-memset.o)
- .debug_line    0x0000183f      0x177 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-sprintf.o)
- .debug_line    0x000019b6       0x83 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-strcat.o)
- .debug_line    0x00001a39       0x89 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-strcpy.o)
- .debug_line    0x00001ac2       0xc4 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-strlen.o)
- .debug_line    0x00001b86       0xde /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-strncpy.o)
- .debug_line    0x00001c64      0x5d5 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-vfprintf.o)
- .debug_line    0x00002239      0x160 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-wcrtomb.o)
- .debug_line    0x00002399      0x186 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-wcsrtombs.o)
- .debug_line    0x0000251f      0x1e6 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-wctomb_r.o)
- .debug_line    0x00002705      0x170 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-wsetup.o)
- .debug_line    0x00002875      0x436 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-dtoa.o)
- .debug_line    0x00002cab      0x1a3 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-fflush.o)
- .debug_line    0x00002e4e      0x1c8 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-findfp.o)
- .debug_line    0x00003016      0x17a /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-freer.o)
- .debug_line    0x00003190      0x1f7 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-fvwrite.o)
- .debug_line    0x00003387      0x175 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-fwalk.o)
- .debug_line    0x000034fc      0x100 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-impure.o)
- .debug_line    0x000035fc      0x16f /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-locale.o)
- .debug_line    0x0000376b      0x18e /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-makebuf.o)
- .debug_line    0x000038f9      0x257 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-mallocr.o)
- .debug_line    0x00003b50       0xe8 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-memchr.o)
- .debug_line    0x00003c38       0xe6 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-memmove.o)
- .debug_line    0x00003d1e      0x112 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-mlock.o)
- .debug_line    0x00003e30      0x3f6 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-mprec.o)
- .debug_line    0x00004226      0x1b4 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-reallocr.o)
- .debug_line    0x000043da       0xbc /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-s_isinfd.o)
- .debug_line    0x00004496       0xbf /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-s_isnand.o)
- .debug_line    0x00004555      0x115 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-sbrkr.o)
- .debug_line    0x0000466a      0x17e /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-stdio.o)
- .debug_line    0x000047e8       0x93 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-strcmp.o)
- .debug_line    0x0000487b      0x33b /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-syscalls.o)
- .debug_line    0x00004bb6      0x116 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-writer.o)
- .debug_line    0x00004ccc      0x11b /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-callocr.o)
- .debug_line    0x00004de7      0x116 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-closer.o)
- .debug_line    0x00004efd      0x10f /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-errno.o)
- .debug_line    0x0000500c      0x172 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-fclose.o)
- .debug_line    0x0000517e      0x166 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-fstatr.o)
- .debug_line    0x000052e4      0x116 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-lseekr.o)
- .debug_line    0x000053fa      0x115 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-readr.o)
- .debug_line    0x0000550f      0x14b /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-reent.o)
- .debug_line    0x0000565a       0x71 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_umodsi3.o)
- .debug_line    0x000056cb       0x7a /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_modsi3.o)
- .debug_line    0x00005745      0x123 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_addsub_df.o)
- .debug_line    0x00005868       0xf5 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_mul_df.o)
- .debug_line    0x0000595d       0xd2 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_div_df.o)
- .debug_line    0x00005a2f       0x77 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_eq_df.o)
- .debug_line    0x00005aa6       0x77 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_ne_df.o)
- .debug_line    0x00005b1d       0x77 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_gt_df.o)
- .debug_line    0x00005b94       0x77 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_ge_df.o)
- .debug_line    0x00005c0b       0x77 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_lt_df.o)
- .debug_line    0x00005c82       0x94 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_si_to_df.o)
- .debug_line    0x00005d16       0x8c /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_df_to_si.o)
- .debug_line    0x00005da2       0x56 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_thenan_df.o)
- .debug_line    0x00005df8       0x89 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_usi_to_df.o)
- .debug_line    0x00005e81       0x6b /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_muldi3.o)
- .debug_line    0x00005eec       0x72 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_clzsi2.o)
- .debug_line    0x00005f5e       0xd4 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_pack_df.o)
- .debug_line    0x00006032       0x9d /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_unpack_df.o)
- .debug_line    0x000060cf       0xae /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_fpcmp_parts_df.o)
- .debug_line    0x0000617d       0x51 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_clz.o)
+.debug_line     0x00000000     0x6114
+ .debug_line    0x00000000      0x10c serial/serial.o
+ .debug_line    0x0000010c       0x9a serial/serialISR.o
+ .debug_line    0x000001a6       0x86 ../Source/portable/GCC/ARM7_LPC23xx/portISR.o
+ .debug_line    0x0000022c       0xb2 ../Common/drivers/LPC/usb/usbcontrol.o
+ .debug_line    0x000002de      0x16b ../Common/drivers/LPC/usb/usbhw_lpc.o
+ .debug_line    0x00000449       0x68 ../Common/drivers/LPC/usb/usbinit.o
+ .debug_line    0x000004b1       0xea ../Common/drivers/LPC/usb/usbstdreq.o
+ .debug_line    0x0000059b       0xdb main.o
+ .debug_line    0x00000676       0x54 ./ParTest/ParTest.o
+ .debug_line    0x000006ca       0xf3 ../Common/Minimal/BlockQ.o
+ .debug_line    0x000007bd      0x152 ../Common/Minimal/blocktim.o
+ .debug_line    0x0000090f       0xa2 ../Common/Minimal/flash.o
+ .debug_line    0x000009b1       0x63 ../Common/Minimal/integer.o
+ .debug_line    0x00000a14      0x11b ../Common/Minimal/GenQTest.o
+ .debug_line    0x00000b2f       0xde ../Common/Minimal/QPeek.o
+ .debug_line    0x00000c0d       0xd1 ../Common/Minimal/dynamic.o
+ .debug_line    0x00000cde       0xcd ../Source/list.o
+ .debug_line    0x00000dab      0x202 ../Source/queue.o
+ .debug_line    0x00000fad      0x2cc ../Source/tasks.o
+ .debug_line    0x00001279       0xbf ../Source/portable/GCC/ARM7_LPC23xx/port.o
+ .debug_line    0x00001338       0xba ../Source/portable/MemMang/heap_2.o
+ .debug_line    0x000013f2       0x78 /tmp/ccpyJHbl.o
+ .debug_line    0x0000146a       0x79 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_udivsi3.o)
+ .debug_line    0x000014e3       0x85 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_divsi3.o)
+ .debug_line    0x00001568       0x63 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_dvmd_tls.o)
+ .debug_line    0x000015cb       0xd7 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-memcpy.o)
+ .debug_line    0x000016a2       0xe3 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-memset.o)
+ .debug_line    0x00001785      0x177 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-sprintf.o)
+ .debug_line    0x000018fc       0x83 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-strcat.o)
+ .debug_line    0x0000197f       0x89 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-strcpy.o)
+ .debug_line    0x00001a08       0xc4 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-strlen.o)
+ .debug_line    0x00001acc       0xde /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-strncpy.o)
+ .debug_line    0x00001baa      0x5d5 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-vfprintf.o)
+ .debug_line    0x0000217f      0x160 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-wcrtomb.o)
+ .debug_line    0x000022df      0x186 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-wcsrtombs.o)
+ .debug_line    0x00002465      0x1e6 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-wctomb_r.o)
+ .debug_line    0x0000264b      0x170 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-wsetup.o)
+ .debug_line    0x000027bb      0x436 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-dtoa.o)
+ .debug_line    0x00002bf1      0x1a3 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-fflush.o)
+ .debug_line    0x00002d94      0x1c8 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-findfp.o)
+ .debug_line    0x00002f5c      0x17a /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-freer.o)
+ .debug_line    0x000030d6      0x1f7 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-fvwrite.o)
+ .debug_line    0x000032cd      0x175 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-fwalk.o)
+ .debug_line    0x00003442      0x100 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-impure.o)
+ .debug_line    0x00003542      0x16f /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-locale.o)
+ .debug_line    0x000036b1      0x18e /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-makebuf.o)
+ .debug_line    0x0000383f      0x257 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-mallocr.o)
+ .debug_line    0x00003a96       0xe8 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-memchr.o)
+ .debug_line    0x00003b7e       0xe6 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-memmove.o)
+ .debug_line    0x00003c64      0x112 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-mlock.o)
+ .debug_line    0x00003d76      0x3f6 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-mprec.o)
+ .debug_line    0x0000416c      0x1b4 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-reallocr.o)
+ .debug_line    0x00004320       0xbc /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-s_isinfd.o)
+ .debug_line    0x000043dc       0xbf /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-s_isnand.o)
+ .debug_line    0x0000449b      0x115 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-sbrkr.o)
+ .debug_line    0x000045b0      0x17e /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-stdio.o)
+ .debug_line    0x0000472e       0x93 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-strcmp.o)
+ .debug_line    0x000047c1      0x33b /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-syscalls.o)
+ .debug_line    0x00004afc      0x116 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-writer.o)
+ .debug_line    0x00004c12      0x11b /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-callocr.o)
+ .debug_line    0x00004d2d      0x116 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-closer.o)
+ .debug_line    0x00004e43      0x10f /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-errno.o)
+ .debug_line    0x00004f52      0x172 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-fclose.o)
+ .debug_line    0x000050c4      0x166 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-fstatr.o)
+ .debug_line    0x0000522a      0x116 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-lseekr.o)
+ .debug_line    0x00005340      0x115 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-readr.o)
+ .debug_line    0x00005455      0x14b /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-reent.o)
+ .debug_line    0x000055a0       0x71 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_umodsi3.o)
+ .debug_line    0x00005611       0x7a /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_modsi3.o)
+ .debug_line    0x0000568b      0x123 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_addsub_df.o)
+ .debug_line    0x000057ae       0xf5 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_mul_df.o)
+ .debug_line    0x000058a3       0xd2 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_div_df.o)
+ .debug_line    0x00005975       0x77 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_eq_df.o)
+ .debug_line    0x000059ec       0x77 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_ne_df.o)
+ .debug_line    0x00005a63       0x77 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_gt_df.o)
+ .debug_line    0x00005ada       0x77 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_ge_df.o)
+ .debug_line    0x00005b51       0x77 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_lt_df.o)
+ .debug_line    0x00005bc8       0x94 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_si_to_df.o)
+ .debug_line    0x00005c5c       0x8c /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_df_to_si.o)
+ .debug_line    0x00005ce8       0x56 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_thenan_df.o)
+ .debug_line    0x00005d3e       0x89 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_usi_to_df.o)
+ .debug_line    0x00005dc7       0x6b /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_muldi3.o)
+ .debug_line    0x00005e32       0x72 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_clzsi2.o)
+ .debug_line    0x00005ea4       0xd4 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_pack_df.o)
+ .debug_line    0x00005f78       0x9d /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_unpack_df.o)
+ .debug_line    0x00006015       0xae /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_fpcmp_parts_df.o)
+ .debug_line    0x000060c3       0x51 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_clz.o)
 
 .debug_frame    0x00000000     0x241c
  .debug_frame   0x00000000       0xa4 serial/serial.o
  .debug_frame   0x000000a4       0x50 serial/serialISR.o
- .debug_frame   0x000000f4       0x80 ../../../Source/portable/GCC/ARM7_LPC23xx/portISR.o
- .debug_frame   0x00000174       0x88 ../../Common/drivers/LPC/usb/usbcontrol.o
- .debug_frame   0x000001fc      0x23c ../../Common/drivers/LPC/usb/usbhw_lpc.o
- .debug_frame   0x00000438       0x38 ../../Common/drivers/LPC/usb/usbinit.o
- .debug_frame   0x00000470       0x6c ../../Common/drivers/LPC/usb/usbstdreq.o
+ .debug_frame   0x000000f4       0x80 ../Source/portable/GCC/ARM7_LPC23xx/portISR.o
+ .debug_frame   0x00000174       0x88 ../Common/drivers/LPC/usb/usbcontrol.o
+ .debug_frame   0x000001fc      0x23c ../Common/drivers/LPC/usb/usbhw_lpc.o
+ .debug_frame   0x00000438       0x38 ../Common/drivers/LPC/usb/usbinit.o
+ .debug_frame   0x00000470       0x6c ../Common/drivers/LPC/usb/usbstdreq.o
  .debug_frame   0x000004dc       0x58 main.o
  .debug_frame   0x00000534       0x50 ./ParTest/ParTest.o
- .debug_frame   0x00000584       0x94 ../../Common/Minimal/BlockQ.o
- .debug_frame   0x00000618       0x74 ../../Common/Minimal/blocktim.o
- .debug_frame   0x0000068c       0x4c ../../Common/Minimal/flash.o
- .debug_frame   0x000006d8       0x58 ../../Common/Minimal/integer.o
- .debug_frame   0x00000730       0xa4 ../../Common/Minimal/GenQTest.o
- .debug_frame   0x000007d4       0xac ../../Common/Minimal/QPeek.o
- .debug_frame   0x00000880       0xc8 ../../Common/Minimal/dynamic.o
- .debug_frame   0x00000948       0x68 ../../../Source/list.o
- .debug_frame   0x000009b0      0x174 ../../../Source/queue.o
- .debug_frame   0x00000b24      0x358 ../../../Source/tasks.o
- .debug_frame   0x00000e7c       0x50 ../../../Source/portable/GCC/ARM7_LPC23xx/port.o
- .debug_frame   0x00000ecc       0x44 ../../../Source/portable/MemMang/heap_2.o
+ .debug_frame   0x00000584       0x94 ../Common/Minimal/BlockQ.o
+ .debug_frame   0x00000618       0x74 ../Common/Minimal/blocktim.o
+ .debug_frame   0x0000068c       0x4c ../Common/Minimal/flash.o
+ .debug_frame   0x000006d8       0x58 ../Common/Minimal/integer.o
+ .debug_frame   0x00000730       0xa4 ../Common/Minimal/GenQTest.o
+ .debug_frame   0x000007d4       0xac ../Common/Minimal/QPeek.o
+ .debug_frame   0x00000880       0xc8 ../Common/Minimal/dynamic.o
+ .debug_frame   0x00000948       0x68 ../Source/list.o
+ .debug_frame   0x000009b0      0x174 ../Source/queue.o
+ .debug_frame   0x00000b24      0x358 ../Source/tasks.o
+ .debug_frame   0x00000e7c       0x50 ../Source/portable/GCC/ARM7_LPC23xx/port.o
+ .debug_frame   0x00000ecc       0x44 ../Source/portable/MemMang/heap_2.o
  .debug_frame   0x00000f10       0x28 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_udivsi3.o)
  .debug_frame   0x00000f38       0x28 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_divsi3.o)
  .debug_frame   0x00000f60       0x2c /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-memcpy.o)
@@ -1391,24 +1391,24 @@ OUTPUT(RTOSDemo.elf elf32-littlearm)
 .debug_loc      0x00000000     0xe4f3
  .debug_loc     0x00000000      0x3a1 serial/serial.o
  .debug_loc     0x000003a1       0xfa serial/serialISR.o
- .debug_loc     0x0000049b      0x1cf ../../Common/drivers/LPC/usb/usbcontrol.o
- .debug_loc     0x0000066a      0x661 ../../Common/drivers/LPC/usb/usbhw_lpc.o
- .debug_loc     0x00000ccb       0x1f ../../Common/drivers/LPC/usb/usbinit.o
- .debug_loc     0x00000cea      0x253 ../../Common/drivers/LPC/usb/usbstdreq.o
+ .debug_loc     0x0000049b      0x1cf ../Common/drivers/LPC/usb/usbcontrol.o
+ .debug_loc     0x0000066a      0x661 ../Common/drivers/LPC/usb/usbhw_lpc.o
+ .debug_loc     0x00000ccb       0x1f ../Common/drivers/LPC/usb/usbinit.o
+ .debug_loc     0x00000cea      0x253 ../Common/drivers/LPC/usb/usbstdreq.o
  .debug_loc     0x00000f3d       0x7b main.o
  .debug_loc     0x00000fb8       0x31 ./ParTest/ParTest.o
- .debug_loc     0x00000fe9      0x20b ../../Common/Minimal/BlockQ.o
- .debug_loc     0x000011f4      0x15e ../../Common/Minimal/blocktim.o
- .debug_loc     0x00001352       0x9a ../../Common/Minimal/flash.o
- .debug_loc     0x000013ec       0x87 ../../Common/Minimal/integer.o
- .debug_loc     0x00001473      0x1ff ../../Common/Minimal/GenQTest.o
- .debug_loc     0x00001672      0x23f ../../Common/Minimal/QPeek.o
- .debug_loc     0x000018b1      0x18e ../../Common/Minimal/dynamic.o
- .debug_loc     0x00001a3f       0x79 ../../../Source/list.o
- .debug_loc     0x00001ab8      0x76e ../../../Source/queue.o
- .debug_loc     0x00002226      0xc70 ../../../Source/tasks.o
- .debug_loc     0x00002e96       0xae ../../../Source/portable/GCC/ARM7_LPC23xx/port.o
- .debug_loc     0x00002f44      0x1eb ../../../Source/portable/MemMang/heap_2.o
+ .debug_loc     0x00000fe9      0x20b ../Common/Minimal/BlockQ.o
+ .debug_loc     0x000011f4      0x15e ../Common/Minimal/blocktim.o
+ .debug_loc     0x00001352       0x9a ../Common/Minimal/flash.o
+ .debug_loc     0x000013ec       0x87 ../Common/Minimal/integer.o
+ .debug_loc     0x00001473      0x1ff ../Common/Minimal/GenQTest.o
+ .debug_loc     0x00001672      0x23f ../Common/Minimal/QPeek.o
+ .debug_loc     0x000018b1      0x18e ../Common/Minimal/dynamic.o
+ .debug_loc     0x00001a3f       0x79 ../Source/list.o
+ .debug_loc     0x00001ab8      0x76e ../Source/queue.o
+ .debug_loc     0x00002226      0xc70 ../Source/tasks.o
+ .debug_loc     0x00002e96       0xae ../Source/portable/GCC/ARM7_LPC23xx/port.o
+ .debug_loc     0x00002f44      0x1eb ../Source/portable/MemMang/heap_2.o
  .debug_loc     0x0000312f      0x107 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-memcpy.o)
  .debug_loc     0x00003236      0x128 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-memset.o)
  .debug_loc     0x0000335e       0xe9 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-sprintf.o)
@@ -1472,43 +1472,43 @@ OUTPUT(RTOSDemo.elf elf32-littlearm)
  .debug_pubnames
                 0x0000007d       0x4a serial/serialISR.o
  .debug_pubnames
-                0x000000c7       0xe3 ../../../Source/portable/GCC/ARM7_LPC23xx/portISR.o
+                0x000000c7       0xe3 ../Source/portable/GCC/ARM7_LPC23xx/portISR.o
  .debug_pubnames
-                0x000001aa       0x4d ../../Common/drivers/LPC/usb/usbcontrol.o
+                0x000001aa       0x4d ../Common/drivers/LPC/usb/usbcontrol.o
  .debug_pubnames
-                0x000001f7      0x1e8 ../../Common/drivers/LPC/usb/usbhw_lpc.o
+                0x000001f7      0x1e8 ../Common/drivers/LPC/usb/usbhw_lpc.o
  .debug_pubnames
-                0x000003df       0x1e ../../Common/drivers/LPC/usb/usbinit.o
+                0x000003df       0x1e ../Common/drivers/LPC/usb/usbinit.o
  .debug_pubnames
-                0x000003fd       0x7f ../../Common/drivers/LPC/usb/usbstdreq.o
+                0x000003fd       0x7f ../Common/drivers/LPC/usb/usbstdreq.o
  .debug_pubnames
                 0x0000047c       0xb2 main.o
  .debug_pubnames
                 0x0000052e       0x66 ./ParTest/ParTest.o
  .debug_pubnames
-                0x00000594       0x52 ../../Common/Minimal/BlockQ.o
+                0x00000594       0x52 ../Common/Minimal/BlockQ.o
  .debug_pubnames
-                0x000005e6       0x53 ../../Common/Minimal/blocktim.o
+                0x000005e6       0x53 ../Common/Minimal/blocktim.o
  .debug_pubnames
-                0x00000639       0x2a ../../Common/Minimal/flash.o
+                0x00000639       0x2a ../Common/Minimal/flash.o
  .debug_pubnames
-                0x00000663       0x52 ../../Common/Minimal/integer.o
+                0x00000663       0x52 ../Common/Minimal/integer.o
  .debug_pubnames
-                0x000006b5       0x54 ../../Common/Minimal/GenQTest.o
+                0x000006b5       0x54 ../Common/Minimal/GenQTest.o
  .debug_pubnames
-                0x00000709       0x95 ../../Common/Minimal/QPeek.o
+                0x00000709       0x95 ../Common/Minimal/QPeek.o
  .debug_pubnames
-                0x0000079e       0x72 ../../Common/Minimal/dynamic.o
+                0x0000079e       0x72 ../Common/Minimal/dynamic.o
  .debug_pubnames
-                0x00000810       0x71 ../../../Source/list.o
+                0x00000810       0x71 ../Source/list.o
  .debug_pubnames
-                0x00000881      0x127 ../../../Source/queue.o
+                0x00000881      0x127 ../Source/queue.o
  .debug_pubnames
-                0x000009a8      0x2ba ../../../Source/tasks.o
+                0x000009a8      0x2ba ../Source/tasks.o
  .debug_pubnames
-                0x00000c62       0x5a ../../../Source/portable/GCC/ARM7_LPC23xx/port.o
+                0x00000c62       0x5a ../Source/portable/GCC/ARM7_LPC23xx/port.o
  .debug_pubnames
-                0x00000cbc       0x31 ../../../Source/portable/MemMang/heap_2.o
+                0x00000cbc       0x31 ../Source/portable/MemMang/heap_2.o
  .debug_pubnames
                 0x00000ced       0x1d /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-memcpy.o)
  .debug_pubnames
@@ -1636,45 +1636,45 @@ OUTPUT(RTOSDemo.elf elf32-littlearm)
  .debug_aranges
                 0x00000020       0x20 serial/serialISR.o
  .debug_aranges
-                0x00000040       0x20 ../../../Source/portable/GCC/ARM7_LPC23xx/portISR.o
+                0x00000040       0x20 ../Source/portable/GCC/ARM7_LPC23xx/portISR.o
  .debug_aranges
-                0x00000060       0x20 ../../Common/drivers/LPC/usb/usbcontrol.o
+                0x00000060       0x20 ../Common/drivers/LPC/usb/usbcontrol.o
  .debug_aranges
-                0x00000080       0x20 ../../Common/drivers/LPC/usb/usbhw_lpc.o
+                0x00000080       0x20 ../Common/drivers/LPC/usb/usbhw_lpc.o
  .debug_aranges
-                0x000000a0       0x20 ../../Common/drivers/LPC/usb/usbinit.o
+                0x000000a0       0x20 ../Common/drivers/LPC/usb/usbinit.o
  .debug_aranges
-                0x000000c0       0x20 ../../Common/drivers/LPC/usb/usbstdreq.o
+                0x000000c0       0x20 ../Common/drivers/LPC/usb/usbstdreq.o
  .debug_aranges
                 0x000000e0       0x20 main.o
  .debug_aranges
                 0x00000100       0x20 ./ParTest/ParTest.o
  .debug_aranges
-                0x00000120       0x20 ../../Common/Minimal/BlockQ.o
+                0x00000120       0x20 ../Common/Minimal/BlockQ.o
  .debug_aranges
-                0x00000140       0x20 ../../Common/Minimal/blocktim.o
+                0x00000140       0x20 ../Common/Minimal/blocktim.o
  .debug_aranges
-                0x00000160       0x20 ../../Common/Minimal/flash.o
+                0x00000160       0x20 ../Common/Minimal/flash.o
  .debug_aranges
-                0x00000180       0x20 ../../Common/Minimal/integer.o
+                0x00000180       0x20 ../Common/Minimal/integer.o
  .debug_aranges
-                0x000001a0       0x20 ../../Common/Minimal/GenQTest.o
+                0x000001a0       0x20 ../Common/Minimal/GenQTest.o
  .debug_aranges
-                0x000001c0       0x20 ../../Common/Minimal/QPeek.o
+                0x000001c0       0x20 ../Common/Minimal/QPeek.o
  .debug_aranges
-                0x000001e0       0x20 ../../Common/Minimal/dynamic.o
+                0x000001e0       0x20 ../Common/Minimal/dynamic.o
  .debug_aranges
-                0x00000200       0x20 ../../../Source/list.o
+                0x00000200       0x20 ../Source/list.o
  .debug_aranges
-                0x00000220       0x20 ../../../Source/queue.o
+                0x00000220       0x20 ../Source/queue.o
  .debug_aranges
-                0x00000240       0x20 ../../../Source/tasks.o
+                0x00000240       0x20 ../Source/tasks.o
  .debug_aranges
-                0x00000260       0x20 ../../../Source/portable/GCC/ARM7_LPC23xx/port.o
+                0x00000260       0x20 ../Source/portable/GCC/ARM7_LPC23xx/port.o
  .debug_aranges
-                0x00000280       0x20 ../../../Source/portable/MemMang/heap_2.o
+                0x00000280       0x20 ../Source/portable/MemMang/heap_2.o
  .debug_aranges
-                0x000002a0       0x28 /tmp/ccwheBMc.o
+                0x000002a0       0x28 /tmp/ccpyJHbl.o
  .debug_aranges
                 0x000002c8       0x20 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_udivsi3.o)
  .debug_aranges
@@ -1800,190 +1800,190 @@ OUTPUT(RTOSDemo.elf elf32-littlearm)
  .debug_aranges
                 0x00000a68       0x20 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_fpcmp_parts_df.o)
 
-.debug_str      0x00000000     0x41ea
- .debug_str     0x00000000      0x1d1 serial/serial.o
-                                0x229 (size before relaxing)
- .debug_str     0x000001d1       0xac serial/serialISR.o
-                                0x1f4 (size before relaxing)
- .debug_str     0x0000027d       0xd3 ../../../Source/portable/GCC/ARM7_LPC23xx/portISR.o
-                                0x1d1 (size before relaxing)
- .debug_str     0x00000350      0x12f ../../Common/drivers/LPC/usb/usbcontrol.o
-                                0x1d1 (size before relaxing)
- .debug_str     0x0000047f      0x3ec ../../Common/drivers/LPC/usb/usbhw_lpc.o
-                                0x493 (size before relaxing)
- .debug_str     0x0000086b       0x56 ../../Common/drivers/LPC/usb/usbinit.o
-                                 0xdf (size before relaxing)
- .debug_str     0x000008c1      0x17d ../../Common/drivers/LPC/usb/usbstdreq.o
-                                0x278 (size before relaxing)
- .debug_str     0x00000a3e       0xda main.o
-                                0x229 (size before relaxing)
- .debug_str     0x00000b18       0x78 ./ParTest/ParTest.o
-                                0x157 (size before relaxing)
- .debug_str     0x00000b90      0x225 ../../Common/Minimal/BlockQ.o
-                                0x338 (size before relaxing)
- .debug_str     0x00000db5      0x150 ../../Common/Minimal/blocktim.o
-                                0x264 (size before relaxing)
- .debug_str     0x00000f05       0x74 ../../Common/Minimal/flash.o
-                                0x17e (size before relaxing)
- .debug_str     0x00000f79       0x92 ../../Common/Minimal/integer.o
-                                0x19e (size before relaxing)
- .debug_str     0x0000100b      0x178 ../../Common/Minimal/GenQTest.o
-                                0x28f (size before relaxing)
- .debug_str     0x00001183       0xf8 ../../Common/Minimal/QPeek.o
-                                0x233 (size before relaxing)
- .debug_str     0x0000127b      0x1de ../../Common/Minimal/dynamic.o
-                                0x2fc (size before relaxing)
- .debug_str     0x00001459      0x12e ../../../Source/list.o
-                                0x227 (size before relaxing)
- .debug_str     0x00001587      0x2e6 ../../../Source/queue.o
-                                0x4a3 (size before relaxing)
- .debug_str     0x0000186d      0x6f3 ../../../Source/tasks.o
-                                0x902 (size before relaxing)
- .debug_str     0x00001f60       0xa8 ../../../Source/portable/GCC/ARM7_LPC23xx/port.o
-                                0x1ad (size before relaxing)
- .debug_str     0x00002008      0x11c ../../../Source/portable/MemMang/heap_2.o
-                                0x20d (size before relaxing)
- .debug_str     0x00002124       0xc2 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-memcpy.o)
+.debug_str      0x00000000     0x418e
+ .debug_str     0x00000000      0x1ba serial/serial.o
+                                0x212 (size before relaxing)
+ .debug_str     0x000001ba       0xac serial/serialISR.o
+                                0x1dd (size before relaxing)
+ .debug_str     0x00000266       0xcd ../Source/portable/GCC/ARM7_LPC23xx/portISR.o
+                                0x1b4 (size before relaxing)
+ .debug_str     0x00000333      0x12c ../Common/drivers/LPC/usb/usbcontrol.o
+                                0x1b7 (size before relaxing)
+ .debug_str     0x0000045f      0x3e9 ../Common/drivers/LPC/usb/usbhw_lpc.o
+                                0x479 (size before relaxing)
+ .debug_str     0x00000848       0x53 ../Common/drivers/LPC/usb/usbinit.o
+                                 0xc5 (size before relaxing)
+ .debug_str     0x0000089b      0x17a ../Common/drivers/LPC/usb/usbstdreq.o
+                                0x25e (size before relaxing)
+ .debug_str     0x00000a15       0xda main.o
+                                0x212 (size before relaxing)
+ .debug_str     0x00000aef       0x78 ./ParTest/ParTest.o
+                                0x140 (size before relaxing)
+ .debug_str     0x00000b67      0x222 ../Common/Minimal/BlockQ.o
+                                0x31e (size before relaxing)
+ .debug_str     0x00000d89      0x14d ../Common/Minimal/blocktim.o
+                                0x24a (size before relaxing)
+ .debug_str     0x00000ed6       0x71 ../Common/Minimal/flash.o
+                                0x164 (size before relaxing)
+ .debug_str     0x00000f47       0x8f ../Common/Minimal/integer.o
+                                0x184 (size before relaxing)
+ .debug_str     0x00000fd6      0x175 ../Common/Minimal/GenQTest.o
+                                0x275 (size before relaxing)
+ .debug_str     0x0000114b       0xf5 ../Common/Minimal/QPeek.o
+                                0x219 (size before relaxing)
+ .debug_str     0x00001240      0x1db ../Common/Minimal/dynamic.o
+                                0x2e2 (size before relaxing)
+ .debug_str     0x0000141b      0x128 ../Source/list.o
+                                0x20a (size before relaxing)
+ .debug_str     0x00001543      0x2e0 ../Source/queue.o
+                                0x486 (size before relaxing)
+ .debug_str     0x00001823      0x6ed ../Source/tasks.o
+                                0x8e5 (size before relaxing)
+ .debug_str     0x00001f10       0xa2 ../Source/portable/GCC/ARM7_LPC23xx/port.o
+                                0x190 (size before relaxing)
+ .debug_str     0x00001fb2      0x116 ../Source/portable/MemMang/heap_2.o
+                                0x1f0 (size before relaxing)
+ .debug_str     0x000020c8       0xc2 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-memcpy.o)
                                  0xf5 (size before relaxing)
- .debug_str     0x000021e6       0x60 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-memset.o)
+ .debug_str     0x0000218a       0x60 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-memset.o)
                                 0x13f (size before relaxing)
- .debug_str     0x00002246      0x404 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-sprintf.o)
+ .debug_str     0x000021ea      0x404 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-sprintf.o)
                                 0x50a (size before relaxing)
- .debug_str     0x0000264a       0x57 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-strcat.o)
+ .debug_str     0x000025ee       0x57 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-strcat.o)
                                 0x12f (size before relaxing)
- .debug_str     0x000026a1       0x4c /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-strcpy.o)
+ .debug_str     0x00002645       0x4c /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-strcpy.o)
                                 0x146 (size before relaxing)
- .debug_str     0x000026ed       0x52 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-strlen.o)
+ .debug_str     0x00002691       0x52 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-strlen.o)
                                 0x13e (size before relaxing)
- .debug_str     0x0000273f       0x4e /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-strncpy.o)
+ .debug_str     0x000026e3       0x4e /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-strncpy.o)
                                 0x155 (size before relaxing)
- .debug_str     0x0000278d      0x1c7 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-vfprintf.o)
+ .debug_str     0x00002731      0x1c7 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-vfprintf.o)
                                 0x6dd (size before relaxing)
- .debug_str     0x00002954       0xaf /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-wcrtomb.o)
+ .debug_str     0x000028f8       0xaf /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-wcrtomb.o)
                                 0x4fe (size before relaxing)
- .debug_str     0x00002a03       0x6f /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-wcsrtombs.o)
+ .debug_str     0x000029a7       0x6f /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-wcsrtombs.o)
                                 0x513 (size before relaxing)
- .debug_str     0x00002a72       0x6e /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-wctomb_r.o)
+ .debug_str     0x00002a16       0x6e /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-wctomb_r.o)
                                 0x4f3 (size before relaxing)
- .debug_str     0x00002ae0       0x4e /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-wsetup.o)
+ .debug_str     0x00002a84       0x4e /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-wsetup.o)
                                 0x4d7 (size before relaxing)
- .debug_str     0x00002b2e      0x10c /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-dtoa.o)
+ .debug_str     0x00002ad2      0x10c /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-dtoa.o)
                                 0x5ce (size before relaxing)
- .debug_str     0x00002c3a       0x6c /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-fflush.o)
+ .debug_str     0x00002bde       0x6c /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-fflush.o)
                                 0x4f5 (size before relaxing)
- .debug_str     0x00002ca6      0x10c /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-findfp.o)
+ .debug_str     0x00002c4a      0x10c /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-findfp.o)
                                 0x5c1 (size before relaxing)
- .debug_str     0x00002db2      0x165 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-freer.o)
+ .debug_str     0x00002d56      0x165 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-freer.o)
                                 0x610 (size before relaxing)
- .debug_str     0x00002f17       0x70 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-fvwrite.o)
+ .debug_str     0x00002ebb       0x70 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-fvwrite.o)
                                 0x53c (size before relaxing)
- .debug_str     0x00002f87       0x68 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-fwalk.o)
+ .debug_str     0x00002f2b       0x68 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-fwalk.o)
                                 0x502 (size before relaxing)
- .debug_str     0x00002fef       0x9e /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-impure.o)
+ .debug_str     0x00002f93       0x9e /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-impure.o)
                                 0x4db (size before relaxing)
- .debug_str     0x0000308d      0x1e7 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-locale.o)
+ .debug_str     0x00003031      0x1e7 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-locale.o)
                                 0x66a (size before relaxing)
- .debug_str     0x00003274      0x11e /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-makebuf.o)
+ .debug_str     0x00003218      0x11e /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-makebuf.o)
                                 0x5be (size before relaxing)
- .debug_str     0x00003392       0xe9 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-mallocr.o)
+ .debug_str     0x00003336       0xe9 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-mallocr.o)
                                 0x6be (size before relaxing)
- .debug_str     0x0000347b       0x5f /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-memchr.o)
+ .debug_str     0x0000341f       0x5f /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-memchr.o)
                                 0x14c (size before relaxing)
- .debug_str     0x000034da       0x57 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-memmove.o)
+ .debug_str     0x0000347e       0x57 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-memmove.o)
                                 0x15e (size before relaxing)
- .debug_str     0x00003531       0x77 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-mlock.o)
+ .debug_str     0x000034d5       0x77 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-mlock.o)
                                 0x4e4 (size before relaxing)
- .debug_str     0x000035a8      0x102 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-mprec.o)
+ .debug_str     0x0000354c      0x102 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-mprec.o)
                                 0x5db (size before relaxing)
- .debug_str     0x000036aa       0x59 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-reallocr.o)
+ .debug_str     0x0000364e       0x59 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-reallocr.o)
                                 0x590 (size before relaxing)
- .debug_str     0x00003703       0xa9 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-s_isinfd.o)
+ .debug_str     0x000036a7       0xa9 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-s_isinfd.o)
                                 0x157 (size before relaxing)
- .debug_str     0x000037ac       0x50 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-s_isnand.o)
+ .debug_str     0x00003750       0x50 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-s_isnand.o)
                                 0x157 (size before relaxing)
- .debug_str     0x000037fc       0x5a /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-sbrkr.o)
+ .debug_str     0x000037a0       0x5a /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-sbrkr.o)
                                 0x4d8 (size before relaxing)
- .debug_str     0x00003856       0x73 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-stdio.o)
+ .debug_str     0x000037fa       0x73 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-stdio.o)
                                 0x50a (size before relaxing)
- .debug_str     0x000038c9       0x4c /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-strcmp.o)
+ .debug_str     0x0000386d       0x4c /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-strcmp.o)
                                 0x124 (size before relaxing)
- .debug_str     0x00003915      0x2a1 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-syscalls.o)
+ .debug_str     0x000038b9      0x2a1 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-syscalls.o)
                                 0x7e8 (size before relaxing)
- .debug_str     0x00003bb6       0x56 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-writer.o)
+ .debug_str     0x00003b5a       0x56 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-writer.o)
                                 0x4db (size before relaxing)
- .debug_str     0x00003c0c       0x19 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-callocr.o)
+ .debug_str     0x00003bb0       0x19 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-callocr.o)
                                 0x50f (size before relaxing)
- .debug_str     0x00003c25       0x4d /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-closer.o)
+ .debug_str     0x00003bc9       0x4d /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-closer.o)
                                 0x4cb (size before relaxing)
- .debug_str     0x00003c72       0x99 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-errno.o)
+ .debug_str     0x00003c16       0x99 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-errno.o)
                                 0x4c3 (size before relaxing)
- .debug_str     0x00003d0b       0x55 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-fclose.o)
+ .debug_str     0x00003caf       0x55 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-fclose.o)
                                 0x4e3 (size before relaxing)
- .debug_str     0x00003d60       0x53 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-fstatr.o)
+ .debug_str     0x00003d04       0x53 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-fstatr.o)
                                 0x59f (size before relaxing)
- .debug_str     0x00003db3       0x4d /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-lseekr.o)
+ .debug_str     0x00003d57       0x4d /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-lseekr.o)
                                 0x4d9 (size before relaxing)
- .debug_str     0x00003e00       0x4b /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-readr.o)
+ .debug_str     0x00003da4       0x4b /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-readr.o)
                                 0x4d9 (size before relaxing)
- .debug_str     0x00003e4b       0x7d /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-reent.o)
+ .debug_str     0x00003def       0x7d /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-reent.o)
                                 0x500 (size before relaxing)
- .debug_str     0x00003ec8      0x16c /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_addsub_df.o)
+ .debug_str     0x00003e6c      0x16c /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_addsub_df.o)
                                 0x21f (size before relaxing)
- .debug_str     0x00004034       0x45 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_mul_df.o)
+ .debug_str     0x00003fd8       0x45 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_mul_df.o)
                                 0x1f1 (size before relaxing)
- .debug_str     0x00004079       0x35 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_div_df.o)
+ .debug_str     0x0000401d       0x35 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_div_df.o)
                                 0x1e1 (size before relaxing)
- .debug_str     0x000040ae       0x10 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_eq_df.o)
+ .debug_str     0x00004052       0x10 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_eq_df.o)
                                 0x1af (size before relaxing)
- .debug_str     0x000040be        0x8 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_ne_df.o)
+ .debug_str     0x00004062        0x8 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_ne_df.o)
                                 0x1af (size before relaxing)
- .debug_str     0x000040c6        0x8 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_gt_df.o)
+ .debug_str     0x0000406a        0x8 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_gt_df.o)
                                 0x1af (size before relaxing)
- .debug_str     0x000040ce        0x8 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_ge_df.o)
+ .debug_str     0x00004072        0x8 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_ge_df.o)
                                 0x1af (size before relaxing)
- .debug_str     0x000040d6        0x8 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_lt_df.o)
+ .debug_str     0x0000407a        0x8 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_lt_df.o)
                                 0x1af (size before relaxing)
- .debug_str     0x000040de       0x18 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_si_to_df.o)
+ .debug_str     0x00004082       0x18 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_si_to_df.o)
                                 0x18e (size before relaxing)
- .debug_str     0x000040f6        0xa /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_df_to_si.o)
+ .debug_str     0x0000409a        0xa /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_df_to_si.o)
                                 0x1b7 (size before relaxing)
  .debug_str     0x00000000      0x153 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_thenan_df.o)
- .debug_str     0x00004100       0x14 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_usi_to_df.o)
+ .debug_str     0x000040a4       0x14 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_usi_to_df.o)
                                 0x18a (size before relaxing)
- .debug_str     0x00004114       0x83 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_muldi3.o)
+ .debug_str     0x000040b8       0x83 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_muldi3.o)
                                 0x160 (size before relaxing)
- .debug_str     0x00004197       0x20 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_clzsi2.o)
+ .debug_str     0x0000413b       0x20 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_clzsi2.o)
                                 0x132 (size before relaxing)
- .debug_str     0x000041b7       0x10 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_pack_df.o)
+ .debug_str     0x0000415b       0x10 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_pack_df.o)
                                 0x1b6 (size before relaxing)
- .debug_str     0x000041c7       0x13 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_unpack_df.o)
+ .debug_str     0x0000416b       0x13 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_unpack_df.o)
                                 0x1a0 (size before relaxing)
- .debug_str     0x000041da       0x10 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_fpcmp_parts_df.o)
+ .debug_str     0x0000417e       0x10 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_fpcmp_parts_df.o)
                                 0x176 (size before relaxing)
  .debug_str     0x00000000      0x115 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_clz.o)
 
 .comment        0x00000000      0x5b2
  .comment       0x00000000       0x12 serial/serial.o
  .comment       0x00000012       0x12 serial/serialISR.o
- .comment       0x00000024       0x12 ../../../Source/portable/GCC/ARM7_LPC23xx/portISR.o
- .comment       0x00000036       0x12 ../../Common/drivers/LPC/usb/usbcontrol.o
- .comment       0x00000048       0x12 ../../Common/drivers/LPC/usb/usbhw_lpc.o
- .comment       0x0000005a       0x12 ../../Common/drivers/LPC/usb/usbinit.o
- .comment       0x0000006c       0x12 ../../Common/drivers/LPC/usb/usbstdreq.o
+ .comment       0x00000024       0x12 ../Source/portable/GCC/ARM7_LPC23xx/portISR.o
+ .comment       0x00000036       0x12 ../Common/drivers/LPC/usb/usbcontrol.o
+ .comment       0x00000048       0x12 ../Common/drivers/LPC/usb/usbhw_lpc.o
+ .comment       0x0000005a       0x12 ../Common/drivers/LPC/usb/usbinit.o
+ .comment       0x0000006c       0x12 ../Common/drivers/LPC/usb/usbstdreq.o
  .comment       0x0000007e       0x12 main.o
  .comment       0x00000090       0x12 ./ParTest/ParTest.o
- .comment       0x000000a2       0x12 ../../Common/Minimal/BlockQ.o
- .comment       0x000000b4       0x12 ../../Common/Minimal/blocktim.o
- .comment       0x000000c6       0x12 ../../Common/Minimal/flash.o
- .comment       0x000000d8       0x12 ../../Common/Minimal/integer.o
- .comment       0x000000ea       0x12 ../../Common/Minimal/GenQTest.o
- .comment       0x000000fc       0x12 ../../Common/Minimal/QPeek.o
- .comment       0x0000010e       0x12 ../../Common/Minimal/dynamic.o
- .comment       0x00000120       0x12 ../../../Source/list.o
- .comment       0x00000132       0x12 ../../../Source/queue.o
- .comment       0x00000144       0x12 ../../../Source/tasks.o
- .comment       0x00000156       0x12 ../../../Source/portable/GCC/ARM7_LPC23xx/port.o
- .comment       0x00000168       0x12 ../../../Source/portable/MemMang/heap_2.o
+ .comment       0x000000a2       0x12 ../Common/Minimal/BlockQ.o
+ .comment       0x000000b4       0x12 ../Common/Minimal/blocktim.o
+ .comment       0x000000c6       0x12 ../Common/Minimal/flash.o
+ .comment       0x000000d8       0x12 ../Common/Minimal/integer.o
+ .comment       0x000000ea       0x12 ../Common/Minimal/GenQTest.o
+ .comment       0x000000fc       0x12 ../Common/Minimal/QPeek.o
+ .comment       0x0000010e       0x12 ../Common/Minimal/dynamic.o
+ .comment       0x00000120       0x12 ../Source/list.o
+ .comment       0x00000132       0x12 ../Source/queue.o
+ .comment       0x00000144       0x12 ../Source/tasks.o
+ .comment       0x00000156       0x12 ../Source/portable/GCC/ARM7_LPC23xx/port.o
+ .comment       0x00000168       0x12 ../Source/portable/MemMang/heap_2.o
  .comment       0x0000017a       0x12 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-memcpy.o)
  .comment       0x0000018c       0x12 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-memset.o)
  .comment       0x0000019e       0x12 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-sprintf.o)
@@ -2046,8 +2046,8 @@ OUTPUT(RTOSDemo.elf elf32-littlearm)
  .comment       0x000005a0       0x12 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/thumb/interwork/libgcc.a(_clz.o)
 
 .debug_ranges   0x00000000      0x808
- .debug_ranges  0x00000000       0x48 ../../Common/drivers/LPC/usb/usbstdreq.o
- .debug_ranges  0x00000048       0x18 ../../../Source/tasks.o
+ .debug_ranges  0x00000000       0x48 ../Common/drivers/LPC/usb/usbstdreq.o
+ .debug_ranges  0x00000048       0x18 ../Source/tasks.o
  .debug_ranges  0x00000060      0x1c0 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-vfprintf.o)
  .debug_ranges  0x00000220       0x28 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-wcsrtombs.o)
  .debug_ranges  0x00000248       0x60 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/thumb/interwork/libg.a(lib_a-wctomb_r.o)
