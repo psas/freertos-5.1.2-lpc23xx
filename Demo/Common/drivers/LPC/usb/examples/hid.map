@@ -1,0 +1,338 @@
+Archive member included because of file (symbol)
+
+../usbstack.a(usbhw_lpc.o)    main_hid.o (USBHwConnect)
+../usbstack.a(usbcontrol.o)   main_hid.o (USBRegisterRequestHandler)
+../usbstack.a(usbstdreq.o)    main_hid.o (USBRegisterDescriptors)
+../usbstack.a(usbinit.o)      main_hid.o (USBInit)
+/usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/libgcc.a(_udivsi3.o)
+                              printf.o (__udivsi3)
+/usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/libgcc.a(_umodsi3.o)
+                              printf.o (__umodsi3)
+/usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/libgcc.a(_dvmd_tls.o)
+                              /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/libgcc.a(_udivsi3.o) (__div0)
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+flash            0x00000000         0x00080000
+ram_isp_low      0x40000120         0x000000df         a
+ram              0x40000200         0x00007f01
+ram_isp_high     0x40007fe0         0x00000020         a
+ram_usb_dma      0x7fd00000         0x00002000
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+LOAD crt.o
+LOAD halsys.o
+LOAD printf.o
+LOAD console.o
+LOAD main_hid.o
+LOAD ../usbstack.a
+START GROUP
+LOAD /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/libgcc.a
+LOAD /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/lib/libc.a
+END GROUP
+                0x40007edc                _stack_end = 0x40007edc
+                0x00000000                . = 0x0
+
+startup
+ *(.startup)
+
+.text           0x00000000     0x1f24
+ *(.text)
+ .text          0x00000000       0xd8 crt.o
+                0x00000000                _startup
+                0x00000040                Reset_Handler
+ .text          0x000000d8      0x150 halsys.o
+                0x000000e4                UNDEF_Routine
+                0x000000e0                SWI_Routine
+                0x00000150                HalSysGetPCLK
+                0x000000dc                FIQ_Routine
+                0x00000144                HalSysGetCCLK
+                0x000000e8                HalSysPinSelect
+                0x000000d8                IRQ_Routine
+                0x000001b8                HalSysInit
+                0x0000015c                HalPinSelect
+ .text          0x00000228      0x45c printf.o
+                0x00000650                printf
+                0x00000618                sprintf
+ .text          0x00000684       0xd8 console.o
+                0x000006d0                putchar
+                0x00000684                ConsoleInit
+                0x00000728                puts
+                0x0000070c                getchar
+ .text          0x0000075c      0x204 main_hid.o
+                0x0000075c                main
+ .text          0x00000960      0x874 ../usbstack.a(usbhw_lpc.o)
+                0x00000b94                USBHwEPRead
+                0x00000ce4                USBHwISR
+                0x00000ff8                USBDisableDMAForEndpoint
+                0x00000b08                USBHwEPWrite
+                0x00001020                USBEnableDMAForEndpoint
+                0x00000c30                USBHwISOCEPRead
+                0x00000a24                USBHwEPConfig
+                0x00000a7c                USBHwSetAddress
+                0x00000a8c                USBHwConnect
+                0x00000ae8                USBHwEPStall
+                0x0000109c                USBSetHeadDDForDMA
+                0x000010b4                USBInitializeUSBDMA
+                0x00001108                USBHwRegisterDevIntHandler
+                0x00001134                USBHwRegisterEPIntHandler
+                0x00000f80                USBSetupDMADescriptor
+                0x00000cd4                USBHwConfigDevice
+                0x00000abc                USBHwNakIntEnable
+                0x00000e44                USBHwInit
+                0x000010dc                USBHwRegisterFrameHandler
+                0x00000ac8                USBHwEPGetStatus
+                0x00001048                USBInitializeISOCFrameArray
+ .text          0x000011d4      0x350 ../usbstack.a(usbcontrol.o)
+                0x00001354                USBHandleControlTransfer
+                0x000011d4                USBRegisterRequestHandler
+ .text          0x00001524      0x428 ../usbstack.a(usbstdreq.o)
+                0x00001544                USBGetDescriptor
+                0x00001534                USBRegisterCustomReqHandler
+                0x00001524                USBRegisterDescriptors
+                0x00001614                USBHandleStandardRequest
+ .text          0x0000194c       0x80 ../usbstack.a(usbinit.o)
+                0x0000194c                USBInit
+ .text          0x000019cc      0x110 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/libgcc.a(_udivsi3.o)
+                0x000019cc                __udivsi3
+                0x000019cc                __aeabi_uidiv
+                0x00001ac4                __aeabi_uidivmod
+ .text          0x00001adc       0xcc /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/libgcc.a(_umodsi3.o)
+                0x00001adc                __umodsi3
+ .text          0x00001ba8        0x4 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/libgcc.a(_dvmd_tls.o)
+                0x00001ba8                __aeabi_ldiv0
+                0x00001ba8                __div0
+                0x00001ba8                __aeabi_idiv0
+ *(.rodata)
+ .rodata        0x00001bac       0x6b main_hid.o
+ *fill*         0x00001c17        0x1 00
+ .rodata        0x00001c18       0x1c ../usbstack.a(usbhw_lpc.o)
+ .rodata        0x00001c34       0x38 ../usbstack.a(usbcontrol.o)
+ .rodata        0x00001c6c       0x28 ../usbstack.a(usbstdreq.o)
+ *(.rodata*)
+ .rodata.str1.4
+                0x00001c94        0x7 printf.o
+                                  0x8 (size before relaxing)
+ *fill*         0x00001c9b        0x1 00
+ .rodata.str1.4
+                0x00001c9c       0x80 main_hid.o
+ .rodata.str1.4
+                0x00001d1c       0xa4 ../usbstack.a(usbhw_lpc.o)
+ .rodata.str1.4
+                0x00001dc0       0xa2 ../usbstack.a(usbcontrol.o)
+                                 0xd0 (size before relaxing)
+ *fill*         0x00001e62        0x2 00
+ .rodata.str1.4
+                0x00001e64       0xbb ../usbstack.a(usbstdreq.o)
+                                 0xe4 (size before relaxing)
+ *fill*         0x00001f1f        0x1 00
+ .rodata.str1.4
+                0x00001f20        0x4 ../usbstack.a(usbinit.o)
+ *(.glue_7)
+ .glue_7        0x00001f24        0x0 crt.o
+ .glue_7        0x00001f24        0x0 halsys.o
+ .glue_7        0x00001f24        0x0 printf.o
+ .glue_7        0x00001f24        0x0 console.o
+ .glue_7        0x00001f24        0x0 main_hid.o
+ .glue_7        0x00001f24        0x0 ../usbstack.a(usbhw_lpc.o)
+ .glue_7        0x00001f24        0x0 ../usbstack.a(usbcontrol.o)
+ .glue_7        0x00001f24        0x0 ../usbstack.a(usbstdreq.o)
+ .glue_7        0x00001f24        0x0 ../usbstack.a(usbinit.o)
+ .glue_7        0x00001f24        0x0 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/libgcc.a(_udivsi3.o)
+ .glue_7        0x00001f24        0x0 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/libgcc.a(_umodsi3.o)
+ .glue_7        0x00001f24        0x0 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/libgcc.a(_dvmd_tls.o)
+ *(.glue_7t)
+ .glue_7t       0x00001f24        0x0 crt.o
+ .glue_7t       0x00001f24        0x0 halsys.o
+ .glue_7t       0x00001f24        0x0 printf.o
+ .glue_7t       0x00001f24        0x0 console.o
+ .glue_7t       0x00001f24        0x0 main_hid.o
+ .glue_7t       0x00001f24        0x0 ../usbstack.a(usbhw_lpc.o)
+ .glue_7t       0x00001f24        0x0 ../usbstack.a(usbcontrol.o)
+ .glue_7t       0x00001f24        0x0 ../usbstack.a(usbstdreq.o)
+ .glue_7t       0x00001f24        0x0 ../usbstack.a(usbinit.o)
+ .glue_7t       0x00001f24        0x0 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/libgcc.a(_udivsi3.o)
+ .glue_7t       0x00001f24        0x0 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/libgcc.a(_umodsi3.o)
+ .glue_7t       0x00001f24        0x0 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/libgcc.a(_dvmd_tls.o)
+                0x00001f24                _etext = .
+
+.usbdma         0x7fd00000        0x0
+ *(.usbdma)
+                0x7fd00000                . = ALIGN (0x4)
+
+.data           0x40000200       0x55 load address 0x00001f24
+                0x40000200                _data = .
+ *(.data)
+ .data          0x40000200        0x0 crt.o
+ .data          0x40000200        0x0 halsys.o
+ .data          0x40000200        0x0 printf.o
+ .data          0x40000200        0x0 console.o
+ .data          0x40000200       0x55 main_hid.o
+ .data          0x40000255        0x0 ../usbstack.a(usbhw_lpc.o)
+ .data          0x40000255        0x0 ../usbstack.a(usbcontrol.o)
+ .data          0x40000255        0x0 ../usbstack.a(usbstdreq.o)
+ .data          0x40000255        0x0 ../usbstack.a(usbinit.o)
+ .data          0x40000255        0x0 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/libgcc.a(_udivsi3.o)
+ .data          0x40000255        0x0 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/libgcc.a(_umodsi3.o)
+ .data          0x40000255        0x0 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/libgcc.a(_dvmd_tls.o)
+                0x40000255                _edata = .
+
+.bss            0x40000258       0xa0
+                0x40000258                _bss_start = .
+ *(.bss)
+ .bss           0x40000258        0x0 crt.o
+ .bss           0x40000258        0x0 halsys.o
+ .bss           0x40000258        0x0 printf.o
+ .bss           0x40000258        0x0 console.o
+ .bss           0x40000258       0x10 main_hid.o
+ .bss           0x40000268       0x48 ../usbstack.a(usbhw_lpc.o)
+ .bss           0x400002b0       0x34 ../usbstack.a(usbcontrol.o)
+ .bss           0x400002e4        0xc ../usbstack.a(usbstdreq.o)
+ .bss           0x400002f0        0x8 ../usbstack.a(usbinit.o)
+ .bss           0x400002f8        0x0 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/libgcc.a(_udivsi3.o)
+ .bss           0x400002f8        0x0 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/libgcc.a(_umodsi3.o)
+ .bss           0x400002f8        0x0 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/libgcc.a(_dvmd_tls.o)
+                0x400002f8                . = ALIGN (0x4)
+                0x400002f8                _bss_end = .
+                0x400002f8                _end = .
+OUTPUT(hid.elf elf32-littlearm)
+
+.debug_abbrev   0x00000000      0xae4
+ .debug_abbrev  0x00000000       0xc9 halsys.o
+ .debug_abbrev  0x000000c9      0x158 printf.o
+ .debug_abbrev  0x00000221       0xb8 console.o
+ .debug_abbrev  0x000002d9       0xf9 main_hid.o
+ .debug_abbrev  0x000003d2      0x295 ../usbstack.a(usbhw_lpc.o)
+ .debug_abbrev  0x00000667      0x152 ../usbstack.a(usbcontrol.o)
+ .debug_abbrev  0x000007b9      0x246 ../usbstack.a(usbstdreq.o)
+ .debug_abbrev  0x000009ff       0xa9 ../usbstack.a(usbinit.o)
+ .debug_abbrev  0x00000aa8       0x14 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/libgcc.a(_udivsi3.o)
+ .debug_abbrev  0x00000abc       0x14 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/libgcc.a(_umodsi3.o)
+ .debug_abbrev  0x00000ad0       0x14 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/libgcc.a(_dvmd_tls.o)
+
+.debug_info     0x00000000     0x1b1f
+ .debug_info    0x00000000      0x174 halsys.o
+ .debug_info    0x00000174      0x352 printf.o
+ .debug_info    0x000004c6       0xd2 console.o
+ .debug_info    0x00000598      0x28c main_hid.o
+ .debug_info    0x00000824      0x8d2 ../usbstack.a(usbhw_lpc.o)
+ .debug_info    0x000010f6      0x33b ../usbstack.a(usbcontrol.o)
+ .debug_info    0x00001431      0x4ba ../usbstack.a(usbstdreq.o)
+ .debug_info    0x000018eb       0xba ../usbstack.a(usbinit.o)
+ .debug_info    0x000019a5       0x7e /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/libgcc.a(_udivsi3.o)
+ .debug_info    0x00001a23       0x7e /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/libgcc.a(_umodsi3.o)
+ .debug_info    0x00001aa1       0x7e /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/libgcc.a(_dvmd_tls.o)
+
+.debug_line     0x00000000      0x82f
+ .debug_line    0x00000000       0x91 halsys.o
+ .debug_line    0x00000091      0x10f printf.o
+ .debug_line    0x000001a0       0x57 console.o
+ .debug_line    0x000001f7       0x9a main_hid.o
+ .debug_line    0x00000291      0x209 ../usbstack.a(usbhw_lpc.o)
+ .debug_line    0x0000049a       0xd2 ../usbstack.a(usbcontrol.o)
+ .debug_line    0x0000056c      0x105 ../usbstack.a(usbstdreq.o)
+ .debug_line    0x00000671       0x54 ../usbstack.a(usbinit.o)
+ .debug_line    0x000006c5       0x8f /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/libgcc.a(_udivsi3.o)
+ .debug_line    0x00000754       0x78 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/libgcc.a(_umodsi3.o)
+ .debug_line    0x000007cc       0x63 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/libgcc.a(_dvmd_tls.o)
+
+.debug_frame    0x00000000      0x5e8
+ .debug_frame   0x00000000       0xa0 halsys.o
+ .debug_frame   0x000000a0       0xd8 printf.o
+ .debug_frame   0x00000178       0x58 console.o
+ .debug_frame   0x000001d0       0x78 main_hid.o
+ .debug_frame   0x00000248      0x20c ../usbstack.a(usbhw_lpc.o)
+ .debug_frame   0x00000454       0x98 ../usbstack.a(usbcontrol.o)
+ .debug_frame   0x000004ec       0x74 ../usbstack.a(usbstdreq.o)
+ .debug_frame   0x00000560       0x38 ../usbstack.a(usbinit.o)
+ .debug_frame   0x00000598       0x28 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/libgcc.a(_udivsi3.o)
+ .debug_frame   0x000005c0       0x28 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/libgcc.a(_umodsi3.o)
+
+.debug_loc      0x00000000     0x1417
+ .debug_loc     0x00000000       0x8e halsys.o
+ .debug_loc     0x0000008e      0x5e4 printf.o
+ .debug_loc     0x00000672       0x63 console.o
+ .debug_loc     0x000006d5      0x159 main_hid.o
+ .debug_loc     0x0000082e      0x5ed ../usbstack.a(usbhw_lpc.o)
+ .debug_loc     0x00000e1b      0x297 ../usbstack.a(usbcontrol.o)
+ .debug_loc     0x000010b2      0x333 ../usbstack.a(usbstdreq.o)
+ .debug_loc     0x000013e5       0x32 ../usbstack.a(usbinit.o)
+
+.debug_pubnames
+                0x00000000      0x405
+ .debug_pubnames
+                0x00000000       0xac halsys.o
+ .debug_pubnames
+                0x000000ac       0x29 printf.o
+ .debug_pubnames
+                0x000000d5       0x43 console.o
+ .debug_pubnames
+                0x00000118       0x1b main_hid.o
+ .debug_pubnames
+                0x00000133      0x1e8 ../usbstack.a(usbhw_lpc.o)
+ .debug_pubnames
+                0x0000031b       0x4d ../usbstack.a(usbcontrol.o)
+ .debug_pubnames
+                0x00000368       0x7f ../usbstack.a(usbstdreq.o)
+ .debug_pubnames
+                0x000003e7       0x1e ../usbstack.a(usbinit.o)
+
+.debug_aranges  0x00000000      0x160
+ .debug_aranges
+                0x00000000       0x20 halsys.o
+ .debug_aranges
+                0x00000020       0x20 printf.o
+ .debug_aranges
+                0x00000040       0x20 console.o
+ .debug_aranges
+                0x00000060       0x20 main_hid.o
+ .debug_aranges
+                0x00000080       0x20 ../usbstack.a(usbhw_lpc.o)
+ .debug_aranges
+                0x000000a0       0x20 ../usbstack.a(usbcontrol.o)
+ .debug_aranges
+                0x000000c0       0x20 ../usbstack.a(usbstdreq.o)
+ .debug_aranges
+                0x000000e0       0x20 ../usbstack.a(usbinit.o)
+ .debug_aranges
+                0x00000100       0x20 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/libgcc.a(_udivsi3.o)
+ .debug_aranges
+                0x00000120       0x20 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/libgcc.a(_umodsi3.o)
+ .debug_aranges
+                0x00000140       0x20 /usr/local/arm-elf-gcc-4.2.1/lib/gcc/arm-elf/4.2.1/libgcc.a(_dvmd_tls.o)
+
+.debug_ranges   0x00000000      0x130
+ .debug_ranges  0x00000000       0x30 halsys.o
+ .debug_ranges  0x00000030       0x80 ../usbstack.a(usbhw_lpc.o)
+ .debug_ranges  0x000000b0       0x80 ../usbstack.a(usbstdreq.o)
+
+.debug_str      0x00000000      0x918
+ .debug_str     0x00000000      0x103 halsys.o
+                                0x110 (size before relaxing)
+ .debug_str     0x00000103       0xb4 printf.o
+                                 0xe1 (size before relaxing)
+ .debug_str     0x000001b7       0x34 console.o
+                                 0x8c (size before relaxing)
+ .debug_str     0x000001eb       0xe6 main_hid.o
+                                0x166 (size before relaxing)
+ .debug_str     0x000002d1      0x410 ../usbstack.a(usbhw_lpc.o)
+                                0x466 (size before relaxing)
+ .debug_str     0x000006e1       0xab ../usbstack.a(usbcontrol.o)
+                                0x1a4 (size before relaxing)
+ .debug_str     0x0000078c      0x153 ../usbstack.a(usbstdreq.o)
+                                0x24b (size before relaxing)
+ .debug_str     0x000008df       0x39 ../usbstack.a(usbinit.o)
+                                 0xa0 (size before relaxing)
+
+.comment        0x00000000       0x90
+ .comment       0x00000000       0x12 halsys.o
+ .comment       0x00000012       0x12 printf.o
+ .comment       0x00000024       0x12 console.o
+ .comment       0x00000036       0x12 main_hid.o
+ .comment       0x00000048       0x12 ../usbstack.a(usbhw_lpc.o)
+ .comment       0x0000005a       0x12 ../usbstack.a(usbcontrol.o)
+ .comment       0x0000006c       0x12 ../usbstack.a(usbstdreq.o)
+ .comment       0x0000007e       0x12 ../usbstack.a(usbinit.o)

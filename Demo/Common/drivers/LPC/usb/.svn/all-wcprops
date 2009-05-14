@@ -1,0 +1,89 @@
+K 25
+svn:wc:ra_dav:version-url
+V 41
+/svnroot/lpcusb/!svn/ver/177/trunk/target
+END
+Doxyfile
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svnroot/lpcusb/!svn/ver/101/trunk/target/Doxyfile
+END
+lpc214x.h
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svnroot/lpcusb/!svn/ver/173/trunk/target/lpc214x.h
+END
+usbstruct.h
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svnroot/lpcusb/!svn/ver/132/trunk/target/usbstruct.h
+END
+CHANGELOG
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svnroot/lpcusb/!svn/ver/145/trunk/target/CHANGELOG
+END
+type.h
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svnroot/lpcusb/!svn/ver/167/trunk/target/type.h
+END
+usbhw_lpc.c
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svnroot/lpcusb/!svn/ver/177/trunk/target/usbhw_lpc.c
+END
+lpc23xx.h
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svnroot/lpcusb/!svn/ver/154/trunk/target/lpc23xx.h
+END
+usbapi.h
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svnroot/lpcusb/!svn/ver/174/trunk/target/usbapi.h
+END
+usbcontrol.c
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svnroot/lpcusb/!svn/ver/161/trunk/target/usbcontrol.c
+END
+debug.h
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svnroot/lpcusb/!svn/ver/161/trunk/target/debug.h
+END
+usbhw_lpc.h
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svnroot/lpcusb/!svn/ver/174/trunk/target/usbhw_lpc.h
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svnroot/lpcusb/!svn/ver/177/trunk/target/Makefile
+END
+usbstdreq.c
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svnroot/lpcusb/!svn/ver/161/trunk/target/usbstdreq.c
+END
+usbinit.c
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svnroot/lpcusb/!svn/ver/161/trunk/target/usbinit.c
+END

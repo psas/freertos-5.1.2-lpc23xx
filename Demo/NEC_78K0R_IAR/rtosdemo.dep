@@ -1,0 +1,608 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<project>
+  <fileVersion>2</fileVersion>
+  <fileChecksum>73745588</fileChecksum>
+  <configuration>
+    <name>78K0R_Kx3</name>
+    <outputs>
+      <file>$PROJ_DIR$\78K0R_Kx3\Obj\rtosdemo.pbd</file>
+      <file>$PROJ_DIR$\78K0R_Kx3\Obj\heap_1.pbi</file>
+      <file>$PROJ_DIR$\78K0R_Kx3\Obj\blocktim.pbi</file>
+      <file>$PROJ_DIR$\78K0R_Kx3\Obj\tasks.pbi</file>
+      <file>$PROJ_DIR$\78K0R_Kx3\Exe\rtosdemo.d26</file>
+      <file>$PROJ_DIR$\..\Common\Minimal\blocktim.c</file>
+      <file>$PROJ_DIR$\78K0R_Kx3\Obj\portasm.r26</file>
+      <file>$PROJ_DIR$\78K0R_Kx3\Obj\PollQ.r26</file>
+      <file>$PROJ_DIR$\78K0R_Kx3\Obj\PollQ.pbi</file>
+      <file>$PROJ_DIR$\78K0R_Kx3\Obj\semtest.pbi</file>
+      <file>$PROJ_DIR$\78K0R_Kx3\Obj\GenQTest.pbi</file>
+      <file>$PROJ_DIR$\78K0R_Kx3\Obj\port.r26</file>
+      <file>$PROJ_DIR$\78K0R_Kx3\Obj\heap_1.r26</file>
+      <file>$PROJ_DIR$\78K0R_Kx3\Obj\ButtonISR.r26</file>
+      <file>$PROJ_DIR$\78K0R_Kx3\Obj\main.pbi</file>
+      <file>$PROJ_DIR$\78K0R_Kx3\Obj\blocktim.r26</file>
+      <file>$PROJ_DIR$\78K0R_Kx3\Obj\queue.r26</file>
+      <file>$PROJ_DIR$\78K0R_Kx3\Obj\dynamic.pbi</file>
+      <file>$PROJ_DIR$\78K0R_Kx3\Obj\RegTest.r26</file>
+      <file>$PROJ_DIR$\78K0R_Kx3\Obj\tasks.r26</file>
+      <file>$PROJ_DIR$\78K0R_Kx3\Obj\list.pbi</file>
+      <file>$PROJ_DIR$\78K0R_Kx3\Obj\queue.pbi</file>
+      <file>$PROJ_DIR$\78K0R_Kx3\Obj\ButtonTask.pbi</file>
+      <file>$PROJ_DIR$\78K0R_Kx3\Obj\port.pbi</file>
+      <file>$PROJ_DIR$\78K0R_Kx3\Obj\ButtonTask.r26</file>
+      <file>$PROJ_DIR$\78K0R_Kx3\Obj\GenQTest.r26</file>
+      <file>$PROJ_DIR$\78K0R_Kx3\Obj\dynamic.r26</file>
+      <file>$PROJ_DIR$\78K0R_Kx3\Obj\semtest.r26</file>
+      <file>$PROJ_DIR$\78K0R_Kx3\Obj\main.r26</file>
+      <file>$PROJ_DIR$\..\Common\Minimal\dynamic.c</file>
+      <file>$PROJ_DIR$\78K0R_Kx3\Obj\list.r26</file>
+      <file>$PROJ_DIR$\..\Common\Minimal\GenQTest.c</file>
+      <file>$PROJ_DIR$\..\Common\Minimal\PollQ.c</file>
+      <file>$PROJ_DIR$\ButtonTask.c</file>
+      <file>$PROJ_DIR$\..\Common\Minimal\semtest.c</file>
+      <file>$PROJ_DIR$\ButtonISR.s26</file>
+      <file>$PROJ_DIR$\cstartup.s26</file>
+      <file>$PROJ_DIR$\main.c</file>
+      <file>$PROJ_DIR$\RegTest.s26</file>
+      <file>$PROJ_DIR$\..\..\Source\portable\MemMang\heap_1.c</file>
+      <file>$PROJ_DIR$\..\..\Source\list.c</file>
+      <file>$PROJ_DIR$\..\..\Source\portable\IAR\78K0R\port.c</file>
+      <file>$PROJ_DIR$\..\..\Source\queue.c</file>
+      <file>$PROJ_DIR$\..\..\Source\portable\IAR\78K0R\portasm.s26</file>
+      <file>$PROJ_DIR$\..\..\Source\tasks.c</file>
+    </outputs>
+    <file>
+      <name>[ROOT_NODE]</name>
+      <outputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 4</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\Common\Minimal\blocktim.c</name>
+      <outputs>
+        <tool>
+          <name>ICC78000</name>
+          <file> 15</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 2</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\Common\Minimal\dynamic.c</name>
+      <outputs>
+        <tool>
+          <name>ICC78000</name>
+          <file> 26</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 17</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\Common\Minimal\GenQTest.c</name>
+      <outputs>
+        <tool>
+          <name>ICC78000</name>
+          <file> 25</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 10</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\Common\Minimal\PollQ.c</name>
+      <outputs>
+        <tool>
+          <name>ICC78000</name>
+          <file> 7</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 8</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\ButtonTask.c</name>
+      <outputs>
+        <tool>
+          <name>ICC78000</name>
+          <file> 24</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 22</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\Common\Minimal\semtest.c</name>
+      <outputs>
+        <tool>
+          <name>ICC78000</name>
+          <file> 27</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 9</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\ButtonISR.s26</name>
+      <outputs>
+        <tool>
+          <name>A78000</name>
+          <file> 13</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\main.c</name>
+      <outputs>
+        <tool>
+          <name>ICC78000</name>
+          <file> 28</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 14</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\RegTest.s26</name>
+      <outputs>
+        <tool>
+          <name>A78000</name>
+          <file> 18</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\Source\portable\MemMang\heap_1.c</name>
+      <outputs>
+        <tool>
+          <name>ICC78000</name>
+          <file> 12</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 1</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\Source\list.c</name>
+      <outputs>
+        <tool>
+          <name>ICC78000</name>
+          <file> 30</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 20</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\Source\portable\IAR\78K0R\port.c</name>
+      <outputs>
+        <tool>
+          <name>ICC78000</name>
+          <file> 11</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 23</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\Source\queue.c</name>
+      <outputs>
+        <tool>
+          <name>ICC78000</name>
+          <file> 16</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 21</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\Source\portable\IAR\78K0R\portasm.s26</name>
+      <outputs>
+        <tool>
+          <name>A78000</name>
+          <file> 6</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\Source\tasks.c</name>
+      <outputs>
+        <tool>
+          <name>ICC78000</name>
+          <file> 19</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 3</file>
+        </tool>
+      </outputs>
+    </file>
+  </configuration>
+  <configuration>
+    <name>78K0R_Kx3L</name>
+    <outputs>
+      <file>$PROJ_DIR$\78K0R_Kx3L\Obj\GenQTest.r26</file>
+      <file>$PROJ_DIR$\78K0R_Kx3L\Obj\tasks.pbi</file>
+      <file>$PROJ_DIR$\..\Common\include\PollQ.h</file>
+      <file>$PROJ_DIR$\78K0R_Kx3L\Obj\blocktim.pbi</file>
+      <file>$PROJ_DIR$\78K0R_Kx3L\Obj\blocktim.r26</file>
+      <file>$PROJ_DIR$\78K0R_Kx3L\Obj\portasm.r26</file>
+      <file>$PROJ_DIR$\..\Common\Minimal\blocktim.c</file>
+      <file>$PROJ_DIR$\78K0R_Kx3L\Obj\port.r26</file>
+      <file>$PROJ_DIR$\78K0R_Kx3L\Obj\ButtonTask.r26</file>
+      <file>$PROJ_DIR$\78K0R_Kx3L\Obj\heap_1.r26</file>
+      <file>$PROJ_DIR$\78K0R_Kx3L\Obj\ButtonISR.r26</file>
+      <file>$PROJ_DIR$\78K0R_Kx3L\Obj\PollQ.pbi</file>
+      <file>$TOOLKIT_DIR$\inc\clib\stddef.h</file>
+      <file>$PROJ_DIR$\..\Common\include\semtest.h</file>
+      <file>$PROJ_DIR$\78K0R_Kx3L\Obj\dynamic.pbi</file>
+      <file>$PROJ_DIR$\78K0R_Kx3L\Obj\list.r26</file>
+      <file>$PROJ_DIR$\78K0R_Kx3L\Obj\queue.r26</file>
+      <file>$PROJ_DIR$\78K0R_Kx3L\Obj\main.pbi</file>
+      <file>$PROJ_DIR$\..\..\Source\include\FreeRTOS.h</file>
+      <file>$PROJ_DIR$\..\..\Source\portable\IAR\78K0R\portmacro.h</file>
+      <file>$TOOLKIT_DIR$\inc\io78f1009_64.h</file>
+      <file>$PROJ_DIR$\78K0R_Kx3L\Obj\port.pbi</file>
+      <file>$PROJ_DIR$\78K0R_Kx3L\Obj\ButtonTask.pbi</file>
+      <file>$TOOLKIT_DIR$\inc\clib\stdio.h</file>
+      <file>$PROJ_DIR$\78K0R_Kx3L\Obj\main.r26</file>
+      <file>$PROJ_DIR$\..\..\Source\include\StackMacros.h</file>
+      <file>$PROJ_DIR$\78K0R_Kx3L\Obj\list.pbi</file>
+      <file>$PROJ_DIR$\..\..\Source\include\queue.h</file>
+      <file>$PROJ_DIR$\..\..\Source\include\task.h</file>
+      <file>$PROJ_DIR$\..\Common\include\blocktim.h</file>
+      <file>$PROJ_DIR$\..\..\Source\include\croutine.h</file>
+      <file>$PROJ_DIR$\..\..\Source\include\portable.h</file>
+      <file>$PROJ_DIR$\..\..\Source\include\semphr.h</file>
+      <file>$PROJ_DIR$\78K0R_Kx3L\Obj\GenQTest.pbi</file>
+      <file>$PROJ_DIR$\78K0R_Kx3L\Obj\semtest.pbi</file>
+      <file>$PROJ_DIR$\78K0R_Kx3L\Obj\cstartup.r26</file>
+      <file>$PROJ_DIR$\FreeRTOSConfig.h</file>
+      <file>$TOOLKIT_DIR$\inc\clib\stdarg.h</file>
+      <file>$PROJ_DIR$\78K0R_Kx3L\Obj\tasks.r26</file>
+      <file>$PROJ_DIR$\78K0R_Kx3L\Obj\heap_1.pbi</file>
+      <file>$TOOLKIT_DIR$\inc\clib\stdlib.h</file>
+      <file>$TOOLKIT_DIR$\inc\clib\sysmac.h</file>
+      <file>$PROJ_DIR$\..\Common\include\dynamic.h</file>
+      <file>$PROJ_DIR$\..\..\Source\include\projdefs.h</file>
+      <file>$PROJ_DIR$\..\..\Source\include\list.h</file>
+      <file>$PROJ_DIR$\78K0R_Kx3L\Obj\PollQ.r26</file>
+      <file>$PROJ_DIR$\78K0R_Kx3L\Obj\queue.pbi</file>
+      <file>$PROJ_DIR$\78K0R_Kx3L\Obj\RegTest.r26</file>
+      <file>$PROJ_DIR$\78K0R_Kx3L\Obj\dynamic.r26</file>
+      <file>$TOOLKIT_DIR$\inc\io78f1009_64_ext.h</file>
+      <file>$PROJ_DIR$\..\Common\include\GenQTest.h</file>
+      <file>$TOOLKIT_DIR$\inc\clib\string.h</file>
+      <file>$TOOLKIT_DIR$\inc\intrinsics.h</file>
+      <file>$PROJ_DIR$\78K0R_Kx3L\Obj\rtosdemo.pbd</file>
+      <file>$PROJ_DIR$\78K0R_Kx3L\Exe\rtosdemo.d26</file>
+      <file>$PROJ_DIR$\78K0R_Kx3L\Obj\semtest.r26</file>
+      <file>$PROJ_DIR$\..\Common\Minimal\dynamic.c</file>
+      <file>$PROJ_DIR$\..\Common\Minimal\GenQTest.c</file>
+      <file>$PROJ_DIR$\..\Common\Minimal\PollQ.c</file>
+      <file>$PROJ_DIR$\ButtonTask.c</file>
+      <file>$PROJ_DIR$\..\Common\Minimal\semtest.c</file>
+      <file>$PROJ_DIR$\ButtonISR.s26</file>
+      <file>$PROJ_DIR$\cstartup.s26</file>
+      <file>$PROJ_DIR$\main.c</file>
+      <file>$PROJ_DIR$\RegTest.s26</file>
+      <file>$PROJ_DIR$\..\..\Source\portable\MemMang\heap_1.c</file>
+      <file>$PROJ_DIR$\..\..\Source\list.c</file>
+      <file>$PROJ_DIR$\..\..\Source\portable\IAR\78K0R\port.c</file>
+      <file>$PROJ_DIR$\..\..\Source\queue.c</file>
+      <file>$PROJ_DIR$\..\..\Source\portable\IAR\78K0R\portasm.s26</file>
+      <file>$PROJ_DIR$\..\..\Source\tasks.c</file>
+    </outputs>
+    <file>
+      <name>[ROOT_NODE]</name>
+      <outputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 54</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\Common\Minimal\blocktim.c</name>
+      <outputs>
+        <tool>
+          <name>ICC78000</name>
+          <file> 4</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 3</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 18 12 41 43 36 52 20 49 31 19 28 44 27 29</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\78K0R_Kx3L\Obj\rtosdemo.pbd</name>
+      <inputs>
+        <tool>
+          <name>BILINK</name>
+          <file> 22 33 11 3 14 39 26 17 21 46 34 1</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\Common\Minimal\dynamic.c</name>
+      <outputs>
+        <tool>
+          <name>ICC78000</name>
+          <file> 48</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 14</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 40 41 18 12 43 36 52 20 49 31 19 28 44 32 27 42</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\Common\Minimal\GenQTest.c</name>
+      <outputs>
+        <tool>
+          <name>ICC78000</name>
+          <file> 0</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 33</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 40 41 18 12 43 36 52 20 49 31 19 28 44 27 32 50</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\Common\Minimal\PollQ.c</name>
+      <outputs>
+        <tool>
+          <name>ICC78000</name>
+          <file> 45</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 11</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 40 41 18 12 43 36 52 20 49 31 19 28 44 27 2</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\ButtonTask.c</name>
+      <outputs>
+        <tool>
+          <name>ICC78000</name>
+          <file> 8</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 22</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 18 12 41 43 36 52 20 49 31 19 28 44 32 27</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\Common\Minimal\semtest.c</name>
+      <outputs>
+        <tool>
+          <name>ICC78000</name>
+          <file> 55</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 34</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 40 41 18 12 43 36 52 20 49 31 19 28 44 32 27 13</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\ButtonISR.s26</name>
+      <outputs>
+        <tool>
+          <name>A78000</name>
+          <file> 10</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\cstartup.s26</name>
+      <outputs>
+        <tool>
+          <name>A78000</name>
+          <file> 35</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\main.c</name>
+      <outputs>
+        <tool>
+          <name>ICC78000</name>
+          <file> 24</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 17</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 40 41 51 18 12 43 36 52 20 49 31 19 28 44 2 13 50 42 29</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\RegTest.s26</name>
+      <outputs>
+        <tool>
+          <name>A78000</name>
+          <file> 47</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\Source\portable\MemMang\heap_1.c</name>
+      <outputs>
+        <tool>
+          <name>ICC78000</name>
+          <file> 9</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 39</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 40 41 18 12 43 36 52 20 49 31 19 28 44</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\Source\list.c</name>
+      <outputs>
+        <tool>
+          <name>ICC78000</name>
+          <file> 15</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 26</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 40 41 18 12 43 36 52 20 49 31 19 44</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\Source\portable\IAR\78K0R\port.c</name>
+      <outputs>
+        <tool>
+          <name>ICC78000</name>
+          <file> 7</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 21</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 40 41 18 12 43 36 52 20 49 31 19 28 44</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\Source\queue.c</name>
+      <outputs>
+        <tool>
+          <name>ICC78000</name>
+          <file> 16</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 46</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 40 41 51 18 12 43 36 52 20 49 31 19 28 44 30</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\Source\portable\IAR\78K0R\portasm.s26</name>
+      <outputs>
+        <tool>
+          <name>A78000</name>
+          <file> 5</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\Source\tasks.c</name>
+      <outputs>
+        <tool>
+          <name>ICC78000</name>
+          <file> 38</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 1</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 23 37 41 40 51 18 12 43 36 52 20 49 31 19 28 44 25</file>
+        </tool>
+      </inputs>
+    </file>
+  </configuration>
+</project>
+
+
