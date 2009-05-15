@@ -40,7 +40,7 @@ LDSCRIPT=lpc2368.ld
 
 PROJECT_NAME=BlinkyLightSample
 
-LINKER_FLAGS=-mthumb -nostartfiles -Xlinker -o$(PROJECT_NAME).elf -Xlinker -M -Xlinker -Map=rtosdemo.map
+LINKER_FLAGS=-mthumb -nostartfiles -Xlinker -o$(PROJECT_NAME).elf -Xlinker -M -Xlinker -Map=$(PROJECT_NAME).map
 
 DEBUG=-g
 OPTIM=-O1
