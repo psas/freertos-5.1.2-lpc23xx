@@ -54,6 +54,7 @@ CFLAGS= $(DEBUG) \
 		-I $(RTOS_SOURCE_DIR)/portable/GCC/ARM7_LPC23xx \
 		-I $(DEMO_INCLUDE_DIR) \
 		-I $(LPCUSB_COMMON_DIR) -D LPC23xx -DLPC2378_PORTB \
+		-I ../Common/drivers/LPC/ \
 		-D ROWLEY_LPC23xx \
 		-D THUMB_INTERWORK \
 		-mcpu=arm7tdmi \
@@ -80,8 +81,8 @@ THUMB_SOURCE= \
 
 
 ARM_SOURCE= \
-		serial/serial.c \
-		serial/serialISR.c \
+		../Common/drivers/LPC/serial/serial.c \
+		../Common/drivers/LPC/serial/serialISR.c \
 		$(RTOS_SOURCE_DIR)/portable/GCC/ARM7_LPC23xx/portISR.c \
 		$(LPCUSB_COMMON_DIR)/usbcontrol.c \
 		$(LPCUSB_COMMON_DIR)/usbhw_lpc.c \
