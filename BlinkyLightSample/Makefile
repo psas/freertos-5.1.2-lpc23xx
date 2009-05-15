@@ -83,6 +83,9 @@ THUMB_SOURCE= \
 ARM_SOURCE= \
 		../Common/drivers/LPC/serial/serial.c \
 		../Common/drivers/LPC/serial/serialISR.c \
+		../Common/drivers/LPC/printf/uart0PutChar2.c \
+		../Common/drivers/LPC/printf/printf2.c \
+		../Common/drivers/LPC/printf/printfHelpers.c \
 		$(RTOS_SOURCE_DIR)/portable/GCC/ARM7_LPC23xx/portISR.c \
 		$(LPCUSB_COMMON_DIR)/usbcontrol.c \
 		$(LPCUSB_COMMON_DIR)/usbhw_lpc.c \
@@ -116,6 +119,8 @@ clean :
 	touch Makefile
 	rm -f $(PROJECT_NAME).elf
 	rm -f $(PROJECT_NAME).hex
+	rm -f $(PROJECT_NAME).bin
+	rm -f $(PROJECT_NAME).map
 	
 	
 	

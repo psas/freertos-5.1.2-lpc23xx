@@ -117,6 +117,8 @@ clean :
 	touch Makefile
 	rm -f $(PROJECT_NAME).elf
 	rm -f $(PROJECT_NAME).hex
+	rm -f $(PROJECT_NAME).bin
+	rm -f $(PROJECT_NAME).map
 	
 	
 	

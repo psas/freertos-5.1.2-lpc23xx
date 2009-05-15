@@ -514,9 +514,9 @@ int main( void )
 {
 	prvSetupHardware();
 	
+	enableSerial0();
 	xSerialPortInitMinimal(0, 115200, 250 );
-	vSerialPutString(0, "Starting up LPC23xx with FreeRTOS\n", 0);
-	
+	vSerialPutString(0, "Starting up LPC23xx with FreeRTOS\n", 50);
 	//usbInit();
 	
 	/* Create the queue used by the LCD task.  Messages for display on the LCD

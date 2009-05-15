@@ -69,6 +69,8 @@
 #include <stdint.h>
 #include "debug.h"
 #include "serial/serial.h"
+#include "printf/uart0PutChar2.h"
+#include "printf/printf2.h"
 
 
 
@@ -151,25 +153,14 @@ static void blinkyLightTask(void *pvParameters) {
 			FIO1CLR = (1<<19);//turn off led on olimex 2378 Sdev board
 
 			x = 0;
-			vSerialPutString(0, "Blinky Light Task...\r\n", 50);
-			
-			
-
-			
+			printf2("Blinky Light Task...\r\n");
 			
 			status = xSerialGetChar(0, &theChar, 1);
 			if( status == pdTRUE ) {
-				
-				char temp[2];
-				temp[0] = theChar;
-				temp[1] = '\0';
-				vSerialPutString(0, "You typed the character: '", 50);
-				vSerialPutString(0, temp, 50);
-				vSerialPutString(0, "'\r\n", 50);
+				printf2("You typed the character: '%c'\r\n", theChar);
 			}
 		}
 	}
-
 }
 
 
