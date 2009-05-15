@@ -38,7 +38,10 @@ CC=arm-elf-gcc
 OBJCOPY=arm-elf-objcopy
 LDSCRIPT=lpc2368.ld
 
-LINKER_FLAGS=-mthumb -nostartfiles -Xlinker -oRTOSDemo.elf -Xlinker -M -Xlinker -Map=rtosdemo.map
+PROJECT_NAME=LPCUPSIntegrationTesting
+
+
+LINKER_FLAGS=-mthumb -nostartfiles -Xlinker -o$(PROJECT_NAME).elf -Xlinker -M -Xlinker -Map=$(PROJECT_NAME).map
 
 DEBUG=-g
 OPTIM=-O1
@@ -91,15 +94,15 @@ THUMB_OBJS = $(THUMB_SOURCE:.c=.o)
 ARM_OBJS = $(ARM_SOURCE:.c=.o)
 
 
-all: RTOSDemo.bin
+all: $(PROJECT_NAME).bin
 
-RTOSDemo.bin : RTOSDemo.hex
-	$(OBJCOPY) RTOSDemo.elf -O binary RTOSDemo.bin
+$(PROJECT_NAME).bin : $(PROJECT_NAME).hex
+	$(OBJCOPY) $(PROJECT_NAME).elf -O binary $(PROJECT_NAME).bin
 	 
-RTOSDemo.hex : RTOSDemo.elf
-	$(OBJCOPY) RTOSDemo.elf -O ihex RTOSDemo.hex
+$(PROJECT_NAME).hex : $(PROJECT_NAME).elf
+	$(OBJCOPY) $(PROJECT_NAME).elf -O ihex $(PROJECT_NAME).hex
 
-RTOSDemo.elf : $(THUMB_OBJS) $(ARM_OBJS) boot.s Makefile
+$(PROJECT_NAME).elf : $(THUMB_OBJS) $(ARM_OBJS) boot.s Makefile
 	$(CC) $(CFLAGS) $(ARM_OBJS) $(THUMB_OBJS) $(LIBS) boot.s $(LINKER_FLAGS) 
 
 $(THUMB_OBJS) : %.o : %.c Makefile FreeRTOSConfig.h
@@ -112,8 +115,8 @@ clean :
 	rm -f $(THUMB_OBJS)
 	rm -f $(ARM_OBJS)
 	touch Makefile
-	rm -f RTOSDemo.elf
-	rm -f RTOSDemo.hex
+	rm -f $(PROJECT_NAME).elf
+	rm -f $(PROJECT_NAME).hex
 	
 	
 	

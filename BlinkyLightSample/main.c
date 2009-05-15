@@ -135,7 +135,8 @@
 
 static void blinkyLightTask(void *pvParameters) {
 	int x = 0;
-		
+	signed portCHAR theChar;
+	signed portBASE_TYPE status;
 	const int interval = 100000;
 	// echo any character received (do USB stuff in interrupt)
 	
@@ -151,6 +152,21 @@ static void blinkyLightTask(void *pvParameters) {
 
 			x = 0;
 			vSerialPutString(0, "Blinky Light Task...\r\n", 50);
+			
+			
+
+			
+			
+			status = xSerialGetChar(0, &theChar, 1);
+			if( status == pdTRUE ) {
+				
+				char temp[2];
+				temp[0] = theChar;
+				temp[1] = '\0';
+				vSerialPutString(0, "You typed the character: '", 50);
+				vSerialPutString(0, temp, 50);
+				vSerialPutString(0, "'\r\n", 50);
+			}
 		}
 	}
 
