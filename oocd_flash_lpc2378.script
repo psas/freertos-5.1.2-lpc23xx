@@ -42,9 +42,10 @@ flash erase_check 0
 sleep 100
 mdh 0x0 100
 #
-flash write_image ./RTOSDemo/RTOSDemo.bin 0x0 bin
-flash write_image ./RTOSDemo/RTOSDemo.bin 0x0 bin
+#flash write_image ./RTOSDemo/RTOSDemo.bin 0x0 bin
+#flash write_image ./RTOSDemo/RTOSDemo.bin 0x0 bin
 #flash write_image /home/paradox/psas/lpc-usb-trunk/target/examples/isoc_io_dma_sample.hex 0x0
+flash write_image /home/inky/freertos-5.1.2-lpc23xx/BlinkyLightSample/BlinkyLightSample.hex
 #flash write_image /home/paradox/psas/lpc-usb-trunk/target/examples/isoc_io_dma_sample.hex 0x0
 #flash write_image /home/paradox/psas/lpc-usb-trunk/target/examples/isoc_io_sample.hex 0x0
 #flash write_image /home/paradox/psas/lpc-usb-trunk/target/examples/isoc_io_sample.hex 0x0
