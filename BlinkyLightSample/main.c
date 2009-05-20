@@ -125,14 +125,11 @@
 #define mainMAM_TIM_3		( ( unsigned portCHAR ) 0x03 )
 #define mainMAM_MODE_FULL	( ( unsigned portCHAR ) 0x02 )
 
-
-
-
-
-
-
-
-
+/* APS State Machine values*/
+#define sleep			((unsigned int) 0x00)
+#define wake			((unsigned int) 0x01)
+#define ready			((unsigned int) 0x02)
+#define armed			((unsigned int) 0x03)
 
 
 static void blinkyLightTask(void *pvParameters) {
@@ -163,6 +160,72 @@ static void blinkyLightTask(void *pvParameters) {
 	}
 }
 
+/*
+ * This task demonstrates the use of basic GPIO input/output for changing APS state machine
+ * When you press B1 on the olimex board, P0.29 will go low and the BUZZAR will make noise,
+ * and the APS state will increment, a loop of 0-3. Current state will be sent to the UART.
+ * When button is not pressed, it will stay high.
+ *
+ * When B2 is pressed, APS state will be reset to zero, and a 'reset aps' message will be
+ * sent to the UART.
+ */
+
+
+void APS_StateTask( void *pvParameters )
+
+{
+
+
+unsigned int rocket_mode = sleep;	// init into sleep mode, may change default mode later
+				// not sure if byte is best for this type
+
+
+
+	initGPIOPin(PORT0, 30, TRUE);	//setup the GPIO pin as input. This is B1 on the olimex board
+
+	initGPIOPin(PORT0, 6, TRUE);	//setup the GPIO pin as input. This is B2 on the olimex board
+
+	for(;;)	{
+
+		//Read P0.30, the B1 button on the olimex board. Note, P0.30 is pulled up normally.
+		//Pressing the button will take the input low.
+		enum BOOL b1  = readGPIOPin(PORT0, 30);
+
+		//Read P0.6, the B2 button on the olimex board. Note, P0.6 is pulled up normally.
+		//Pressing the button will take the input low.
+		enum BOOL b2  = readGPIOPin(PORT0, 6);
+
+		if( ! b1 ) {
+
+			// increment the aps state machine
+			rocket_mode++;
+
+			// loop back to state 0 if greater than 3
+			if(rocket_mode > armed)
+				rocket_mode = sleep;
+
+			// output current state
+			
+		} else {
+
+			vTaskDelay(50);
+		}
+
+		if( ! b2 ) {
+
+			// reset state machine to zero
+			rocket_mode = sleep;
+
+			// output 'reset aps' string to UART
+			
+		} else {
+
+			vTaskDelay(50);
+		}
+
+	}
+
+}//end APS_StateTask
 
 /*-----------------------------------------------------------*/
 
@@ -241,6 +304,8 @@ int main( void )
 	SCS |= 1; //Configure FIO
 	
 	xTaskCreate( blinkyLightTask, ( signed portCHAR * ) "BlinkyLight", configMINIMAL_STACK_SIZE, NULL, mainCHECK_TASK_PRIORITY - 1, NULL );
+
+	xTaskCreate( APS_StateTask, ( signed portCHAR * ) "APS_State", configMINIMAL_STACK_SIZE, NULL, mainCHECK_TASK_PRIORITY - 1, NULL );
   
 	/* Start the scheduler. */
 	vTaskStartScheduler();
