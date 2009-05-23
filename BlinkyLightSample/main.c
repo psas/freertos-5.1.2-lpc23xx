@@ -136,30 +136,51 @@
 
 
 static void blinkyLightTask(void *pvParameters) {
+	
+	
+	int v = 0;
 	int x = 0;
-	signed portCHAR theChar;
-	signed portBASE_TYPE status;
-	const int interval = 100000;
+	//signed portCHAR theChar;
+	//signed portBASE_TYPE status;
+	//const int interval = 100000;
 	// echo any character received (do USB stuff in interrupt)
 	
 	for(;;) {
 		//vSerialPutString(0, "Testing...\r\n", 50);
-		x++;
+				//x++;
 
-		if (x == interval) {
-			FIO1SET = (1<<19);//turn on led on olimex 2378 dev board
+		if ( ( ( FIO0PIN >> 6 ) && 0x00000001 ) == 0x00000001 ) {
 			
-		} else if (x >= (interval*2)) {
+			v = 1;
+		}
+		else if  ( ( ( FIO0PIN >> 6 ) && 0x00000001 ) == 0x00000000 ) {
+		
+			v = 0;
+		}
+
+		printf2("%d", FIO0PIN);
+
+		if ( v == 1 ) {//(x == interval) {
+			printf2("FLAME ON!\r\n");
+			FIO1SET = (1<<19);//turn on led on olimex 2378 dev board
+		}
+		else if ( v == 0 ) {
+			printf2("Flame off!\r\n");
+			FIO1CLR = (1<<19);//turn off led on olimex 2378 Sdev board
+		}	
+			
+/*		} else if (x >= (interval*2)) {
 			FIO1CLR = (1<<19);//turn off led on olimex 2378 Sdev board
 
 			x = 0;
-			printf2("Blinky Light Task...\r\n");
+			//printf2("Blinky Light Task...\r\n");
 			
 			status = xSerialGetChar(0, &theChar, 1);
 			if( status == pdTRUE ) {
 				printf2("You typed the character: '%c'\r\n", theChar);
 			}
 		}
+*/
 	}
 }
 
@@ -215,7 +236,12 @@ static void prvSetupHardware( void )
 	*/
 	
 	/* Setup the led's on the MCB2300 board */
-	vParTestInitialise();
+	//doing this manually for now!
+	//vParTestInitialise();  
+	
+	SCS |= 1;  //set to fast GPIO
+	FIO1DIR |= (1<<19); //set P1.19 as output
+	
 }
 
 
