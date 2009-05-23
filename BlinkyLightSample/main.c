@@ -138,7 +138,7 @@
 static void blinkyLightTask(void *pvParameters) {
 	
 	
-	int v = 0;
+	int v = 1;
 	int x = 0;
 	//signed portCHAR theChar;
 	//signed portBASE_TYPE status;
@@ -148,7 +148,7 @@ static void blinkyLightTask(void *pvParameters) {
 	for(;;) {
 		//vSerialPutString(0, "Testing...\r\n", 50);
 				//x++;
-
+/*
 		if ( ( ( FIO0PIN >> 6 ) && 0x00000001 ) == 0x00000001 ) {
 			
 			v = 1;
@@ -157,8 +157,8 @@ static void blinkyLightTask(void *pvParameters) {
 		
 			v = 0;
 		}
-
-		printf2("%d", FIO0PIN);
+*/
+		//printf2("%d", FIO0PIN);
 
 		if ( v == 1 ) {//(x == interval) {
 			printf2("FLAME ON!\r\n");
