@@ -138,7 +138,7 @@
 static void blinkyLightTask(void *pvParameters) {
 	
 	
-	int v = 1;
+	int v = 0;
 	int x = 0;
 	//signed portCHAR theChar;
 	//signed portBASE_TYPE status;
@@ -148,24 +148,27 @@ static void blinkyLightTask(void *pvParameters) {
 	for(;;) {
 		//vSerialPutString(0, "Testing...\r\n", 50);
 				//x++;
-/*
-		if ( ( ( FIO0PIN >> 6 ) && 0x00000001 ) == 0x00000001 ) {
+
+		if ( ( ( FIO0PIN >> 6 ) & 0x00000001 ) == 0x00000001 ) {
 			
 			v = 1;
 		}
-		else if  ( ( ( FIO0PIN >> 6 ) && 0x00000001 ) == 0x00000000 ) {
+		else if  ( ( ( FIO0PIN >> 6 ) & 0x00000001 ) == 0x00000000 ) {
 		
 			v = 0;
 		}
-*/
+
 		//printf2("%d", FIO0PIN);
+		//x = (int) ( ( FIO0PIN >> 6 ) & 0x00000001 );
+		//printf2("FIO0PIN = 0x%X\r\n", FIO0PIN);
+		printf2("v = %d\r\n", v);
 
 		if ( v == 1 ) {//(x == interval) {
-			printf2("FLAME ON!\r\n");
+			//printf2("Flame off!\r\n");
 			FIO1SET = (1<<19);//turn on led on olimex 2378 dev board
 		}
 		else if ( v == 0 ) {
-			printf2("Flame off!\r\n");
+			//printf2("FLAME ON!\r\n");
 			FIO1CLR = (1<<19);//turn off led on olimex 2378 Sdev board
 		}	
 			
