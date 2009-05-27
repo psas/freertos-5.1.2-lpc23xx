@@ -131,6 +131,48 @@
 #define ready			((unsigned int) 0x02)
 #define armed			((unsigned int) 0x03)
 
+typedef enum{SLEEP = 0, WAKE, READY, ARMED}APS_state_type;
+
+void(*aps_state_table[])()={Sleep, Wake, Ready, Armed};
+
+APS_state_type curr_state;
+
+void Init_aps_sm();
+{
+
+curr_state = SLEEP;
+delay 50;
+
+}
+
+void Sleep();
+{
+
+//if some condition, change to another state
+
+}
+
+void Wake();
+{
+
+//if some condition, change to another state
+
+}
+
+void Ready();
+{
+
+//if some condition, change to another state
+
+}
+
+void Armed();
+{
+
+//if some condition, change to another state
+
+}
+
 
 static void blinkyLightTask(void *pvParameters) {
 	int x = 0;
