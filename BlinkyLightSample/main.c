@@ -126,10 +126,10 @@
 #define mainMAM_MODE_FULL	( ( unsigned portCHAR ) 0x02 )
 
 /* APS State Machine values*/
-#define sleep			((unsigned int) 0x00)
-#define wake			((unsigned int) 0x01)
-#define ready			((unsigned int) 0x02)
-#define armed			((unsigned int) 0x03)
+#define Sleep			((unsigned portLONG) 0x00)
+#define Wake			((unsigned portLONG) 0x01)
+#define Ready			((unsigned portLONG) 0x02)
+#define Armed			((unsigned portLONG) 0x03)
 
 typedef enum{SLEEP = 0, WAKE, READY, ARMED}APS_state_type;
 
@@ -137,36 +137,36 @@ void(*aps_state_table[])()={Sleep, Wake, Ready, Armed};
 
 APS_state_type curr_state;
 
-void Init_aps_sm();
+void Init_aps_sm()
 {
 
 curr_state = SLEEP;
-delay 50;
+//delay 50;
 
 }
 
-void Sleep();
+void Sleep()
 {
 
 //if some condition, change to another state
 
 }
 
-void Wake();
+void Wake()
 {
 
 //if some condition, change to another state
 
 }
 
-void Ready();
+void Ready()
 {
 
 //if some condition, change to another state
 
 }
 
-void Armed();
+void Armed()
 {
 
 //if some condition, change to another state
@@ -218,24 +218,24 @@ void APS_StateTask( void *pvParameters )
 {
 
 
-unsigned int rocket_mode = sleep;	// init into sleep mode, may change default mode later
+unsigned int rocket_mode = Sleep;	// init into sleep mode, may change default mode later
 				// not sure if byte is best for this type
 
 
 
-	initGPIOPin(PORT0, 30, TRUE);	//setup the GPIO pin as input. This is B1 on the olimex board
+	//initGPIOPin(PORT0, 30, 0xFFFF);	//setup the GPIO pin as input. This is B1 on the olimex board
 
-	initGPIOPin(PORT0, 6, TRUE);	//setup the GPIO pin as input. This is B2 on the olimex board
+	//initGPIOPin(PORT0, 6, 0xFFFF);	//setup the GPIO pin as input. This is B2 on the olimex board
 
-	for(;;)	{
+	/*for(;;)	{
 
 		//Read P0.30, the B1 button on the olimex board. Note, P0.30 is pulled up normally.
 		//Pressing the button will take the input low.
-		enum BOOL b1  = readGPIOPin(PORT0, 30);
+		unsigned int b1  = readGPIOPin(PORT0, 30);
 
 		//Read P0.6, the B2 button on the olimex board. Note, P0.6 is pulled up normally.
 		//Pressing the button will take the input low.
-		enum BOOL b2  = readGPIOPin(PORT0, 6);
+		unsigned int b2  = readGPIOPin(PORT0, 6);
 
 		if( ! b1 ) {
 
@@ -243,8 +243,8 @@ unsigned int rocket_mode = sleep;	// init into sleep mode, may change default mo
 			rocket_mode++;
 
 			// loop back to state 0 if greater than 3
-			if(rocket_mode > armed)
-				rocket_mode = sleep;
+			if(rocket_mode > Armed)
+				rocket_mode = Sleep;
 
 			// output current state
 			
@@ -256,7 +256,7 @@ unsigned int rocket_mode = sleep;	// init into sleep mode, may change default mo
 		if( ! b2 ) {
 
 			// reset state machine to zero
-			rocket_mode = sleep;
+			rocket_mode = Sleep;
 
 			// output 'reset aps' string to UART
 			
@@ -265,7 +265,7 @@ unsigned int rocket_mode = sleep;	// init into sleep mode, may change default mo
 			vTaskDelay(50);
 		}
 
-	}
+	}*/
 
 }//end APS_StateTask
 
