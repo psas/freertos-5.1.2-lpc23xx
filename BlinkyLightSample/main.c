@@ -126,10 +126,10 @@
 #define mainMAM_MODE_FULL	( ( unsigned portCHAR ) 0x02 )
 
 /* APS State Machine values*/
-#define Sleep			((unsigned portLONG) 0x00)
-#define Wake			((unsigned portLONG) 0x01)
-#define Ready			((unsigned portLONG) 0x02)
-#define Armed			((unsigned portLONG) 0x03)
+#define Sleep			( ( unsigned portLONG ) 0x00 )
+#define Wake			( ( unsigned portLONG ) 0x01 )
+#define Ready			( ( unsigned portLONG ) 0x02 )
+#define Armed			( ( unsigned portLONG ) 0x03 )
 
 typedef enum{SLEEP = 0, WAKE, READY, ARMED}APS_state_type;
 
@@ -145,28 +145,28 @@ curr_state = SLEEP;
 
 }
 
-void Sleep()
+void Sleep(void)
 {
 
 //if some condition, change to another state
 
 }
 
-void Wake()
+void Wake(void)
 {
 
 //if some condition, change to another state
 
 }
 
-void Ready()
+void Ready(void)
 {
 
 //if some condition, change to another state
 
 }
 
-void Armed()
+void Armed(void)
 {
 
 //if some condition, change to another state
