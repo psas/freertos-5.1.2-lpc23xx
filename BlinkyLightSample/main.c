@@ -126,28 +126,27 @@
 #define mainMAM_MODE_FULL	( ( unsigned portCHAR ) 0x02 )
 
 /* APS State Machine values*/
-#define Sleep			( ( unsigned portLONG ) 0x00 )
+/*#define Sleep			( ( unsigned portLONG ) 0x00 )
 #define Wake			( ( unsigned portLONG ) 0x01 )
 #define Ready			( ( unsigned portLONG ) 0x02 )
-#define Armed			( ( unsigned portLONG ) 0x03 )
+#define Armed			( ( unsigned portLONG ) 0x03 )*/
 
 typedef enum{SLEEP = 0, WAKE, READY, ARMED}APS_state_type;
 
-void(*aps_state_table[])()={Sleep, Wake, Ready, Armed};
+void (*aps_state_table[])()={SLEEP, WAKE, READY, ARMED};
 
 APS_state_type curr_state;
 
 void Init_aps_sm()
 {
-
 curr_state = SLEEP;
 //delay 50;
 
 }
 
-void Sleep(void)
+void Sleep()
 {
-
+curr_state = SLEEP;
 //if some condition, change to another state
 
 }
@@ -217,55 +216,42 @@ void APS_StateTask( void *pvParameters )
 
 {
 
+	int x = 0;
+	signed portCHAR theChar;
+	signed portLONG status;
+	const int interval = 100000;
+	// echo any character received (do USB stuff in interrupt)
+	
+	Init_aps_sm();
 
-unsigned int rocket_mode = Sleep;	// init into sleep mode, may change default mode later
-				// not sure if byte is best for this type
+	for(;;) {
+		x++;
 
-
-
-	//initGPIOPin(PORT0, 30, 0xFFFF);	//setup the GPIO pin as input. This is B1 on the olimex board
-
-	//initGPIOPin(PORT0, 6, 0xFFFF);	//setup the GPIO pin as input. This is B2 on the olimex board
-
-	/*for(;;)	{
-
-		//Read P0.30, the B1 button on the olimex board. Note, P0.30 is pulled up normally.
-		//Pressing the button will take the input low.
-		unsigned int b1  = readGPIOPin(PORT0, 30);
-
-		//Read P0.6, the B2 button on the olimex board. Note, P0.6 is pulled up normally.
-		//Pressing the button will take the input low.
-		unsigned int b2  = readGPIOPin(PORT0, 6);
-
-		if( ! b1 ) {
-
-			// increment the aps state machine
-			rocket_mode++;
-
-			// loop back to state 0 if greater than 3
-			if(rocket_mode > Armed)
-				rocket_mode = Sleep;
-
-			// output current state
+		if (x == interval) {
+			FIO1SET = (1<<19);//turn on led on olimex 2378 dev board
 			
-		} else {
+		} else if (x >= (interval*2)) {
+			FIO1CLR = (1<<19);//turn off led on olimex 2378 Sdev board
 
-			vTaskDelay(50);
-		}
-
-		if( ! b2 ) {
-
-			// reset state machine to zero
-			rocket_mode = Sleep;
-
-			// output 'reset aps' string to UART
+			x = 0;
+			printf2("APS State Machine Blinky Light Task...\r\n");
 			
-		} else {
-
-			vTaskDelay(50);
+			status = xSerialGetChar(0, &theChar, 1);
+			if( status == pdTRUE ) {
+				printf2("You typed the character: '%c'\r\n", theChar);
+				if(theChar == 'w') {
+					curr_state = WAKE;
+				} else if (theChar == 's') {
+					curr_state = SLEEP;
+				} else if (theChar == 'r') {
+					curr_state = READY;
+				} else if (theChar == 'a') {				
+					curr_state == ARMED;
+				}
+				printf2("State is now %d'\r\n", curr_state);
+			}
 		}
-
-	}*/
+	}
 
 }//end APS_StateTask
 
