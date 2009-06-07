@@ -90,7 +90,6 @@ to exclude the API function. */
 #define INCLUDE_xTaskGetCurrentTaskHandle	1
 
 
-#endif /* FREERTOS_CONFIG_H */
 
 
 #ifndef sbi
@@ -119,3 +118,13 @@ typedef struct
 } xLCDMessage;
 
 #endif
+
+#ifndef BOOL_
+#define BOOL_
+   enum BOOL {FALSE=0, TRUE=1};
+#endif
+
+#define SET_BIT(variable, bitNumber)    (variable |= (1<<bitNumber))
+#define ZERO_BIT(variable, bitNumber)   (variable &= ~(1<<bitNumber))
+
+#endif /* FREERTOS_CONFIG_H */

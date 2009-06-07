@@ -50,6 +50,10 @@
 	licensing and training services.
 */
 
+/* Pick thy processor here!*/
+#define PROCESSOR_MODEL = LPC2378
+//#define PROCESSOR_MODEL = LPC2368
+
 /* Scheduler includes. */
 #include "FreeRTOS.h"
 #include "task.h"
@@ -71,6 +75,7 @@
 #include "serial/serial.h"
 #include "printf/uart0PutChar2.h"
 #include "printf/printf2.h"
+#include "gpio/gpio.h"
 
 
 
@@ -244,6 +249,7 @@ static void prvSetupHardware( void )
 	
 	SCS |= 1;  //set to fast GPIO
 	FIO1DIR |= (1<<19); //set P1.19 as output
+	initFGPIOPin(PORT1, 19, FALSE);
 	
 }
 

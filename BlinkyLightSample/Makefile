@@ -86,6 +86,7 @@ ARM_SOURCE= \
 		../Common/drivers/LPC/printf/uart0PutChar2.c \
 		../Common/drivers/LPC/printf/printf2.c \
 		../Common/drivers/LPC/printf/printfHelpers.c \
+		../Common/drivers/LPC/gpio/gpio.c \
 		$(RTOS_SOURCE_DIR)/portable/GCC/ARM7_LPC23xx/portISR.c \
 		$(LPCUSB_COMMON_DIR)/usbcontrol.c \
 		$(LPCUSB_COMMON_DIR)/usbhw_lpc.c \
