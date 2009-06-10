@@ -247,8 +247,8 @@ static void prvSetupHardware( void )
 	//doing this manually for now!
 	//vParTestInitialise();  
 	
-	SCS |= 1;  //set to fast GPIO
-	FIO1DIR |= (1<<19); //set P1.19 as output
+	//SCS |= 1;  //set to fast GPIO
+	//FIO1DIR |= (1<<19); //set P1.19 as output
 	initFGPIOPin(PORT1, 19, FALSE);
 	
 }

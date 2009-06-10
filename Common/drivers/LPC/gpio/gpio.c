@@ -44,6 +44,9 @@
  * This is used to initialize a GPIO pin as input or output.
  */
 void initFGPIOPin(enum PortNumber portNumber, portLONG ipNumber, enum BOOL input) {
+	
+	SCS |= 1;  //set to fast GPIO
+	
 	if( portNumber == PORT0 ) {
 		
 		if( ipNumber >= 0 && ipNumber <= 15 ) {
