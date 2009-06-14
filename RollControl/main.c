@@ -71,6 +71,7 @@
 #include "serial/serial.h"
 #include "printf/uart0PutChar2.h"
 #include "printf/printf2.h"
+#include "peripherals/pwm.h"
 
 
 
@@ -127,10 +128,20 @@
 
 
 
+#define PCLK    configCPU_CLOCK_HZ
 
 
 
 
+uint32_t microsecondsToCPUTicks(const uint32_t microseconds) {
+	uint32_t ret = (configCPU_CLOCK_HZ / 1000000) * microseconds;
+	return(ret);
+}
+
+uint32_t milisecondsToCPUTicks(const uint32_t miliseconds) {
+	uint32_t ret = (configCPU_CLOCK_HZ / 1000) * miliseconds;
+	return(ret);
+}
 
 
 
@@ -142,12 +153,20 @@ static void rollControlTask(void *pvParameters) {
 	const int interval = 100000;
 	// echo any character received (do USB stuff in interrupt)
 	
+	uint32_t pwmDutyCycle = 1000;
+	
 	for(;;) {
 		//vSerialPutString(0, "Testing...\r\n", 50);
 		x++;
 
 		if (x == interval) {
 			FIO1SET = (1<<19);//turn on led on olimex 2378 dev board
+			
+			pwmDutyCycle += 100;
+			if(pwmDutyCycle > 2000 ) {
+				pwmDutyCycle = 1000;
+			}
+			setPWMDutyCycle(PWM1_1, microsecondsToCPUTicks(pwmDutyCycle));
 			
 		} else if (x >= (interval*2)) {
 			FIO1CLR = (1<<19);//turn off led on olimex 2378 Sdev board
@@ -226,19 +245,23 @@ void enableSerial0( void ) {
 }
 
 
-
 /*-----------------------------------------------------------*/
-#define PCLK    configCPU_CLOCK_HZ
+
 //#define PCLK    48000000
 int main( void )
 {
 	prvSetupHardware();
 	
 	enableSerial0();
+	
+	PWMinit (0, milisecondsToCPUTicks(30));//30ms period, given 48mhz CPU clock
+	setupPWMChannel(PWM1_1, microsecondsToCPUTicks(1500)); //1ms duty cycle, given 48mhz CPU clock
+	
 	xSerialPortInitMinimal(0, 115200, 250 );
 	vSerialPutString(0, "Starting up LPC23xx with FreeRTOS\n", 50);
 	
 	SCS |= 1; //Configure FIO
+	
 	
 	xTaskCreate( rollControlTask, ( signed portCHAR * ) "rollControlTask", ROLL_CONTROL_STACK_SIZE, NULL, mainCHECK_TASK_PRIORITY - 1, NULL );
   

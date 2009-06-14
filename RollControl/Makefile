@@ -81,6 +81,7 @@ THUMB_SOURCE= \
 
 
 ARM_SOURCE= \
+		../Common/drivers/LPC/peripherals/pwm.c \
 		../Common/drivers/LPC/serial/serial.c \
 		../Common/drivers/LPC/serial/serialISR.c \
 		../Common/drivers/LPC/printf/uart0PutChar2.c \
