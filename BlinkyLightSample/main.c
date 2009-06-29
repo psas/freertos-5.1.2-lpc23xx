@@ -76,7 +76,7 @@
 #include "printf/uart0PutChar2.h"
 #include "printf/printf2.h"
 #include "gpio/gpio.h"
-
+#include "adc/adc.h"
 
 
 
@@ -192,6 +192,12 @@ static void blinkyLightTask(void *pvParameters) {
 	}
 }
 
+static void ADCtestTask(void *pvParameters) {
+	
+	//initFGPIOPin(PORT1, 19, FALSE);  Similar function from a similar location.  This one works if uncommented, the one below does not.  
+	configureADCPort( AD0_0 );
+	
+}
 
 /*-----------------------------------------------------------*/
 
@@ -276,6 +282,7 @@ int main( void )
 	SCS |= 1; //Configure FIO
 	
 	xTaskCreate( blinkyLightTask, ( signed portCHAR * ) "BlinkyLight", configMINIMAL_STACK_SIZE, NULL, mainCHECK_TASK_PRIORITY - 1, NULL );
+	xTaskCreate( ADCtestTask, ( signed portCHAR * ) "ADCtest", configMINIMAL_STACK_SIZE, NULL, mainCHECK_TASK_PRIORITY - 1, NULL );
   
 	/* Start the scheduler. */
 	vTaskStartScheduler();
