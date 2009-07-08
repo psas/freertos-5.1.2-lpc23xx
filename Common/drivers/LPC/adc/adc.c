@@ -36,13 +36,23 @@
 
 #include "adc.h"
 
+#if (defined(PROCESSOR_MODEL_LPC2368) && defined(PROCESSOR_MODEL_LPC2378))
+#error "Both PROCESSOR_MODEL_LPC2368 and PROCESSOR_MODEL_LPC2378 are defined!  There can only be one!"
+#endif
 
+#if ( (!defined(PROCESSOR_MODEL_LPC2368)) && (!defined(PROCESSOR_MODEL_LPC2378)) )
+#error "Neither PROCESSOR_MODEL_LPC2368 or PROCESSOR_MODEL_LPC2378 are defined!  Specify the processor!"
+#endif
 
-#if PROCESSOR_MODEL == LPC2368
+#ifdef PROCESSOR_MODEL_LPC2368
 
 //this shouldn't work yet!
+/*void configureADCPort(enum ADCPort port )
+{
 
-#elif PROCESSOR_MODEL == LPC2378
+}*/
+
+#elif PROCESSOR_MODEL_LPC2378
 
 
 /* Initialize the A/D converter*/
@@ -135,13 +145,13 @@ void configureADCPort(enum ADCPort port )
 		AD0CR |= ( 1 << uxADC_Channel); //set bit X to enable pin AD{port}.{channel} for AD conversion
 		
 		/* BURST: bit 16, when set the AD converter is in burst mode 
-	 	doing repeated conversions at a rate of CLKS		
+		doing repeated conversions at a rate of CLKS		
 		*/
 		AD0CR |= (1<<16); //sets the AD converter to burst mode for repeated conversions
 		
 		
 		/* CLKDIV: bits 15:8 set the clock for the conversion. 
-	 	VPB clock (PCLK) is divided by this value plus 1. 
+		VPB clock (PCLK) is divided by this value plus 1. 
 		Total should be less than 4.5MHz. Value should be greater 
 		than 14 for a VPB clock of 60Mhz*/
 		AD0CR |= (20<<8); //sets a value of 20 into CLKDIV for a clock of 3MHz for conversions
@@ -157,36 +167,7 @@ void configureADCPort(enum ADCPort port )
 		/* PDN: bit 21, set to enanble the ADC, clear to disable the ADC*/
 		AD0CR |= (1<<21); //sets bit 21 to turn on the ADC		
 
-	} else if( uxADC_Port == 1 ) {
-		/* SEL: bits 7:0 selects which pins are to be sampled, bit 0 
-	 		selects pin AD0.0, bit 7 selects pin AD0.7 			
-		*/
-		AD1CR |= ( 1 << uxADC_Channel); //set bit X to enable pin AD{port}.{channel} for AD conversion
-		
-		/* BURST: bit 16, when set the AD converter is in burst mode 
-	 	doing repeated conversions at a rate of CLKS		
-		*/
-		AD1CR |= (1<<16); //sets the AD converter to burst mode for repeated conversions
-		
-		
-		/* CLKDIV: bits 15:8 set the clock for the conversion. 
-	 	VPB clock (PCLK) is divided by this value plus 1. 
-		Total should be less than 4.5MHz. Value should be greater 
-		than 14 for a VPB clock of 60Mhz*/
-		AD1CR |= (20<<8); //sets a value of 20 into CLKDIV for a clock of 3MHz for conversions
-		
-		
-		
-		/* CLKS: bits 19:17, number of clocks used for each conversion in burst mode, 
-		000 11clks,10bits -- 111 4clks,3bits*/
-		//value 000 into CLKS for 11 clocks for 10 bits of resolution
-		AD1CR &= ~(1<<17);
-		AD1CR &= ~(1<<18);
-		AD1CR &= ~(1<<19);
-		
-		/* PDN: bit 21, set to enanble the ADC, clear to disable the ADC*/
-		AD1CR |= (1<<21); //sets bit 21 to turn on the ADC
-	}	
+	}
 }
 
 
@@ -207,10 +188,7 @@ portBASE_TYPE uxADCDone(enum ADCPort port )
 			return (unsigned portBASE_TYPE) ( AD0STAT & (1 << (uxADC_Channel) ) );
 
 			break;
-		case 1:
-			return (unsigned portBASE_TYPE) ( AD1STAT & (1 << (uxADC_Channel) ) );
 
-			break;
 		default:
 			return 0; // invalid port so return false
 
@@ -245,18 +223,7 @@ portLONG cADC_Result( enum ADCPort port )
 			return ulADCValue;
 
 			break;
-		case 1:
-			// 0xE0060010 is AD1DR0 register, this will add the channel number to point to the correct location for that channel
-			ulADCValue = (*((volatile unsigned long *) (0xE0060010 + (uxADC_Channel * 4))) );
 
-			if( !( ulADCValue & (1<<31) ) )
-				return(-1); // conversion not done return 0
-
-			ulADCValue &= ~(3<<30);  //bits 30 and 31 indicate overrun and done bits, but not useful to the caller.
-    		ulADCValue = (ulADCValue >> 6);
-			return ulADCValue;
-
-			break;
 	}
 	
 	return(-2);
@@ -276,16 +243,7 @@ portBASE_TYPE getPort(enum ADCPort port) {
 		case AD0_7:
 			return(0);
 			break;
-		case AD1_0:
-		case AD1_1:
-		case AD1_2:
-		case AD1_3:
-		case AD1_4:
-		case AD1_5:
-		case AD1_6:
-		case AD1_7:
-			return(1);
-			break;
+
 	}
 	return(0);
 }
@@ -293,28 +251,28 @@ portBASE_TYPE getPort(enum ADCPort port) {
 portBASE_TYPE getChannel(enum ADCPort port) {
 	switch(port) {
 		case AD0_0:
-		case AD1_0:
+		
 			return(0);
 		case AD0_1:
-		case AD1_1:
+		
 			return(1);
 		case AD0_2:
-		case AD1_2:
+		
 			return(2);
 		case AD0_3:
-		case AD1_3:
+		
 			return(3);
 		case AD0_4:
-		case AD1_4:
+		
 			return(4);
 		case AD0_5:
-		case AD1_5:
+		
 			return(5);
 		case AD0_6:
-		case AD1_6:
+		
 			return(6);
 		case AD0_7:
-		case AD1_7:
+		
 			return(7);
 	}
 	//ERROR

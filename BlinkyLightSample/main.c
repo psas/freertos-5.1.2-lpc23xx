@@ -50,9 +50,8 @@
 	licensing and training services.
 */
 
-/* Pick thy processor here!*/
-#define PROCESSOR_MODEL = LPC2378
-//#define PROCESSOR_MODEL = LPC2368
+
+
 
 /* Scheduler includes. */
 #include "FreeRTOS.h"
@@ -194,7 +193,7 @@ static void blinkyLightTask(void *pvParameters) {
 
 static void ADCtestTask(void *pvParameters) {
 	
-	//initFGPIOPin(PORT1, 19, FALSE);  Similar function from a similar location.  This one works if uncommented, the one below does not.  
+	//initFGPIOPin(PORT1, 19, FALSE);  //Similar function from a similar location.  This one works if uncommented, the one below does not.  
 	configureADCPort( AD0_0 );
 	
 }

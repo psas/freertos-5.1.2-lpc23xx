@@ -36,13 +36,20 @@
 //#include "helpers.h"  //is this needed?
 #include "gpio.h"
 
+#if (defined(PROCESSOR_MODEL_LPC2368) && defined(PROCESSOR_MODEL_LPC2378))
+#error "Both PROCESSOR_MODEL_LPC2368 and PROCESSOR_MODEL_LPC2378 are defined!  There can only be one!"
+#endif
 
+#if ( (!defined(PROCESSOR_MODEL_LPC2368)) && (!defined(PROCESSOR_MODEL_LPC2378)) )
+#error "Neither PROCESSOR_MODEL_LPC2368 or PROCESSOR_MODEL_LPC2378 are defined!  Specify the processor!"
+#endif
 
-#if PROCESSOR_MODEL == LPC2368
+#ifdef PROCESSOR_MODEL_LPC2368
 
 /*
  * This is used to initialize a GPIO pin as input or output.
  */
+
 void initFGPIOPin(enum PortNumber portNumber, portLONG ipNumber, enum BOOL input) {
 	
 	SCS |= 1;  //set to fast GPIO
@@ -152,11 +159,12 @@ void initFGPIOPin(enum PortNumber portNumber, portLONG ipNumber, enum BOOL input
 
 
 
-#elif PROCESSOR_MODEL == LPC2378
+#elif PROCESSOR_MODEL_LPC2378
 
 /*
  * This is used to initialize a GPIO pin as input or output.
  */
+
 void initFGPIOPin(enum PortNumber portNumber, portLONG ipNumber, enum BOOL input) {
 	if( portNumber == PORT0 ) {
 		
@@ -278,6 +286,8 @@ void initFGPIOPin(enum PortNumber portNumber, portLONG ipNumber, enum BOOL input
 		//FIXME error	
 	}	
 }
+
+
 
 #endif
 

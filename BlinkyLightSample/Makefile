@@ -61,7 +61,9 @@ CFLAGS= $(DEBUG) \
 		-D PACK_STRUCT_END=__attribute\(\(packed\)\) \
 		-D ALIGN_STRUCT_END=__attribute\(\(aligned\(4\)\)\) \
 		-fomit-frame-pointer \
-		-mthumb-interwork
+		-mthumb-interwork \
+		-D PROCESSOR_MODEL_LPC2378
+		
 										
 THUMB_SOURCE= \
 		main.c \

@@ -33,7 +33,8 @@
 */
 
 
-
+//should put a conditional here to ensure enum only allows the correct set 
+// of ports per processor type
 
 #ifndef ADC_H
 #define ADC_H
