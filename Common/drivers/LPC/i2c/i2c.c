@@ -37,27 +37,33 @@
 
 #include "i2c.h"
 
+//note that the enum I2Cchannel {I2C0=0, I2C1=1, I2C2=2}
+
 //Initialize specific I2C channel for master-only by enabling the I2C 
 //interrupt and then writing 0x40 to the correct I2CONSET
 //takes a string containing the I2C channel to be set up
-//it should probably take an enum, but I'm gonna set it up as a string
-//just for now...
-void I2Cinit(char *myI2Cchannel) {
-//enable the interrupt for the correct channel
+void I2Cinit(enum I2Cchannel myI2Cchannel) {
 
-//put 0x40 in the correct I2CONSET 
+	if (myI2Cchannel == I2C0 ) {
+		//enable the interrupt for the correct channel
+		//put 0x40 in the correct I2CONSET 
+	}
+	if (myI2Cchannel == I2C1 ) {
+		//enable the interrupt for the correct channel
+		//put 0x40 in the correct I2CONSET 	
+	}
+	if (myI2Cchannel == I2C2 ) {
+		//enable the interrupt for the correct channel
+		//put 0x40 in the correct I2CONSET 	
+	}
+	
+	
 
 }
 
-// SLAVE FUNCTIONALITY IS JUST A STUB FOR NOW
-//Initialize the specific I2C channel for master/slave by writing 
-//the new slave address to I2ADR, enabling the I2C interrupt, and 
-//then writing 0x44 to the correct I2CONSET
-//takes a string containing the I2C channel to be set up
-//it should probably take an enum, but I'm gonna set it up as a string
-//just for now...
-//takes an int containing the slave address the LPC214x should respond to
+
 /*SLAVE FUNCTIONALITY IS JUST A STUB FOR NOW
+//takes an int containing the slave address the LPC214x should respond to
 void initI2C(char *myI2Cchannel, int mySlaveAddress) {
 //Load mySlaveAddress to correct I2ADR (slave address register)
 //correct per channel given in myI2Cchannel
@@ -67,16 +73,16 @@ void initI2C(char *myI2Cchannel, int mySlaveAddress) {
 //put 0x44 in the correct I2CONSET
 
 }
-*/
+*/  //end SLAVE FUNCTIONALITY IS JUST A STUB FOR NOW
+
 
 //Master Transmit - Begin a master transmit by setting up the buffer,
 //pointer, and data count, then sending a START
 //takes a string containing the I2C channel to be set up
-//it should probably take an enum, but I'm gonna set it up as a string
-//just for now...
 //takes an int (should this be byte?) vector containing the data to send
 //takes an int containing the length of the vector (is this needed?)
-void I2CmasterTransmit(char *myI2Cchannel, int *myDataToSend, int dataLength) {
+void I2CmasterTransmit(enum I2Cchannel myI2Cchannel, int *myDataToSend, int dataLength) {
+
 
 //initialize master data counter
 
@@ -96,11 +102,9 @@ void I2CmasterTransmit(char *myI2Cchannel, int *myDataToSend, int dataLength) {
 //Master Recieve - Begin a master recieve by setting up the buffer,
 //pointer, and data count, then sending a START
 //takes a string containing the I2C channel to be set up
-//it should probably take an enum, but I'm gonna set it up as a string
-//just for now...
 //takes an int (should this be byte?) vector containing the data to recieve
 //takes a pointer to an int to contain the length of the received data (is this needed?)
-void I2CmasterRecieve(char *myI2Cchannel, int *myDataToSend, int *dataLength) {
+void I2CmasterRecieve(enum I2Cchannel myI2Cchannel, int *myDataToSend, int *dataLength) {
 
 //initialize master data counter
 
@@ -120,9 +124,7 @@ void I2CmasterRecieve(char *myI2Cchannel, int *myDataToSend, int *dataLength) {
 //This is to handle the state machine aspect of the I2C hardware.
 //It needs to be interrupt driven...  This seems uncomfortable...
 //It should take the I2C channel it's working on as an input.
-//it should probably take an enum, but I'm gonna set it up as a string
-//just for now...
-void i2cStateHandler(char *myI2Cchannel) {
+void i2cStateHandler(enum I2Cchannel myI2Cchannel) {
 
 //Read the I2C state from the correct I2STA register and then branch to
 //the corresponding state routine.
