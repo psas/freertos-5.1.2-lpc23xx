@@ -41,20 +41,27 @@
 
 //Initialize specific I2C channel for master-only by enabling the I2C 
 //interrupt and then writing 0x40 to the correct I2CONSET
-//takes a string containing the I2C channel to be set up
+//takes an enum containing the I2C channel to be set up
+//FIXME I feel like something is missing here.
 void I2Cinit(enum I2Cchannel myI2Cchannel) {
 
 	if (myI2Cchannel == I2C0 ) {
-		//enable the interrupt for the correct channel
+		//enable the interrupt for the correct channel (VICIntEnable BIT 9)
+		SET_BIT(VICIntEnable, 9);
 		//put 0x40 in the correct I2CONSET 
+		SET_BIT(I20CONSET, 6);
 	}
 	if (myI2Cchannel == I2C1 ) {
-		//enable the interrupt for the correct channel
-		//put 0x40 in the correct I2CONSET 	
+		//enable the interrupt for the correct channel (VICIntEnable BIT 19)
+		SET_BIT(VICIntEnable, 19);
+		//put 0x40 in the correct I2CONSET 
+		SET_BIT(I21CONSET, 6);
 	}
 	if (myI2Cchannel == I2C2 ) {
-		//enable the interrupt for the correct channel
-		//put 0x40 in the correct I2CONSET 	
+		//enable the interrupt for the correct channel (VICIntEnable BIT 30)
+		SET_BIT(VICIntEnable, 30);
+		//put 0x40 in the correct I2CONSET 
+		SET_BIT(I22CONSET, 6);	
 	}
 	
 	
@@ -85,6 +92,7 @@ void I2CmasterTransmit(enum I2Cchannel myI2Cchannel, int *myDataToSend, int data
 
 
 //initialize master data counter
+//this seems to only exist in the I2C software example, so I'm assuming it's just to be a logical construction
 
 //set up the Slave Address to transmit data to, and add the Write bit
 
@@ -107,6 +115,7 @@ void I2CmasterTransmit(enum I2Cchannel myI2Cchannel, int *myDataToSend, int data
 void I2CmasterRecieve(enum I2Cchannel myI2Cchannel, int *myDataToSend, int *dataLength) {
 
 //initialize master data counter
+//this seems to only exist in the I2C software example, so I'm assuming it's just to be a logical construction
 
 //set up the Slave Address from which to recieve data, and add the Read bit
 
@@ -146,6 +155,7 @@ void i2cStateHandler(enum I2Cchannel myI2Cchannel) {
 //set up the Master Transmit data buffer
 //set up the Master Recieve data buffer
 //initialize the Master data counter
+  //this seems to only exist in the I2C software example, so I'm assuming it's just to be a logical construction
 //exit
 
 
@@ -159,6 +169,7 @@ void i2cStateHandler(enum I2Cchannel myI2Cchannel) {
 //set up the Master Transmit data buffer
 //set up the Master Recieve data buffer
 //initialize the Master data counter
+  //this seems to only exist in the I2C software example, so I'm assuming it's just to be a logical construction
 //exit
 
 
