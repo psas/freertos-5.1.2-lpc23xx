@@ -39,6 +39,9 @@
 
 #include "FreeRTOS.h"
 
-enum I2Cchannel {I2C0=0, I2C1=1, I2C2=2};
+enum I2Cchannel {I2C0=0, I2C1, I2C2};
+
+void I2Cinit(enum I2Cchannel myI2Cchannel) ;
 
 #endif
+

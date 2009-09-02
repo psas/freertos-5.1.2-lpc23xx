@@ -3,7 +3,7 @@
 /*
 	i2c handling suite
 	Jeremy Booth
-	Portland State Aeronautical Society
+	Portland State Aerospace Society
 	http://psas.pdx.edu
 	
 
@@ -43,29 +43,63 @@
 //interrupt and then writing 0x40 to the correct I2CONSET
 //takes an enum containing the I2C channel to be set up
 //FIXME I feel like something is missing here.
-void I2Cinit(enum I2Cchannel myI2Cchannel) {
 
-	if (myI2Cchannel == I2C0 ) {
-		//enable the interrupt for the correct channel (VICIntEnable BIT 9)
-		SET_BIT(VICIntEnable, 9);
-		//put 0x40 in the correct I2CONSET 
-		SET_BIT(I20CONSET, 6);
-	}
-	if (myI2Cchannel == I2C1 ) {
-		//enable the interrupt for the correct channel (VICIntEnable BIT 19)
-		SET_BIT(VICIntEnable, 19);
-		//put 0x40 in the correct I2CONSET 
-		SET_BIT(I21CONSET, 6);
-	}
-	if (myI2Cchannel == I2C2 ) {
-		//enable the interrupt for the correct channel (VICIntEnable BIT 30)
-		SET_BIT(VICIntEnable, 30);
-		//put 0x40 in the correct I2CONSET 
-		SET_BIT(I22CONSET, 6);	
-	}
-	
-	
+// 1. Turn on the power to the channel
+// 2. Configure the clock for the channel
+//
+// 3. Set I/O pins to correct mode
+//
+// 4. Configure interrupt in VIRC
+//
+// 5. Continue initializing
+void I2Cinit(I2Cchannel channel) {
 
+// VIC table page 94 lpc23xx manual
+#define VICI2C0EN     9
+#define VICI2C1EN     19
+#define VICI2C2EN     30
+
+    // I2C 
+#define I2EN          6
+
+    // PCONP
+#define PCI2C0        7
+#define PCI2C1        19
+#define PCI2C2        26
+
+    // I2C clock
+    // Table 446 p516 lpc23xx
+#define I2SCLHIGH     80
+#define I2SCLLOW      80
+
+    switch(channel) {
+        case I2C0: 
+            // power
+            // enable the power then check that it is enabled
+		SET_BIT(PCONP, PCI2C0);
+                I2C0SCLL = I2SCLLOW;
+                I2C0SCLH = I2SCLHIGH;
+		SET_BIT(VICIntEnable, VICI2C0EN);
+		SET_BIT(I20CONSET,    I2EN    );
+                break;
+        case I2C1: 
+		SET_BIT(PCONP, PCI2C1);
+                I2C1SCLL = I2SCLLOW;
+                I2C1SCLH = I2SCLHIGH;
+		SET_BIT(VICIntEnable, VICI2C1EN);
+		SET_BIT(I21CONSET,    I2EN    );
+                break;
+        case I2C2: 
+		SET_BIT(PCONP, PCI2C2);
+                I2C2SCLL = I2SCLLOW;
+                I2C2SCLH = I2SCLHIGH;
+		SET_BIT(VICIntEnable, VICI2C2EN);
+		SET_BIT(I22CONSET,    I2EN    );
+                break;
+        default:
+                //  error         ???
+                break;
+    }
 }
 
 
