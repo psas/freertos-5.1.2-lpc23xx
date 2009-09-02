@@ -1,4 +1,3 @@
- 
 
 /*
 	i2c handling suite
@@ -44,8 +43,9 @@
 #define VICI2C1EN     19
 #define VICI2C2EN     30
 
-    // I2C 
+    // I2CnCONSET
 #define I2EN          6
+#define AA            2
 
     // PCONP
 #define PCI2C0        7
@@ -64,6 +64,8 @@
 #define SCL2          0x2<<20
 #define SCL2MASK      ~(0x3<<22)
 
+#define PULLUP        0x0
+
     // PINSEL1
     //
 #define SDA1          (0x3<<6)
@@ -77,11 +79,14 @@
 
 #define SCL0          0x1<<24
 #define SCL0MASK      ~(0x3<<24)
-
  
-enum I2Cchannel {I2C0=0, I2C1, I2C2};
+typedef enum { I2C0=0, I2C1, I2C2} i2c_iface;
 
-void I2Cinit(enum I2Cchannel myI2Cchannel) ;
+void i2c0_isr(void) __attribute__ ((interrupt("IRQ")));
+void i2c1_isr(void) __attribute__ ((interrupt("IRQ")));
+void i2c2_isr(void) __attribute__ ((interrupt("IRQ")));
+
+void i2cinit(i2c_iface channel) ;
 
 #endif
 

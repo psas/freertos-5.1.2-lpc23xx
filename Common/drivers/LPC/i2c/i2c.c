@@ -37,40 +37,51 @@
 
 #include "i2c.h"
 
-// 1. Turn on the power to the channel
-// 2. Configure the clock for the channel
-// 3. Set I/O pins to correct mode
-// 4. Configure interrupt in VIRC
-// 5. Continue initializing
-void I2Cinit(I2Cchannel channel) {
+/*
+ * i2cinit
+ *
+ * 1. Turn on the power to the channel
+ * 2. Configure the clock for the channel
+ * 3. Set I/O pins to correct mode
+ * 4. Configure interrupt in VIC
+ * 5. Continue initializing...tbd
+ */
+void i2cinit(i2c_iface channel) {
     switch(channel) {
-        set up VIC p93 table 86
         case I2C0: 
             // power
             SET_BIT(PCONP, PCI2C0);
 
             // Enable
-            SET_BIT(I20CONSET,    I2EN    );
+            SET_BIT(I2C0CONSET, I2EN ); // master mode
+            ZERO_BIT(I2C0CONSET, AA );
 
             // i2c clock
             I2C0SCLL = I2SCLLOW;
             I2C0SCLH = I2SCLHIGH;
 
-            //2368 is 100pin package use table 107 p 158
-            // pins
+            // 2368 is 100pin package use table 107 p158 lpc23xx usermanual
             PINSEL1 &= SDA0MASK;
             PINSEL1 |= SDA0;
             PINSEL1 &= SCL0MASK;
             PINSEL1 |= SCL0;
 
+            // pinmode: I2C0 pins permanent open drain (pullup)
+            // reference: lpc23xx usermanual p158 table 107 footnote 2
+              
             // vic
+            // set up VIC p93 table 86 lpc23xx user manual
             SET_BIT(VICIntEnable, VICI2C0EN);
-            channel 9 
+            VICVectAddr9 = (unsigned) i2c0_isr;
+
+            // continue initializing...? stopped here on Wed 02 September 2009 11:04:10 (PDT)
+            //
             break;
         case I2C1: 
             SET_BIT(PCONP, PCI2C1);
 
-            SET_BIT(I21CONSET, I2EN );
+            SET_BIT(I2C1CONSET, I2EN );
+            ZERO_BIT(I2C1CONSET, AA );
 
             I2C1SCLL = I2SCLLOW;
             I2C1SCLH = I2SCLHIGH;
@@ -80,12 +91,19 @@ void I2Cinit(I2Cchannel channel) {
             PINSEL1 &= SCL1MASK;
             PINSEL1 |= SCL1;
 
+            PINMODE1 &= SDA1MASK;
+            PINMODE1 |= PULLUP;
+            PINMODE1 &= SCL1MASK;
+            PINMODE1 |= PULLUP;
+
             SET_BIT(VICIntEnable, VICI2C1EN);
+            VICVectAddr19 = (unsigned) i2c1_isr;
             break;
         case I2C2: 
             SET_BIT(PCONP, PCI2C2);
 
-            SET_BIT(I22CONSET, I2EN );
+            SET_BIT(I2C2CONSET, I2EN );
+            ZERO_BIT(I2C2CONSET, AA );
 
             I2C2SCLL = I2SCLLOW;
             I2C2SCLH = I2SCLHIGH;
@@ -95,7 +113,13 @@ void I2Cinit(I2Cchannel channel) {
             PINSEL0 &= SCL2MASK;
             PINSEL0 |= SCL2;
 
+            PINMODE2 &= SDA2MASK;
+            PINMODE2 |= PULLUP;
+            PINMODE2 &= SCL2MASK;
+            PINMODE2 |= PULLUP;
+
             SET_BIT(VICIntEnable, VICI2C2EN);
+            VICVectAddr30 = (unsigned) i2c2_isr;
             break;
         default:
             //  error         ???
@@ -103,6 +127,26 @@ void I2Cinit(I2Cchannel channel) {
     }
 }
 
+/*
+ * i2c0_isr
+ */
+void i2c0_isr(void) {
+    // not implemented
+}
+
+/*
+ * i2c1_isr
+ */
+void i2c1_isr(void) {
+    // not implemented
+}
+
+/*
+ * i2c2_isr
+ */
+void i2c2_isr(void) {
+    // not implemented
+}
 
 /*SLAVE FUNCTIONALITY IS JUST A STUB FOR NOW
 //takes an int containing the slave address the LPC214x should respond to
