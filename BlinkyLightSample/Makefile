@@ -61,7 +61,9 @@ CFLAGS= $(DEBUG) \
 		-D PACK_STRUCT_END=__attribute\(\(packed\)\) \
 		-D ALIGN_STRUCT_END=__attribute\(\(aligned\(4\)\)\) \
 		-fomit-frame-pointer \
-		-mthumb-interwork
+		-mthumb-interwork \
+		-D PROCESSOR_MODEL_LPC2378
+		
 										
 THUMB_SOURCE= \
 		main.c \
@@ -86,6 +88,8 @@ ARM_SOURCE= \
 		../Common/drivers/LPC/printf/uart0PutChar2.c \
 		../Common/drivers/LPC/printf/printf2.c \
 		../Common/drivers/LPC/printf/printfHelpers.c \
+		../Common/drivers/LPC/gpio/gpio.c \
+		../Common/drivers/LPC/adc/adc.c \
 		$(RTOS_SOURCE_DIR)/portable/GCC/ARM7_LPC23xx/portISR.c \
 		$(LPCUSB_COMMON_DIR)/usbcontrol.c \
 		$(LPCUSB_COMMON_DIR)/usbhw_lpc.c \
