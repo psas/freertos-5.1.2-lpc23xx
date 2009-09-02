@@ -37,68 +37,69 @@
 
 #include "i2c.h"
 
-//note that the enum I2Cchannel {I2C0=0, I2C1=1, I2C2=2}
-
-//Initialize specific I2C channel for master-only by enabling the I2C 
-//interrupt and then writing 0x40 to the correct I2CONSET
-//takes an enum containing the I2C channel to be set up
-//FIXME I feel like something is missing here.
-
 // 1. Turn on the power to the channel
 // 2. Configure the clock for the channel
-//
 // 3. Set I/O pins to correct mode
-//
 // 4. Configure interrupt in VIRC
-//
 // 5. Continue initializing
 void I2Cinit(I2Cchannel channel) {
-
-// VIC table page 94 lpc23xx manual
-#define VICI2C0EN     9
-#define VICI2C1EN     19
-#define VICI2C2EN     30
-
-    // I2C 
-#define I2EN          6
-
-    // PCONP
-#define PCI2C0        7
-#define PCI2C1        19
-#define PCI2C2        26
-
-    // I2C clock
-    // Table 446 p516 lpc23xx
-#define I2SCLHIGH     80
-#define I2SCLLOW      80
-
     switch(channel) {
+        set up VIC p93 table 86
         case I2C0: 
             // power
-            // enable the power then check that it is enabled
-		SET_BIT(PCONP, PCI2C0);
-                I2C0SCLL = I2SCLLOW;
-                I2C0SCLH = I2SCLHIGH;
-		SET_BIT(VICIntEnable, VICI2C0EN);
-		SET_BIT(I20CONSET,    I2EN    );
-                break;
+            SET_BIT(PCONP, PCI2C0);
+
+            // Enable
+            SET_BIT(I20CONSET,    I2EN    );
+
+            // i2c clock
+            I2C0SCLL = I2SCLLOW;
+            I2C0SCLH = I2SCLHIGH;
+
+            //2368 is 100pin package use table 107 p 158
+            // pins
+            PINSEL1 &= SDA0MASK;
+            PINSEL1 |= SDA0;
+            PINSEL1 &= SCL0MASK;
+            PINSEL1 |= SCL0;
+
+            // vic
+            SET_BIT(VICIntEnable, VICI2C0EN);
+            channel 9 
+            break;
         case I2C1: 
-		SET_BIT(PCONP, PCI2C1);
-                I2C1SCLL = I2SCLLOW;
-                I2C1SCLH = I2SCLHIGH;
-		SET_BIT(VICIntEnable, VICI2C1EN);
-		SET_BIT(I21CONSET,    I2EN    );
-                break;
+            SET_BIT(PCONP, PCI2C1);
+
+            SET_BIT(I21CONSET, I2EN );
+
+            I2C1SCLL = I2SCLLOW;
+            I2C1SCLH = I2SCLHIGH;
+
+            PINSEL1 &= SDA1MASK;
+            PINSEL1 |= SDA1;
+            PINSEL1 &= SCL1MASK;
+            PINSEL1 |= SCL1;
+
+            SET_BIT(VICIntEnable, VICI2C1EN);
+            break;
         case I2C2: 
-		SET_BIT(PCONP, PCI2C2);
-                I2C2SCLL = I2SCLLOW;
-                I2C2SCLH = I2SCLHIGH;
-		SET_BIT(VICIntEnable, VICI2C2EN);
-		SET_BIT(I22CONSET,    I2EN    );
-                break;
+            SET_BIT(PCONP, PCI2C2);
+
+            SET_BIT(I22CONSET, I2EN );
+
+            I2C2SCLL = I2SCLLOW;
+            I2C2SCLH = I2SCLHIGH;
+
+            PINSEL0 &= SDA2MASK;
+            PINSEL0 |= SDA2;
+            PINSEL0 &= SCL2MASK;
+            PINSEL0 |= SCL2;
+
+            SET_BIT(VICIntEnable, VICI2C2EN);
+            break;
         default:
-                //  error         ???
-                break;
+            //  error         ???
+            break;
     }
 }
 
