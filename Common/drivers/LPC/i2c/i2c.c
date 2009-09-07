@@ -37,6 +37,21 @@
 
 #include "i2c.h"
 
+int i2c0TxSlaveAddress = 0; //Slave the bus is currently talking to.  NOT the slave address of the LPC23xx device!!!
+int i2c0TransmitData [127];  //data to transmit buffer
+int i2c0ReceiveData [127];  //data to receive buffer
+int i2c0DataCounter = 0;
+
+int i2c1TxSlaveAddress = 0; //Slave the bus is currently talking to.  NOT the slave address of the LPC23xx device!!!
+int i2c1TransmitData [127];  //data to transmit buffer
+int i2c1ReceiveData [127];  //data to receive buffer
+int i2c1DataCounter = 0;
+
+int i2c2TxSlaveAddress = 0; //Slave the bus is currently talking to.  NOT the slave address of the LPC23xx device!!!
+int i2c2TransmitData [127];  //data to transmit buffer
+int i2c2ReceiveData [127];  //data to receive buffer
+int i2c2DataCounter = 0;
+
 /*
  * i2cinit
  *
@@ -132,6 +147,145 @@ void i2cinit(i2c_iface channel) {
  */
 void i2c0_isr(void) {
     // not implemented
+
+//Read the I2C state from the correct I2STA register and then branch to
+//the corresponding state routine.
+    switch(I2C0STAT) {
+
+//State 0x00 - Bus Error
+        case 0x00:
+            //write 0x14 to I2CONSET to set the STO and AA flags.
+            I2C0CONSET &= 0x14;
+            //write 0x08 to IXCONCLR to clear the SI flag.
+            I2C0CONCLR &= 0x08;
+            //should we log anything?
+            break;
+
+
+
+
+//State 0X08 - A start condition has been transmitted, The Slave Address 
+//and Read or Write bit will be transmitted.  An ACK bit will be received.
+        case 0x08:
+            //write the Slave Address with R/W bit to I2DAT
+            
+            //write 0x04 to I2CONSET to set the AA bit
+            //write 0x08 to I2CONCLR to clear the SI flag
+            //set up the Master Transmit data buffer
+            //set up the Master Recieve data buffer
+            //initialize the Master data counter
+              //this seems to only exist in the I2C software example, so I'm assuming it's just to be a logical construction
+            //exit
+
+
+//State 0x10 - A repeated start condition has been transmitted.  The Slave
+//Address and Read or Write bit will be transmitted.  An ACK bit will be 
+//received
+
+//write the Slave Address with R/W bit to I2DAT
+//write 0x04 to I2CONSET to set the AA bit
+//write 0x08 to I2CONCLR to clear the SI flag
+//set up the Master Transmit data buffer
+//set up the Master Recieve data buffer
+//initialize the Master data counter
+  //this seems to only exist in the I2C software example, so I'm assuming it's just to be a logical construction
+//exit
+
+
+//State 0x18 - Previous state was 0x08 or 0x10.  Slave Address and Read or 
+//Write has been transmitted.  An ACK has been received. The first data byte 
+//will be transmitted, an ACK bit will be received.
+
+//Load I2DAT with first data byte from Master Transmit buffer.
+//Write 0x04 to I2CONSET to set the AA bit.
+//Write 0x08 to I2CONCLR to clear the SI flag.
+//Increment Master Transmit buffer pointer.
+//Exit
+
+
+//State 0x20 - Slave Address + Write has been transmitted.  NOT ACK has been 
+//received. A Stop condition will be transmitted.
+
+//Write 0x14 to I2CONSET to set the STO and AA bits.
+//Write 0x08 to I2CONCLR to clear the SI flag.
+//Exit
+
+
+//State 0x28 - Data has been transmitted, ACK has been received. If the 
+//transmitted data was the last data byte then transmit a Stop condition, 
+//otherwise transmit the next data byte.
+
+//Decrement the Master data counter, skip to NOT_LAST_BYTE if not the last data byte.
+//Write 0x14 to I2CONSET to set the STO and AA bits.
+//Write 0x08 to I2CONCLR to clear the SI flag.
+//Exit
+//NOT_LAST_BYTE:
+//Load I2DAT with next data byte from Master Transmit buffer.
+//Write 0x04 to I2CONSET to set the AA bit.
+//Write 0x08 to I2CONCLR to clear the SI flag.
+//Increment Master Transmit buffer pointer
+//Exit
+
+
+//State 0x30 - Data has been transmitted, NOT ACK received. A Stop condition 
+//will be transmitted.
+
+//Write 0x14 to I2CONSET to set the STO and AA bits.
+//Write 0x08 to I2CONCLR to clear the SI flag.
+//Exit
+
+
+//State 0x38 - Arbitration has been lost during Slave Address + Write or data. 
+//The bus has been released and not addressed Slave mode is entered. A new Start 
+//condition will be transmitted when the bus is free again.
+
+//Write 0x24 to I2CONSET to set the STA and AA bits.
+//Write 0x08 to I2CONCLR to clear the SI flag.
+//Exit
+
+
+//State 0x40
+//Previous state was State 08 or State 10. Slave Address + Read has been transmitted,
+//ACK has been received. Data will be received and ACK returned.
+
+//Write 0x04 to I2CONSET to set the AA bit.
+//Write 0x08 to I2CONCLR to clear the SI flag.
+//Exit
+
+
+//State 0x48 - Slave Address + Read has been transmitted, NOT ACK has been received. 
+//A Stop condition will be transmitted.
+
+//Write 0x14 to I2CONSET to set the STO and AA bits.
+//Write 0x08 to I2CONCLR to clear the SI flag.
+//Exit
+
+
+//State: 0x50 - Data has been received, ACK has been returned. Data will be read 
+//from I2DAT. Additional data will be received. If this is the last data byte then 
+//NOT ACK will be returned, otherwise ACK will be returned.
+
+//Read data byte from I2DAT into Master Receive buffer.
+//Decrement the Master data counter, skip to NOT_LAST_BYTE if not the last data byte.
+//Write 0x0C to I2CONCLR to clear the SI flag and the AA bit.
+//Exit
+//NOT_LAST_BYTE:
+//Write 0x04 to I2CONSET to set the AA bit.
+//Write 0x08 to I2CONCLR to clear the SI flag.
+//Increment Master Receive buffer pointer
+//Exit
+
+
+//State: 0x58 - Data has been received, NOT ACK has been returned. Data will be read 
+//from I2DAT. A Stop condition will be transmitted.
+
+//Read data byte from I2DAT into Master Receive buffer.
+//Write 0x14 to I2CONSET to set the STO and AA bits.
+//Write 0x08 to I2CONCLR to clear the SI flag.
+//Exit
+
+
+
 }
 
 /*
@@ -213,6 +367,7 @@ void I2CmasterRecieve(enum I2Cchannel myI2Cchannel, int *myDataToSend, int *data
 //It needs to be interrupt driven...  This seems uncomfortable...
 //It should take the I2C channel it's working on as an input.
 void i2cStateHandler(enum I2Cchannel myI2Cchannel) {
+//this is moving to the ISR funciton.
 
 //Read the I2C state from the correct I2STA register and then branch to
 //the corresponding state routine.

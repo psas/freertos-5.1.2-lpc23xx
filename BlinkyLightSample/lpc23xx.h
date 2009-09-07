@@ -726,6 +726,14 @@ Reset, and Code Security/Debugging */
 #define I21SCLH        (*(volatile unsigned int *)(I2C1_BASE_ADDR + 0x10))
 #define I21SCLL        (*(volatile unsigned int *)(I2C1_BASE_ADDR + 0x14))
 #define I21CONCLR      (*(volatile unsigned int *)(I2C1_BASE_ADDR + 0x18))
+//Slightly different naming
+#define I2C1CONSET      (*(volatile unsigned int *)(I2C1_BASE_ADDR + 0x00))
+#define I2C1STAT        (*(volatile unsigned int *)(I2C1_BASE_ADDR + 0x04))
+#define I2C1DAT         (*(volatile unsigned int *)(I2C1_BASE_ADDR + 0x08))
+#define I2C1ADR         (*(volatile unsigned int *)(I2C1_BASE_ADDR + 0x0C))
+#define I2C1SCLH        (*(volatile unsigned int *)(I2C1_BASE_ADDR + 0x10))
+#define I2C1SCLL        (*(volatile unsigned int *)(I2C1_BASE_ADDR + 0x14))
+#define I2C1CONCLR      (*(volatile unsigned int *)(I2C1_BASE_ADDR + 0x18))
 
 /* I2C Interface 2 */
 #define I2C2_BASE_ADDR		0xE0080000
@@ -736,6 +744,15 @@ Reset, and Code Security/Debugging */
 #define I22SCLH        (*(volatile unsigned int *)(I2C2_BASE_ADDR + 0x10))
 #define I22SCLL        (*(volatile unsigned int *)(I2C2_BASE_ADDR + 0x14))
 #define I22CONCLR      (*(volatile unsigned int *)(I2C2_BASE_ADDR + 0x18))
+//Slightly different naming
+#define I2C2CONSET      (*(volatile unsigned int *)(I2C2_BASE_ADDR + 0x00))
+#define I2C2STAT        (*(volatile unsigned int *)(I2C2_BASE_ADDR + 0x04))
+#define I2C2DAT         (*(volatile unsigned int *)(I2C2_BASE_ADDR + 0x08))
+#define I2C2ADR         (*(volatile unsigned int *)(I2C2_BASE_ADDR + 0x0C))
+#define I2C2SCLH        (*(volatile unsigned int *)(I2C2_BASE_ADDR + 0x10))
+#define I2C2SCLL        (*(volatile unsigned int *)(I2C2_BASE_ADDR + 0x14))
+#define I2C2CONCLR      (*(volatile unsigned int *)(I2C2_BASE_ADDR + 0x18))
+
 
 /* SPI0 (Serial Peripheral Interface 0) */
 #define SPI0_BASE_ADDR		0xE0020000
