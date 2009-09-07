@@ -44,8 +44,11 @@
 #define VICI2C2EN     30
 
     // I2CnCONSET
-#define I2EN          6
 #define AA            2
+#define SI            3
+#define STO           4
+#define STA           5
+#define I2EN          6
 
     // PCONP
 #define PCI2C0        7
@@ -80,6 +83,12 @@
 #define SCL0          0x1<<24
 #define SCL0MASK      ~(0x3<<24)
  
+
+// Control
+#define WRITEMASK         ~(0x1<<8)
+#define READMASK           (0x1<<8) 
+
+
 typedef enum { I2C0=0, I2C1, I2C2} i2c_iface;
 
 void i2c0_isr(void) __attribute__ ((interrupt("IRQ")));

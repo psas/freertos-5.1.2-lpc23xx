@@ -40,8 +40,10 @@
 int i2c0TxSlaveAddress = 0; //Slave the bus is currently talking to.  NOT the slave address of the LPC23xx device!!!
 int i2c0TransmitData [127];  //data to transmit buffer
 int i2c0ReceiveData [127];  //data to receive buffer
-int i2c0DataCounter = 0;
+int i2c0DataCounter = 0;    // bytes sent
+int i2c0DataLength  = 0;    // total bytes to send
 
+i
 int i2c1TxSlaveAddress = 0; //Slave the bus is currently talking to.  NOT the slave address of the LPC23xx device!!!
 int i2c1TransmitData [127];  //data to transmit buffer
 int i2c1ReceiveData [127];  //data to receive buffer
@@ -146,86 +148,89 @@ void i2cinit(i2c_iface channel) {
  * i2c0_isr
  */
 void i2c0_isr(void) {
-    // not implemented
+    uint32_t status;
 
-//Read the I2C state from the correct I2STA register and then branch to
-//the corresponding state routine.
-    switch(I2C0STAT) {
+    status = I2C0STAT;
 
-//State 0x00 - Bus Error
+    //Read the I2C state from the correct I2STA register and then branch to
+    //the corresponding state routine.
+    switch(status) {
+
+        //State 0x00 - Bus Error
         case 0x00:
             //write 0x14 to I2CONSET to set the STO and AA flags.
-            I2C0CONSET &= 0x14;
+            SET_BIT(I2C0CONCLR, STO);
+            SET_BIT(I2C0CONCLR, AA);
+            // DBG("Clearing flags");
             //write 0x08 to IXCONCLR to clear the SI flag.
-            I2C0CONCLR &= 0x08;
+            SET_BIT(I2C0CONCLR, SI);
             //should we log anything?
             break;
 
-
-
-
-//State 0X08 - A start condition has been transmitted, The Slave Address 
-//and Read or Write bit will be transmitted.  An ACK bit will be received.
+        //State 0X08 - A start condition has been transmitted, The Slave Address 
+        //and Read or Write bit will be transmitted.  An ACK bit will be received.
         case 0x08:
             //write the Slave Address with R/W bit to I2DAT
-            
+             I2C0DAT = i2c0TxSlaveAddress
+
             //write 0x04 to I2CONSET to set the AA bit
+            SET_BIT(I2C0CONSET,AA);
+
             //write 0x08 to I2CONCLR to clear the SI flag
-            //set up the Master Transmit data buffer
-            //set up the Master Recieve data buffer
-            //initialize the Master data counter
-              //this seems to only exist in the I2C software example, so I'm assuming it's just to be a logical construction
-            //exit
+            SET_BIT(I2C0CONCLR, SI);
+            break;
 
 
-//State 0x10 - A repeated start condition has been transmitted.  The Slave
-//Address and Read or Write bit will be transmitted.  An ACK bit will be 
-//received
+         //State 0x10 - A repeated start condition has been transmitted.  The Slave
+         //Address and Read or Write bit will be transmitted.  An ACK bit will be 
+         //received
+        case 0x10:
+             //write the Slave Address with R/W bit to I2DAT
+             I2C0DAT = i2c0TxSlaveAddress
 
-//write the Slave Address with R/W bit to I2DAT
-//write 0x04 to I2CONSET to set the AA bit
-//write 0x08 to I2CONCLR to clear the SI flag
-//set up the Master Transmit data buffer
-//set up the Master Recieve data buffer
-//initialize the Master data counter
-  //this seems to only exist in the I2C software example, so I'm assuming it's just to be a logical construction
-//exit
+            //write 0x04 to I2CONSET to set the AA bit
+            SET_BIT(I2C0CONSET,AA);
 
+            //write 0x08 to I2CONCLR to clear the SI flag
+            SET_BIT(I2C0CONCLR, SI);
+            break;
 
-//State 0x18 - Previous state was 0x08 or 0x10.  Slave Address and Read or 
-//Write has been transmitted.  An ACK has been received. The first data byte 
-//will be transmitted, an ACK bit will be received.
+        //State 0x18 - Previous state was 0x08 or 0x10.  Slave Address and Read or 
+        //Write has been transmitted.  An ACK has been received. The first data byte 
+        //will be transmitted, an ACK bit will be received.
+        case 0x18:
+            if(i2c0DataCounter < i2c0DataLength) {
+                I2C0DAT = i2cTransmitData[i2c0DataCounter];
+                SET_BIT(I2C0CONSET,AA);
+                i2c0DataCounter++;
+            }
+            SET_BIT(I2C0CONCLR, SI);
+            break;
 
-//Load I2DAT with first data byte from Master Transmit buffer.
-//Write 0x04 to I2CONSET to set the AA bit.
-//Write 0x08 to I2CONCLR to clear the SI flag.
-//Increment Master Transmit buffer pointer.
-//Exit
+        //State 0x20 - Slave Address + Write has been transmitted.  NOT ACK has been 
+        //received. A Stop condition will be transmitted.
+        case 0x20:
+            SET_BIT(I2C0CONSET, STO);
+            SET_BIT(I2C0CONSET, AA);
+            SET_BIT(I2C0CONCLR, SI);
+            break;
 
-
-//State 0x20 - Slave Address + Write has been transmitted.  NOT ACK has been 
-//received. A Stop condition will be transmitted.
-
-//Write 0x14 to I2CONSET to set the STO and AA bits.
-//Write 0x08 to I2CONCLR to clear the SI flag.
-//Exit
-
-
-//State 0x28 - Data has been transmitted, ACK has been received. If the 
-//transmitted data was the last data byte then transmit a Stop condition, 
-//otherwise transmit the next data byte.
-
-//Decrement the Master data counter, skip to NOT_LAST_BYTE if not the last data byte.
-//Write 0x14 to I2CONSET to set the STO and AA bits.
-//Write 0x08 to I2CONCLR to clear the SI flag.
-//Exit
-//NOT_LAST_BYTE:
-//Load I2DAT with next data byte from Master Transmit buffer.
-//Write 0x04 to I2CONSET to set the AA bit.
-//Write 0x08 to I2CONCLR to clear the SI flag.
-//Increment Master Transmit buffer pointer
-//Exit
-
+        //State 0x28 - Data has been transmitted, ACK has been received. If the 
+        //transmitted data was the last data byte then transmit a Stop condition, 
+        //otherwise transmit the next data byte.
+        case 0x28:
+            if(i2c0DataCounter == i2c0DataLength) {
+                SET_BIT(I2C0CONSET, STO);
+                SET_BIT(I2C0CONSET, AA);
+            } else {
+                if(i2c0DataCounter < i2c0DataLength) {
+                    I2C0DAT = i2cTransmitData[i2c0DataCounter];
+                    SET_BIT(I2C0CONSET,AA);
+                    i2c0DataCounter++;
+                }
+            }
+            SET_BIT(I2C0CONCLR, SI);
+            break;
 
 //State 0x30 - Data has been transmitted, NOT ACK received. A Stop condition 
 //will be transmitted.
@@ -316,27 +321,32 @@ void initI2C(char *myI2Cchannel, int mySlaveAddress) {
 */  //end SLAVE FUNCTIONALITY IS JUST A STUB FOR NOW
 
 
-//Master Transmit - Begin a master transmit by setting up the buffer,
-//pointer, and data count, then sending a START
-//takes a string containing the I2C channel to be set up
-//takes an int (should this be byte?) vector containing the data to send
-//takes an int containing the length of the vector (is this needed?)
-void I2CmasterTransmit(enum I2Cchannel myI2Cchannel, int *myDataToSend, int dataLength) {
+/*
+ * I2CMasterTX
+ * Master Transmit - Begin a master transmit by setting up the buffer,
+ * pointer, and data count, then sending a START
+ * takes a string containing the I2C channel to be set up
+ * takes an int (should this be byte?) vector containing the data to send
+ * takes an int containing the length of the vector (is this needed?)
+ */
+void I2CMasterTX(enum I2Cchannel myI2Cchannel, int deviceAddr; int *myDataToSend, int dataLength) {
 
+    uint32_t i,j;
 
-//initialize master data counter
-//this seems to only exist in the I2C software example, so I'm assuming it's just to be a logical construction
+    //set up the data to be transmitted in the Master Transmit buffer
+    for(i=0; i<dataLength; i++) {
+        i2c0TransmitData[i] = myDataToSent[i];
+    }
 
-//set up the Slave Address to transmit data to, and add the Write bit
+    //initialize master data counter
+    i2c0DataCounter = dataLength;
 
-//write 0x20 to I2CONSET to set the STA bit
+    //set up the Slave Address to transmit data to, and add the Write bit
+    i2c0TxSlaveAddress = deviceAddr;
+    i2c0TxSlaveAddress &= WRITEMASK;
 
-//set up the data to be transmitted in the Master Transmit buffer
-
-//initialize the Master data counter to match the length of the data being
-//sent (why are we initializing this twice???)
-
-//exit/return
+    //write 0x20 to I2CONSET to set the STA bit
+    SET_BIT(I2C0CONSET, STA);
 
 } 
 
@@ -347,6 +357,7 @@ void I2CmasterTransmit(enum I2Cchannel myI2Cchannel, int *myDataToSend, int data
 //takes a pointer to an int to contain the length of the received data (is this needed?)
 void I2CmasterRecieve(enum I2Cchannel myI2Cchannel, int *myDataToSend, int *dataLength) {
 
+i2c0TxSlaveAddres |= READMASK;
 //initialize master data counter
 //this seems to only exist in the I2C software example, so I'm assuming it's just to be a logical construction
 
