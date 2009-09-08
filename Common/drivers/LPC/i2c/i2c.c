@@ -37,19 +37,19 @@
 
 #include "i2c.h"
 
-int i2c0TxSlaveAddress = 0; //Slave the bus is currently talking to.  NOT the slave address of the LPC23xx device!!!
+int I2C0ExtSlaveAddress = 0; //Slave the bus is currently talking to.  NOT the slave address of the LPC23xx device!!!
 int i2c0TransmitData [127];  //data to transmit buffer
 int i2c0ReceiveData [127];  //data to receive buffer
 int i2c0DataCounter = 0;    // bytes sent
 int i2c0DataLength  = 0;    // total bytes to send
 
 i
-int i2c1TxSlaveAddress = 0; //Slave the bus is currently talking to.  NOT the slave address of the LPC23xx device!!!
+int i2c1SlaveAddress = 0; //Slave the bus is currently talking to.  NOT the slave address of the LPC23xx device!!!
 int i2c1TransmitData [127];  //data to transmit buffer
 int i2c1ReceiveData [127];  //data to receive buffer
 int i2c1DataCounter = 0;
 
-int i2c2TxSlaveAddress = 0; //Slave the bus is currently talking to.  NOT the slave address of the LPC23xx device!!!
+int i2c2SlaveAddress = 0; //Slave the bus is currently talking to.  NOT the slave address of the LPC23xx device!!!
 int i2c2TransmitData [127];  //data to transmit buffer
 int i2c2ReceiveData [127];  //data to receive buffer
 int i2c2DataCounter = 0;
@@ -144,11 +144,13 @@ void i2cinit(i2c_iface channel) {
     }
 }
 
+    //DBG("z%d", b1);
 /*
  * i2c0_isr
  */
 void i2c0_isr(void) {
     uint32_t status;
+    uint8_t  holdbyte;
 
     status = I2C0STAT;
 
@@ -158,6 +160,7 @@ void i2c0_isr(void) {
 
         //State 0x00 - Bus Error
         case 0x00:
+            DBG("\tI2C0 State 0x00...\n");
             //write 0x14 to I2CONSET to set the STO and AA flags.
             SET_BIT(I2C0CONCLR, STO);
             SET_BIT(I2C0CONCLR, AA);
@@ -167,38 +170,41 @@ void i2c0_isr(void) {
             //should we log anything?
             break;
 
-        //State 0X08 - A start condition has been transmitted, The Slave Address 
-        //and Read or Write bit will be transmitted.  An ACK bit will be received.
+            //State 0X08 - A start condition has been transmitted, The Slave Address 
+            //and Read or Write bit will be transmitted.  An ACK bit will be received.
         case 0x08:
+            DBG("\tI2C0 State 0x08...\n");
             //write the Slave Address with R/W bit to I2DAT
-             I2C0DAT = i2c0TxSlaveAddress
+            I2C0DAT = I2C0ExtSlaveAddress
 
-            //write 0x04 to I2CONSET to set the AA bit
-            SET_BIT(I2C0CONSET,AA);
+                //write 0x04 to I2CONSET to set the AA bit
+                SET_BIT(I2C0CONSET,AA);
 
             //write 0x08 to I2CONCLR to clear the SI flag
             SET_BIT(I2C0CONCLR, SI);
             break;
 
 
-         //State 0x10 - A repeated start condition has been transmitted.  The Slave
-         //Address and Read or Write bit will be transmitted.  An ACK bit will be 
-         //received
+            //State 0x10 - A repeated start condition has been transmitted.  The Slave
+            //Address and Read or Write bit will be transmitted.  An ACK bit will be 
+            //received
         case 0x10:
-             //write the Slave Address with R/W bit to I2DAT
-             I2C0DAT = i2c0TxSlaveAddress
+            DBG("\tI2C0 State 0x10...\n");
+            //write the Slave Address with R/W bit to I2DAT
+            I2C0DAT = I2C0ExtSlaveAddress
 
-            //write 0x04 to I2CONSET to set the AA bit
-            SET_BIT(I2C0CONSET,AA);
+                //write 0x04 to I2CONSET to set the AA bit
+                SET_BIT(I2C0CONSET,AA);
 
             //write 0x08 to I2CONCLR to clear the SI flag
             SET_BIT(I2C0CONCLR, SI);
             break;
 
-        //State 0x18 - Previous state was 0x08 or 0x10.  Slave Address and Read or 
-        //Write has been transmitted.  An ACK has been received. The first data byte 
-        //will be transmitted, an ACK bit will be received.
+            //State 0x18 - Previous state was 0x08 or 0x10.  Slave Address and Read or 
+            //Write has been transmitted.  An ACK has been received. The first data byte 
+            //will be transmitted, an ACK bit will be received.
         case 0x18:
+            DBG("\tI2C0 State 0x18...\n");
             if(i2c0DataCounter < i2c0DataLength) {
                 I2C0DAT = i2cTransmitData[i2c0DataCounter];
                 SET_BIT(I2C0CONSET,AA);
@@ -207,18 +213,20 @@ void i2c0_isr(void) {
             SET_BIT(I2C0CONCLR, SI);
             break;
 
-        //State 0x20 - Slave Address + Write has been transmitted.  NOT ACK has been 
-        //received. A Stop condition will be transmitted.
+            //State 0x20 - Slave Address + Write has been transmitted.  NOT ACK has been 
+            //received. A Stop condition will be transmitted.
         case 0x20:
+            DBG("\tI2C0 State 0x20...\n");
             SET_BIT(I2C0CONSET, STO);
             SET_BIT(I2C0CONSET, AA);
             SET_BIT(I2C0CONCLR, SI);
             break;
 
-        //State 0x28 - Data has been transmitted, ACK has been received. If the 
-        //transmitted data was the last data byte then transmit a Stop condition, 
-        //otherwise transmit the next data byte.
+            //State 0x28 - Data has been transmitted, ACK has been received. If the 
+            //transmitted data was the last data byte then transmit a Stop condition, 
+            //otherwise transmit the next data byte.
         case 0x28:
+            DBG("\tI2C0 State 0x28...\n");
             if(i2c0DataCounter == i2c0DataLength) {
                 SET_BIT(I2C0CONSET, STO);
                 SET_BIT(I2C0CONSET, AA);
@@ -232,65 +240,72 @@ void i2c0_isr(void) {
             SET_BIT(I2C0CONCLR, SI);
             break;
 
-//State 0x30 - Data has been transmitted, NOT ACK received. A Stop condition 
-//will be transmitted.
+            //State 0x30 - Data has been transmitted, NOT ACK received. A Stop condition 
+            //will be transmitted.
+        case 0x30:
+            DBG("\tI2C0 State 0x30...\n");
+            SET_BIT(I2C0CONSET, STO);
+            SET_BIT(I2C0CONSET, AA);
+            SET_BIT(I2C0CONCLR, SI);
+            break;
 
-//Write 0x14 to I2CONSET to set the STO and AA bits.
-//Write 0x08 to I2CONCLR to clear the SI flag.
-//Exit
+            //State 0x38 - Arbitration has been lost during Slave Address + Write or data. 
+            //The bus has been released and not addressed Slave mode is entered. A new Start 
+            //condition will be transmitted when the bus is free again.
+        case 0x38:
+            DBG("\tI2C0 State 0x38...\n");
+            SET_BIT(I2C0CONSET, STA);
+            SET_BIT(I2C0CONSET, AA);
+            SET_BIT(I2C0CONCLR, SI);
+            break;
 
+            //State 0x40
+            //Previous state was State 08 or State 10. Slave Address + Read has been transmitted,
+            //ACK has been received. Data will be received and ACK returned.
+        case 0x40:
+            DBG("\tI2C0 State 0x40...\n");
+            SET_BIT(I2C0CONSET, AA);
+            SET_BIT(I2C0CONCLR, SI);
+            break;
 
-//State 0x38 - Arbitration has been lost during Slave Address + Write or data. 
-//The bus has been released and not addressed Slave mode is entered. A new Start 
-//condition will be transmitted when the bus is free again.
+            //State 0x48 - Slave Address + Read has been transmitted, NOT ACK has been received. 
+            //A Stop condition will be transmitted.
+        case 0x48:
+            DBG("\tI2C0 State 0x48...\n");
+            SET_BIT(I2C0CONSET, STO);
+            SET_BIT(I2C0CONSET, AA);
+            SET_BIT(I2C0CONCLR, SI);
+            break;
 
-//Write 0x24 to I2CONSET to set the STA and AA bits.
-//Write 0x08 to I2CONCLR to clear the SI flag.
-//Exit
+            //State: 0x50 - Data has been received, ACK has been returned. Data will be read 
+            //from I2DAT. Additional data will be received. If this is the last data byte then 
+            //NOT ACK will be returned, otherwise ACK will be returned.
+        case 0x50:
+            DBG("\tI2C0 State 0x50...\n");
+            if(i2c0DataCounter < i2c0DataLength) {
+                i2c0ReceiveData[i2cDataCounter] = I2C0DAT;
+            }
+            i2c0DataCounter++;
+            if(i2c0DataCounter == i2c0DataLength) {
+                SET_BIT(I2C0CONCLR, AA);
+            } else if(i2c0DataCounter < i2c0DataLength) {
+                SET_BIT(I2C0CONSET, AA);
+            }
+            SET_BIT(I2C0CONCLR, SI);
+            break;
 
-
-//State 0x40
-//Previous state was State 08 or State 10. Slave Address + Read has been transmitted,
-//ACK has been received. Data will be received and ACK returned.
-
-//Write 0x04 to I2CONSET to set the AA bit.
-//Write 0x08 to I2CONCLR to clear the SI flag.
-//Exit
-
-
-//State 0x48 - Slave Address + Read has been transmitted, NOT ACK has been received. 
-//A Stop condition will be transmitted.
-
-//Write 0x14 to I2CONSET to set the STO and AA bits.
-//Write 0x08 to I2CONCLR to clear the SI flag.
-//Exit
-
-
-//State: 0x50 - Data has been received, ACK has been returned. Data will be read 
-//from I2DAT. Additional data will be received. If this is the last data byte then 
-//NOT ACK will be returned, otherwise ACK will be returned.
-
-//Read data byte from I2DAT into Master Receive buffer.
-//Decrement the Master data counter, skip to NOT_LAST_BYTE if not the last data byte.
-//Write 0x0C to I2CONCLR to clear the SI flag and the AA bit.
-//Exit
-//NOT_LAST_BYTE:
-//Write 0x04 to I2CONSET to set the AA bit.
-//Write 0x08 to I2CONCLR to clear the SI flag.
-//Increment Master Receive buffer pointer
-//Exit
-
-
-//State: 0x58 - Data has been received, NOT ACK has been returned. Data will be read 
-//from I2DAT. A Stop condition will be transmitted.
-
-//Read data byte from I2DAT into Master Receive buffer.
-//Write 0x14 to I2CONSET to set the STO and AA bits.
-//Write 0x08 to I2CONCLR to clear the SI flag.
-//Exit
-
-
-
+            //State: 0x58 - Data has been received, NOT ACK has been returned. Data will be read 
+            //from I2DAT. A Stop condition will be transmitted.
+        case 0x58:
+            DBG("\tI2C0 State 0x58...\n");
+            SET_BIT(I2C0CONSET, STO);
+            SET_BIT(I2C0CONSET, AA);
+            SET_BIT(I2C0CONCLR, SI);
+            break;
+        default:
+            DBG("*ERROR* Un-implemented state!\n");
+            break;
+    }
 }
 
 /*
@@ -329,21 +344,21 @@ void initI2C(char *myI2Cchannel, int mySlaveAddress) {
  * takes an int (should this be byte?) vector containing the data to send
  * takes an int containing the length of the vector (is this needed?)
  */
-void I2CMasterTX(enum I2Cchannel myI2Cchannel, int deviceAddr; int *myDataToSend, int dataLength) {
+void I2CMasterTX(enum I2Cchannel myI2Cchannel, int deviceAddr, int *myDataToSend, int dataLength) {
 
-    uint32_t i,j;
+    uint32_t i;
 
     //set up the data to be transmitted in the Master Transmit buffer
     for(i=0; i<dataLength; i++) {
         i2c0TransmitData[i] = myDataToSent[i];
     }
-
     //initialize master data counter
-    i2c0DataCounter = dataLength;
+    i2c0DataLength  = dataLength;
+    i2c0DataCounter = 0;
 
     //set up the Slave Address to transmit data to, and add the Write bit
-    i2c0TxSlaveAddress = deviceAddr;
-    i2c0TxSlaveAddress &= WRITEMASK;
+    I2C0ExtSlaveAddress = deviceAddr;
+    I2C0ExtSlaveAddress &= WRITEMASK;
 
     //write 0x20 to I2CONSET to set the STA bit
     SET_BIT(I2C0CONSET, STA);
@@ -355,9 +370,24 @@ void I2CMasterTX(enum I2Cchannel myI2Cchannel, int deviceAddr; int *myDataToSend
 //takes a string containing the I2C channel to be set up
 //takes an int (should this be byte?) vector containing the data to recieve
 //takes a pointer to an int to contain the length of the received data (is this needed?)
-void I2CmasterRecieve(enum I2Cchannel myI2Cchannel, int *myDataToSend, int *dataLength) {
+void I2CMasterRX(enum I2Cchannel myI2Cchannel, int deviceAddr, int *myDataToSend, int *dataLength) {
+    uint32_t i;
+    //set up the data to be transmitted in the Master RX buffer
+    for(i=0; i<dataLength; i++) {
+        i2c0ReceiveData[i] = myDataToSend[i];
+    }
 
-i2c0TxSlaveAddres |= READMASK;
+    //initialize master data counter
+    i2c0DataLength  = dataLength;
+    i2c0DataCounter = 0;
+
+    // add the Read bit
+    I2C0ExtSlaveAddress = deviceAddr;
+    I2C0ExtSlaveAddress |= READMASK;
+
+    SET_BIT(I2C0CONSET, STA);
+} 
+
 //initialize master data counter
 //this seems to only exist in the I2C software example, so I'm assuming it's just to be a logical construction
 
