@@ -36,7 +36,10 @@ can be applied.
 #include <stdint.h>
 #include <stdio.h>
 #include "lpc23xx.h"
+#include "printf2.h"
+#include "FreeRTOSConfig.h"
 #include "i2c.h"
+
 
 int I2C0ExtSlaveAddress = 0;    // Slave the bus is currently talking to.  NOT the slave address of the LPC23xx device!!!
 int I2C0DataCounter     = 0;    // bytes sent
@@ -146,7 +149,7 @@ void I2Cinit(i2c_iface channel) {
     }
 }
 
-//DBG("z%d", b1);
+//printf2("z%d", b1);
 /*
  * i2c0_isr
  */
@@ -162,7 +165,7 @@ void i2c0_isr(void) {
 
         //State 0x00 - Bus Error
         case 0x00:
-            DBG("\tI2C0 State 0x00...\n");
+            printf2("\tI2C0 State 0x00...\n");
             //write 0x14 to I2CONSET to set the STO and AA flags.
             SET_BIT(I2C0CONCLR, STO);
             SET_BIT(I2C0CONCLR, AA);
@@ -172,7 +175,7 @@ void i2c0_isr(void) {
             // State 0X08 - A start condition has been transmitted, The Slave Address 
             // and Read or Write bit will be transmitted.  An ACK bit will be received.
         case 0x08:
-            DBG("\tI2C0 State 0x08...\n");
+            printf2("\tI2C0 State 0x08...\n");
             //write the Slave Address with R/W bit to I2DAT
             I2C0DAT = I2C0ExtSlaveAddress;
 
@@ -188,7 +191,7 @@ void i2c0_isr(void) {
             //Address and Read or Write bit will be transmitted.  An ACK bit will be 
             //received
         case 0x10:
-            DBG("\tI2C0 State 0x10...\n");
+            printf2("\tI2C0 State 0x10...\n");
             //write the Slave Address with R/W bit to I2DAT
             I2C0DAT = I2C0ExtSlaveAddress;
 
@@ -203,7 +206,7 @@ void i2c0_isr(void) {
             //Write has been transmitted.  An ACK has been received. The first data byte 
             //will be transmitted, an ACK bit will be received.
         case 0x18:
-            DBG("\tI2C0 State 0x18...\n");
+            printf2("\tI2C0 State 0x18...\n");
             if(I2C0DataCounter < I2C0DataLength) {
                 I2C0DAT = I2C0TransmitData[I2C0DataCounter];
                 SET_BIT(I2C0CONSET,AA);
@@ -215,7 +218,7 @@ void i2c0_isr(void) {
             //State 0x20 - Slave Address + Write has been transmitted.  NOT ACK has been 
             //received. A Stop condition will be transmitted.
         case 0x20:
-            DBG("\tI2C0 State 0x20...\n");
+            printf2("\tI2C0 State 0x20...\n");
             SET_BIT(I2C0CONSET, STO);
             SET_BIT(I2C0CONSET, AA);
             SET_BIT(I2C0CONCLR, SI);
@@ -225,7 +228,7 @@ void i2c0_isr(void) {
             //transmitted data was the last data byte then transmit a Stop condition, 
             //otherwise transmit the next data byte.
         case 0x28:
-            DBG("\tI2C0 State 0x28...\n");
+            printf2("\tI2C0 State 0x28...\n");
             if(I2C0DataCounter == I2C0DataLength) {
                 SET_BIT(I2C0CONSET, STO);
                 SET_BIT(I2C0CONSET, AA);
@@ -242,7 +245,7 @@ void i2c0_isr(void) {
             //State 0x30 - Data has been transmitted, NOT ACK received. A Stop condition 
             //will be transmitted.
         case 0x30:
-            DBG("\tI2C0 State 0x30...\n");
+            printf2("\tI2C0 State 0x30...\n");
             SET_BIT(I2C0CONSET, STO);
             SET_BIT(I2C0CONSET, AA);
             SET_BIT(I2C0CONCLR, SI);
@@ -252,7 +255,7 @@ void i2c0_isr(void) {
             //The bus has been released and not addressed Slave mode is entered. A new Start 
             //condition will be transmitted when the bus is free again.
         case 0x38:
-            DBG("\tI2C0 State 0x38...\n");
+            printf2("\tI2C0 State 0x38...\n");
             SET_BIT(I2C0CONSET, STA);
             SET_BIT(I2C0CONSET, AA);
             SET_BIT(I2C0CONCLR, SI);
@@ -262,7 +265,7 @@ void i2c0_isr(void) {
             //Previous state was State 08 or State 10. Slave Address + Read has been transmitted,
             //ACK has been received. Data will be received and ACK returned.
         case 0x40:
-            DBG("\tI2C0 State 0x40...\n");
+            printf2("\tI2C0 State 0x40...\n");
             SET_BIT(I2C0CONSET, AA);
             SET_BIT(I2C0CONCLR, SI);
             break;
@@ -270,7 +273,7 @@ void i2c0_isr(void) {
             //State 0x48 - Slave Address + Read has been transmitted, NOT ACK has been received. 
             //A Stop condition will be transmitted.
         case 0x48:
-            DBG("\tI2C0 State 0x48...\n");
+            printf2("\tI2C0 State 0x48...\n");
             SET_BIT(I2C0CONSET, STO);
             SET_BIT(I2C0CONSET, AA);
             SET_BIT(I2C0CONCLR, SI);
@@ -280,7 +283,7 @@ void i2c0_isr(void) {
             //from I2DAT. Additional data will be received. If this is the last data byte then 
             //NOT ACK will be returned, otherwise ACK will be returned.
         case 0x50:
-            DBG("\tI2C0 State 0x50...\n");
+            printf2("\tI2C0 State 0x50...\n");
             if(I2C0DataCounter < I2C0DataLength) {
                 I2C0ReceiveData[I2C0DataCounter] = I2C0DAT;
             }
@@ -296,13 +299,13 @@ void i2c0_isr(void) {
             //State: 0x58 - Data has been received, NOT ACK has been returned. Data will be read 
             //from I2DAT. A Stop condition will be transmitted.
         case 0x58:
-            DBG("\tI2C0 State 0x58...\n");
+            printf2("\tI2C0 State 0x58...\n");
             SET_BIT(I2C0CONSET, STO);
             SET_BIT(I2C0CONSET, AA);
             SET_BIT(I2C0CONCLR, SI);
             break;
         default:
-            DBG("*ERROR* Un-implemented state!\n");
+            printf2("*ERROR* Un-implemented state!\n");
             break;
     }
 }
