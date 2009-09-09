@@ -36,7 +36,7 @@ can be applied.
 #include <stdint.h>
 #include <stdio.h>
 #include "lpc23xx.h"
-#include "printf2.h"
+#include "printf/printf2.h"
 #include "FreeRTOSConfig.h"
 #include "i2c.h"
 
