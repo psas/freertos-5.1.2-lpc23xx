@@ -36,8 +36,6 @@
 #ifndef _I2C_H
 #define _I2C_H
 
-#include "FreeRTOS.h"
-
 // MAX values
 #define I2C_MAX_BUFFER   1024
 
