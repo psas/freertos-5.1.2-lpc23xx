@@ -32,7 +32,6 @@
 RTOS_SOURCE_DIR=../Source
 DEMO_COMMON_DIR=../Common/Minimal
 DEMO_INCLUDE_DIR=../Common/include
-LPCUSB_COMMON_DIR=../Common/drivers/LPC/usb
 
 CC=arm-elf-gcc
 OBJCOPY=arm-elf-objcopy
@@ -53,7 +52,6 @@ CFLAGS= $(DEBUG) \
 		-I $(RTOS_SOURCE_DIR)/include \
 		-I $(RTOS_SOURCE_DIR)/portable/GCC/ARM7_LPC23xx \
 		-I $(DEMO_INCLUDE_DIR) \
-		-I $(LPCUSB_COMMON_DIR) -D LPC23xx -DLPC2378_PORTB \
 		-I ../Common/drivers/LPC/ \
 		-D ROWLEY_LPC23xx \
 		-D THUMB_INTERWORK \
@@ -88,11 +86,7 @@ ARM_SOURCE= \
 		../Common/drivers/LPC/printf/printf2.c \
 		../Common/drivers/LPC/printf/printfHelpers.c \
 		../Common/drivers/LPC/i2c/i2c.c \
-		$(RTOS_SOURCE_DIR)/portable/GCC/ARM7_LPC23xx/portISR.c \
-		$(LPCUSB_COMMON_DIR)/usbcontrol.c \
-		$(LPCUSB_COMMON_DIR)/usbhw_lpc.c \
-		$(LPCUSB_COMMON_DIR)/usbinit.c \
-		$(LPCUSB_COMMON_DIR)/usbstdreq.c
+		$(RTOS_SOURCE_DIR)/portable/GCC/ARM7_LPC23xx/portISR.c
 
 THUMB_OBJS = $(THUMB_SOURCE:.c=.o)
 ARM_OBJS = $(ARM_SOURCE:.c=.o)

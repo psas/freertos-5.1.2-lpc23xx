@@ -69,8 +69,10 @@ int I2C2ReceiveData[I2C_MAX_BUFFER];
  * 5. Continue initializing...tbd
  */
 void I2Cinit(i2c_iface channel) {
+    printf2("\tI2C Initialize block! ...\n");
     switch(channel) {
         case I2C0: 
+            printf2("\tI2C0 Init! ...\n");
             // power
             SET_BIT(PCONP, PCI2C0);
 
@@ -100,6 +102,7 @@ void I2Cinit(i2c_iface channel) {
             //
             break;
         case I2C1: 
+            printf2("\tI2C1 Init! ...\n");
             SET_BIT(PCONP, PCI2C1);
 
             SET_BIT(I2C1CONSET, I2EN );
@@ -122,6 +125,7 @@ void I2Cinit(i2c_iface channel) {
             VICVectAddr19 = (unsigned) i2c1_isr;
             break;
         case I2C2: 
+            printf2("\tI2C1 Init! ...\n");
             SET_BIT(PCONP, PCI2C2);
 
             SET_BIT(I2C2CONSET, I2EN );

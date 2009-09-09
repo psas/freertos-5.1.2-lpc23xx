@@ -37,7 +37,7 @@
 #define _I2C_H
 
 // MAX values
-#define I2C_MAX_BUFFER   1024
+#define I2C_MAX_BUFFER   16
 
 // VIC table page 94 lpc23xx manual
 #define VICI2C0EN        9

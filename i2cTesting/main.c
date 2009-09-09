@@ -67,7 +67,7 @@
 #include "QPeek.h"
 #include "dynamic.h"
 #include <stdint.h>
-#include "debug.h"
+// #include "debug.h"
 #include "serial/serial.h"
 #include "printf/uart0PutChar2.h"
 #include "printf/printf2.h"
@@ -111,7 +111,7 @@
 #define mainPLL_DIV			( ( unsigned portLONG ) 0x0000 )
 #define mainCPU_CLK_DIV		( ( unsigned portLONG ) 0x0005 )
 
-#define PCLK ((12 * (mainPLL_MUL+1) * 2) / (mainPLL_DIV + 1)) / mainCPU_CLK_DIV
+// #define PCLK ((12 * (mainPLL_MUL+1) * 2) / (mainPLL_DIV + 1)) / mainCPU_CLK_DIV
 
 #define mainPLL_ENABLE		( ( unsigned portLONG ) 0x0001 )
 #define mainPLL_CONNECT		( ( ( unsigned portLONG ) 0x0002 ) | mainPLL_ENABLE )
@@ -175,7 +175,7 @@ static void i2cTestTask(void *pvParameters) {
 			FIO1CLR = (1<<19);//turn off led on olimex 2378 Sdev board
 
 			x = 0;
-			printf2("Blinky Light Task...\r\n");
+			printf2("i2c Light Task...\r\n");
 			
 			status = xSerialGetChar(0, &theChar, 1);
 			if( status == pdTRUE ) {
