@@ -205,7 +205,7 @@ void i2c0_isr(void) {
         case 0x18:
             DBG("\tI2C0 State 0x18...\n");
             if(I2C0DataCounter < I2C0DataLength) {
-                I2C0DAT = I2CTransmitData[I2C0DataCounter];
+                I2C0DAT = I2C0TransmitData[I2C0DataCounter];
                 SET_BIT(I2C0CONSET,AA);
                 I2C0DataCounter++;
             }
@@ -231,7 +231,7 @@ void i2c0_isr(void) {
                 SET_BIT(I2C0CONSET, AA);
             } else {
                 if(I2C0DataCounter < I2C0DataLength) {
-                    I2C0DAT = I2CTransmitData[I2C0DataCounter];
+                    I2C0DAT = I2C0TransmitData[I2C0DataCounter];
                     SET_BIT(I2C0CONSET,AA);
                     I2C0DataCounter++;
                 }
@@ -282,7 +282,7 @@ void i2c0_isr(void) {
         case 0x50:
             DBG("\tI2C0 State 0x50...\n");
             if(I2C0DataCounter < I2C0DataLength) {
-                I2C0ReceiveData[I2CDataCounter] = I2C0DAT;
+                I2C0ReceiveData[I2C0DataCounter] = I2C0DAT;
             }
             I2C0DataCounter++;
             if(I2C0DataCounter == I2C0DataLength) {
@@ -336,7 +336,7 @@ void I2C0MasterTX(int deviceAddr, int *myDataToSend, int dataLength) {
 
     //set up the data to be transmitted in the Master Transmit buffer
     for(i=0; i<dataLength; i++) {
-        I2C0TransmitData[i] = myDataToSent[i];
+        I2C0TransmitData[i] = myDataToSend[i];
     }
     //initialize master data counter
     I2C0DataLength  = dataLength;
