@@ -63,10 +63,8 @@ CFLAGS= $(DEBUG) \
 										
 THUMB_SOURCE= \
 		main.c \
-		./ParTest/ParTest.c \
 		$(DEMO_COMMON_DIR)/BlockQ.c \
 		$(DEMO_COMMON_DIR)/blocktim.c \
-		$(DEMO_COMMON_DIR)/flash.c \
 		$(DEMO_COMMON_DIR)/integer.c \
 		$(DEMO_COMMON_DIR)/GenQTest.c \
 		$(DEMO_COMMON_DIR)/QPeek.c \

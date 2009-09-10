@@ -236,8 +236,6 @@ static void prvSetupHardware( void )
 	MAMCR = mainMAM_MODE_FULL;
 	*/
 	
-	/* Setup the led's on the MCB2300 board */
-	vParTestInitialise();
 }
 
 
