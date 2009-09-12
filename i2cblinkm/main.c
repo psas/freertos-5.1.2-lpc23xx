@@ -128,17 +128,14 @@ static void i2cblinkmTask(void *pvParameters) {
 	signed portCHAR theChar;
 	signed portBASE_TYPE status;
 	const int interval = 100000;
-	// echo any character received (do USB stuff in interrupt)
 	
 	uint32_t blinkm_id;
 
 	uint32_t pwmDutyCycle = 1000;
-	
 
         int myDataToSend;
 
-	I2Cinit(I2C0);
-                       printf2("VICIntEnable is: 0x%X\n\r", VICIntEnable);
+        printf2("VICIntEnable is: 0x%X\n\r", VICIntEnable);
 	
 	for(;;) {
 		//vSerialPutString(0, "Testing...\r\n", 50);
@@ -169,9 +166,9 @@ static void i2cblinkmTask(void *pvParameters) {
                        printf2("VICVectAddr9 is: 0x%X\n\r", VICVectAddr9);
                        printf2("i2c0_isr is: 0x%X\n\r", i2c0_isr);
                        printf2("VICIntEnable is: 0x%X\n\r", VICIntEnable);
-                       printf2("VICRawIntr register is: 0x%X\n\r",VICRawIntr);
 
                        I2C0MasterTX(BLINKM_ADDR, &myDataToSend, 1);
+                       printf2("VICRawIntr register is: 0x%X\n\r",VICRawIntr);
 
                        myDataToSend = 0xff;
 
@@ -269,9 +266,12 @@ int main( void )
     setupPWMChannel(PWM1_1, microsecondsToCPUTicks(1500)); // 1ms duty cycle, given 48mhz CPU clock
 
     xSerialPortInitMinimal(0, 115200, 250 );
-    vSerialPutString(0, "Starting up LPC23xx with FreeRTOS\n", 50);
+    vSerialPutString(0, "Starting up LPC23xx with FreeRTOS\n\r", 50);
 
     SCS |= 1; //Configure FIO
+
+    // Initialize I2C0
+    I2Cinit(I2C0);
 
     xTaskCreate( i2cblinkmTask, 
             ( signed portCHAR * ) "i2cblinkmTask", 

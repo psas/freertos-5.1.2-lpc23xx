@@ -77,8 +77,11 @@ void I2Cinit(i2c_iface channel) {
             SET_BIT(PCONP, PCI2C0);
 
             // Enable
+            printf2("\tBefore I2C0 I2C0CONSET: 0x%X\n\r", I2C0CONSET);
             SET_BIT(I2C0CONSET, I2EN ); // master mode
+            printf2("\tafter I2EN I2C0 I2C0CONSET: 0x%X\n\r", I2C0CONSET);
             ZERO_BIT(I2C0CONSET, AA );
+            printf2("\tafter AA I2C0 I2C0CONSET: 0x%X\n\r", I2C0CONSET);
 
             // I2C clock
             I2C0SCLL = I2SCLLOW;
@@ -359,7 +362,12 @@ void I2C0MasterTX(int deviceAddr, int *myDataToSend, int dataLength) {
 
     //write 0x20 to I2CONSET to set the STA bit
     printf2("In Send Start bit\n\r");
+    printf2("Before STA: VICRawIntr register is: 0x%X\n\r",VICRawIntr);
     SET_BIT(I2C0CONSET, STA);
+    printf2("After STA: VICRawIntr register is: 0x%X\n\r",VICRawIntr);
+
+    printf2("I2C0STAT is: 0x%X\n\r", I2C0STAT);
+    printf2("I2C0CONSET is: 0x%X\n\r", I2C0CONSET);
 
 } 
 
