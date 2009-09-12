@@ -29,29 +29,28 @@
 #	***************************************************************************
 
 
-RTOS_SOURCE_DIR=../Source
-DEMO_COMMON_DIR=../Common/Minimal
-DEMO_INCLUDE_DIR=../Common/include
+RTOS_SOURCE_DIR   = ../Source
+COMMON_DIR        = ../Common/Minimal
+INCLUDE_DIR       = ../Common/include
 
-CC=arm-elf-gcc
-OBJCOPY=arm-elf-objcopy
-LDSCRIPT=lpc2368.ld
+CC                = arm-elf-gcc
+OBJCOPY           = arm-elf-objcopy
+LDSCRIPT          = lpc2368.ld
 
-PROJECT_NAME=i2cTesting
+PROJECT_NAME      = i2cblinkm
 
-LINKER_FLAGS=-mthumb -nostartfiles -Xlinker -o$(PROJECT_NAME).elf -Xlinker -M -Xlinker -Map=$(PROJECT_NAME).map
+LINKER_FLAGS     = -mthumb -nostartfiles -Xlinker -o$(PROJECT_NAME).elf -Xlinker -M -Xlinker -Map=$(PROJECT_NAME).map
 
-DEBUG=-g
-OPTIM=-O1
-
-
-CFLAGS= $(DEBUG) \
+DEBUG             = -g
+OPTIM             = -O1
+	 
+CFLAGS        = $(DEBUG) \
 		$(OPTIM) \
 		-T$(LDSCRIPT) \
 		-I . \
 		-I $(RTOS_SOURCE_DIR)/include \
 		-I $(RTOS_SOURCE_DIR)/portable/GCC/ARM7_LPC23xx \
-		-I $(DEMO_INCLUDE_DIR) \
+		-I $(INCLUDE_DIR) \
 		-I ../Common/drivers/LPC/ \
 		-D ROWLEY_LPC23xx \
 		-D THUMB_INTERWORK \
@@ -61,34 +60,30 @@ CFLAGS= $(DEBUG) \
 		-fomit-frame-pointer \
 		-mthumb-interwork
 										
-THUMB_SOURCE= \
-		main.c \
-		$(DEMO_COMMON_DIR)/BlockQ.c \
-		$(DEMO_COMMON_DIR)/blocktim.c \
-		$(DEMO_COMMON_DIR)/integer.c \
-		$(DEMO_COMMON_DIR)/GenQTest.c \
-		$(DEMO_COMMON_DIR)/QPeek.c \
-		$(DEMO_COMMON_DIR)/dynamic.c \
-		$(RTOS_SOURCE_DIR)/list.c \
-		$(RTOS_SOURCE_DIR)/queue.c \
-		$(RTOS_SOURCE_DIR)/tasks.c \
-		$(RTOS_SOURCE_DIR)/portable/GCC/ARM7_LPC23xx/port.c \
-		$(RTOS_SOURCE_DIR)/portable/MemMang/heap_2.c 
+THUMB_SOURCE  = main.c \
+                $(COMMON_DIR)/integer.c \
+                $(COMMON_DIR)/GenQTest.c \
+                $(COMMON_DIR)/QPeek.c \
+                $(COMMON_DIR)/dynamic.c \
+                $(COMMON_DIR)/blocktim.c \
+                $(COMMON_DIR)/BlockQ.c \
+                $(RTOS_SOURCE_DIR)/list.c \
+                $(RTOS_SOURCE_DIR)/queue.c \
+                $(RTOS_SOURCE_DIR)/tasks.c \
+                $(RTOS_SOURCE_DIR)/portable/GCC/ARM7_LPC23xx/port.c \
+                $(RTOS_SOURCE_DIR)/portable/MemMang/heap_2.c 
 
-
-ARM_SOURCE= \
-		../Common/drivers/LPC/peripherals/pwm.c \
-		../Common/drivers/LPC/serial/serial.c \
-		../Common/drivers/LPC/serial/serialISR.c \
-		../Common/drivers/LPC/printf/uart0PutChar2.c \
-		../Common/drivers/LPC/printf/printf2.c \
-		../Common/drivers/LPC/printf/printfHelpers.c \
-		../Common/drivers/LPC/i2c/i2c.c \
-		$(RTOS_SOURCE_DIR)/portable/GCC/ARM7_LPC23xx/portISR.c
+ARM_SOURCE    = ../Common/drivers/LPC/peripherals/pwm.c \
+                ../Common/drivers/LPC/serial/serial.c \
+                ../Common/drivers/LPC/serial/serialISR.c \
+                ../Common/drivers/LPC/printf/uart0PutChar2.c \
+                ../Common/drivers/LPC/printf/printf2.c \
+                ../Common/drivers/LPC/printf/printfHelpers.c \
+                ../Common/drivers/LPC/i2c/i2c.c \
+                $(RTOS_SOURCE_DIR)/portable/GCC/ARM7_LPC23xx/portISR.c
 
 THUMB_OBJS = $(THUMB_SOURCE:.c=.o)
-ARM_OBJS = $(ARM_SOURCE:.c=.o)
-
+ARM_OBJS   = $(ARM_SOURCE:.c=.o)
 
 all: $(PROJECT_NAME).bin
 
@@ -115,10 +110,4 @@ clean :
 	rm -f $(PROJECT_NAME).hex
 	rm -f $(PROJECT_NAME).bin
 	rm -f $(PROJECT_NAME).map
-	
-	
-	
-
-
-
 

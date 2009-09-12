@@ -7,3 +7,4 @@ void putchar2(const portCHAR ch) {
 	buff[1] = '\0';
 	vSerialPutString(0, buff, 5);
 }
+

@@ -1,4 +1,7 @@
+
+
 /*
+ * Portions of this code:
 	FreeRTOS.org V5.1.2 - Copyright (C) 2003-2009 Richard Barry.
 
 	This file is part of the FreeRTOS.org distribution.
@@ -22,32 +25,6 @@
 	the source code for any proprietary components.  See the licensing section 
 	of http://www.FreeRTOS.org for full details of how and when the exception
 	can be applied.
-
-    ***************************************************************************
-    ***************************************************************************
-    *                                                                         *
-    * Get the FreeRTOS eBook!  See http://www.FreeRTOS.org/Documentation      *
-	*                                                                         *
-	* This is a concise, step by step, 'hands on' guide that describes both   *
-	* general multitasking concepts and FreeRTOS specifics. It presents and   *
-	* explains numerous examples that are written using the FreeRTOS API.     *
-	* Full source code for all the examples is provided in an accompanying    *
-	* .zip file.                                                              *
-    *                                                                         *
-    ***************************************************************************
-    ***************************************************************************
-
-	Please ensure to read the configuration and relevant port sections of the
-	online documentation.
-
-	http://www.FreeRTOS.org - Documentation, latest information, license and 
-	contact details.
-
-	http://www.SafeRTOS.com - A version that is certified for use in safety 
-	critical systems.
-
-	http://www.OpenRTOS.com - Commercial support, development, porting, 
-	licensing and training services.
 */
 
 /* Scheduler includes. */
@@ -58,6 +35,7 @@
 #include "portmacro.h"
 
 /* Demo app includes. */
+/*
 #include "BlockQ.h"
 #include "death.h"
 #include "blocktim.h"
@@ -66,15 +44,13 @@
 #include "GenQTest.h"
 #include "QPeek.h"
 #include "dynamic.h"
+*/
 #include <stdint.h>
-// #include "debug.h"
 #include "serial/serial.h"
 #include "printf/uart0PutChar2.h"
 #include "printf/printf2.h"
 #include "peripherals/pwm.h"
 #include "i2c/i2c.h"
-
-
 
 #define I2CTEST_STACK_SIZE 1024
 
@@ -145,18 +121,24 @@ uint32_t milisecondsToCPUTicks(const uint32_t miliseconds) {
 }
 
 
+#define BLINKM_ADDR 0x09
 
-
-static void i2cTestTask(void *pvParameters) {
+static void i2cblinkmTask(void *pvParameters) {
 	int x = 0;
 	signed portCHAR theChar;
 	signed portBASE_TYPE status;
 	const int interval = 100000;
 	// echo any character received (do USB stuff in interrupt)
 	
+	uint32_t blinkm_id;
+
 	uint32_t pwmDutyCycle = 1000;
 	
+
+        int myDataToSend;
+
 	I2Cinit(I2C0);
+                       printf2("VICIntEnable is: 0x%X\n\r", VICIntEnable);
 	
 	for(;;) {
 		//vSerialPutString(0, "Testing...\r\n", 50);
@@ -175,14 +157,41 @@ static void i2cTestTask(void *pvParameters) {
 			FIO1CLR = (1<<19);//turn off led on olimex 2378 Sdev board
 
 			x = 0;
-			printf2("i2c Light Task...\r\n");
-			
-			status = xSerialGetChar(0, &theChar, 1);
-			if( status == pdTRUE ) {
-				printf2("You typed the character: '%c'\r\n", theChar);
-			}
-		}
-	}
+
+                        // get id from blinkm and print
+
+		       printf2("i2c Light Task...\r\n");
+
+                       myDataToSend = 'c';
+                       printf2("VICRawIntr register is: 0x%X\n\r",VICRawIntr);
+
+		       printf2("sending c...\r\n");
+                       printf2("VICVectAddr9 is: 0x%X\n\r", VICVectAddr9);
+                       printf2("i2c0_isr is: 0x%X\n\r", i2c0_isr);
+                       printf2("VICIntEnable is: 0x%X\n\r", VICIntEnable);
+                       printf2("VICRawIntr register is: 0x%X\n\r",VICRawIntr);
+
+                       I2C0MasterTX(BLINKM_ADDR, &myDataToSend, 1);
+
+                       myDataToSend = 0xff;
+
+		       printf2("sending ff...\r\n");
+                       printf2("VICRawIntr register is: 0x%X\n\r",VICRawIntr);
+
+                       I2C0MasterTX(BLINKM_ADDR, &myDataToSend, 1);
+
+                       myDataToSend = 0xc4;
+		       printf2("sending c4...\r\n");
+                       printf2("VICRawIntr register is: 0x%X\n\r",VICRawIntr);
+
+                       I2C0MasterTX(BLINKM_ADDR, &myDataToSend, 1);
+
+                       status = xSerialGetChar(0, &theChar, 1);
+                       if( status == pdTRUE ) {
+                           printf2("You typed the character: '%c'\r\n", theChar);
+                       }
+                }
+        }
 }
 
 
@@ -222,6 +231,7 @@ static void prvSetupHardware( void )
 	PLLFEED = mainPLL_FEED_BYTE1;
 	PLLFEED = mainPLL_FEED_BYTE2;
 	while( !( PLLSTAT & mainPLL_CONNECTED ) ); 
+
 	
 	/* 
 	This code is commented out as the MAM does not work on the original revision
@@ -235,7 +245,6 @@ static void prvSetupHardware( void )
 	MAMTIM = mainMAM_TIM_3;
 	MAMCR = mainMAM_MODE_FULL;
 	*/
-	
 }
 
 
@@ -251,28 +260,33 @@ void enableSerial0( void ) {
 //#define PCLK    48000000
 int main( void )
 {
-	prvSetupHardware();
-	
-	enableSerial0();
-	
-	PWMinit (0, milisecondsToCPUTicks(30));//30ms period, given 48mhz CPU clock
-	setupPWMChannel(PWM1_1, microsecondsToCPUTicks(1500)); //1ms duty cycle, given 48mhz CPU clock
-	
-	xSerialPortInitMinimal(0, 115200, 250 );
-	vSerialPutString(0, "Starting up LPC23xx with FreeRTOS\n", 50);
-	
-	SCS |= 1; //Configure FIO
-	
-	
-	xTaskCreate( i2cTestTask, ( signed portCHAR * ) "i2cTestTask", I2CTEST_STACK_SIZE, NULL, mainCHECK_TASK_PRIORITY - 1, NULL );
-  
-	/* Start the scheduler. */
-	vTaskStartScheduler();
+    prvSetupHardware();
+
+    enableSerial0();
+
+    PWMinit (0, milisecondsToCPUTicks(30));                // 30ms period, given 48mhz CPU clock
+
+    setupPWMChannel(PWM1_1, microsecondsToCPUTicks(1500)); // 1ms duty cycle, given 48mhz CPU clock
+
+    xSerialPortInitMinimal(0, 115200, 250 );
+    vSerialPutString(0, "Starting up LPC23xx with FreeRTOS\n", 50);
+
+    SCS |= 1; //Configure FIO
+
+    xTaskCreate( i2cblinkmTask, 
+            ( signed portCHAR * ) "i2cblinkmTask", 
+            I2CTEST_STACK_SIZE, NULL, 
+            mainCHECK_TASK_PRIORITY - 1, 
+            NULL );
+
+    /* Start the scheduler. */
+    vTaskStartScheduler();
 
     /* Will only get here if there was insufficient memory to create the idle
-    task. */
-	return 0; 
+       task. */
+    return 0; 
 }
+
 /*-----------------------------------------------------------*/
 
 void vApplicationTickHook( void )
@@ -282,8 +296,8 @@ void vApplicationTickHook( void )
 	static unsigned portLONG ulTicksSinceLastDisplay = 0;
 	static portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
 
-	/* Called from every tick interrupt.  Have enough ticks passed to make it
-	time to perform our health status check again? */
+	// Called from every tick interrupt.  Have enough ticks passed to make it
+        // time to perform our health status check again? 
 	ulTicksSinceLastDisplay++;
 	if( ulTicksSinceLastDisplay >= mainCHECK_DELAY )
 	{
@@ -322,9 +336,6 @@ void vApplicationTickHook( void )
 		xHigherPriorityTaskWoken = pdFALSE;
 	}
 }
-
-
-
 
 
 
