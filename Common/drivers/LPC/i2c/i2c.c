@@ -69,10 +69,10 @@ int I2C2ReceiveData[I2C_MAX_BUFFER];
  * 5. Continue initializing...tbd
  */
 void I2Cinit(i2c_iface channel) {
-    printf2("\tI2C Initialize block! ...\n");
+    printf2("\tI2C Initialize block! ...\n\r");
     switch(channel) {
         case I2C0: 
-            printf2("\tI2C0 Init! ...\n");
+            printf2("\tI2C0 Init! ...\n\r");
             // power
             SET_BIT(PCONP, PCI2C0);
 
@@ -98,6 +98,7 @@ void I2Cinit(i2c_iface channel) {
             SET_BIT(VICIntEnable, VICI2C0EN);
             VICVectAddr9 = (unsigned) i2c0_isr;
 
+            SET_BIT(I2C0CONCLR, SI);
             // continue initializing...? stopped here on Wed 02 September 2009 11:04:10 (PDT)
             //
             break;
@@ -161,6 +162,7 @@ void i2c0_isr(void) {
     uint32_t status;
     uint8_t  holdbyte;
 
+    printf2("\tI2C0 isr entry..\n\r");
     status = I2C0STAT;
 
     //Read the I2C state from the correct I2STA register and then branch to
@@ -341,6 +343,8 @@ void I2C0MasterTX(int deviceAddr, int *myDataToSend, int dataLength) {
 
     uint32_t i;
 
+    printf2("In I2C0MasterTX\n\r");
+
     //set up the data to be transmitted in the Master Transmit buffer
     for(i=0; i<dataLength; i++) {
         I2C0TransmitData[i] = myDataToSend[i];
@@ -354,6 +358,7 @@ void I2C0MasterTX(int deviceAddr, int *myDataToSend, int dataLength) {
     I2C0ExtSlaveAddress &= WRITEMASK;
 
     //write 0x20 to I2CONSET to set the STA bit
+    printf2("In Send Start bit\n\r");
     SET_BIT(I2C0CONSET, STA);
 
 } 

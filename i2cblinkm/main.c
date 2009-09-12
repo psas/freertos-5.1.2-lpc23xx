@@ -121,6 +121,8 @@ uint32_t milisecondsToCPUTicks(const uint32_t miliseconds) {
 }
 
 
+#define BLINKM_ADDR 0x09
+
 static void i2cblinkmTask(void *pvParameters) {
 	int x = 0;
 	signed portCHAR theChar;
@@ -128,9 +130,15 @@ static void i2cblinkmTask(void *pvParameters) {
 	const int interval = 100000;
 	// echo any character received (do USB stuff in interrupt)
 	
+	uint32_t blinkm_id;
+
 	uint32_t pwmDutyCycle = 1000;
 	
+
+        int myDataToSend;
+
 	I2Cinit(I2C0);
+                       printf2("VICIntEnable is: 0x%X\n\r", VICIntEnable);
 	
 	for(;;) {
 		//vSerialPutString(0, "Testing...\r\n", 50);
@@ -149,14 +157,41 @@ static void i2cblinkmTask(void *pvParameters) {
 			FIO1CLR = (1<<19);//turn off led on olimex 2378 Sdev board
 
 			x = 0;
-			printf2("i2c Light Task...\r\n");
-			
-			status = xSerialGetChar(0, &theChar, 1);
-			if( status == pdTRUE ) {
-				printf2("You typed the character: '%c'\r\n", theChar);
-			}
-		}
-	}
+
+                        // get id from blinkm and print
+
+		       printf2("i2c Light Task...\r\n");
+
+                       myDataToSend = 'c';
+                       printf2("VICRawIntr register is: 0x%X\n\r",VICRawIntr);
+
+		       printf2("sending c...\r\n");
+                       printf2("VICVectAddr9 is: 0x%X\n\r", VICVectAddr9);
+                       printf2("i2c0_isr is: 0x%X\n\r", i2c0_isr);
+                       printf2("VICIntEnable is: 0x%X\n\r", VICIntEnable);
+                       printf2("VICRawIntr register is: 0x%X\n\r",VICRawIntr);
+
+                       I2C0MasterTX(BLINKM_ADDR, &myDataToSend, 1);
+
+                       myDataToSend = 0xff;
+
+		       printf2("sending ff...\r\n");
+                       printf2("VICRawIntr register is: 0x%X\n\r",VICRawIntr);
+
+                       I2C0MasterTX(BLINKM_ADDR, &myDataToSend, 1);
+
+                       myDataToSend = 0xc4;
+		       printf2("sending c4...\r\n");
+                       printf2("VICRawIntr register is: 0x%X\n\r",VICRawIntr);
+
+                       I2C0MasterTX(BLINKM_ADDR, &myDataToSend, 1);
+
+                       status = xSerialGetChar(0, &theChar, 1);
+                       if( status == pdTRUE ) {
+                           printf2("You typed the character: '%c'\r\n", theChar);
+                       }
+                }
+        }
 }
 
 
@@ -196,6 +231,7 @@ static void prvSetupHardware( void )
 	PLLFEED = mainPLL_FEED_BYTE1;
 	PLLFEED = mainPLL_FEED_BYTE2;
 	while( !( PLLSTAT & mainPLL_CONNECTED ) ); 
+
 	
 	/* 
 	This code is commented out as the MAM does not work on the original revision
