@@ -227,6 +227,8 @@ static void prvSetupHardware( void )
        MAMTIM = mainMAM_TIM_3;
        MAMCR = mainMAM_MODE_FULL;
        */
+       FIO1DIR |= (1<<19);
+
 }
 
 
@@ -257,6 +259,7 @@ int main( void )
 
     // Initialize I2C0
     I2Cinit(I2C0);
+
 
     xTaskCreate( i2cblinkmTask, 
             ( signed portCHAR * ) "i2cblinkmTask", 
