@@ -178,6 +178,11 @@ void i2c0_isr(void) {
 
     portSAVE_CONTEXT();
 
+//    FIO1CLR = (1<<19);//turn off led on olimex 2378 Sdev board
+    FIO1SET = (1<<19);//turn on led on olimex 2378 dev board
+
+
+//     printf2("\tI2C0 ISR! ...\n\r");
     uint32_t status;
     uint8_t  holdbyte;
 

@@ -136,7 +136,7 @@ static void i2cblinkmTask(void *pvParameters) {
         x++;
 
         if (x == interval) {
-            FIO1SET = (1<<19);//turn on led on olimex 2378 dev board
+//            FIO1SET = (1<<19);//turn on led on olimex 2378 dev board
 
             pwmDutyCycle += 100;
             if(pwmDutyCycle > 2000 ) {
@@ -146,6 +146,8 @@ static void i2cblinkmTask(void *pvParameters) {
 
         } else if (x >= (interval*2)) {
             FIO1CLR = (1<<19);//turn off led on olimex 2378 Sdev board
+//            vTaskDelay( 1000 );
+
 
             x = 0;
 
