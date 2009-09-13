@@ -141,8 +141,10 @@ static void i2cblinkmTask(void *pvParameters) {
 		//vSerialPutString(0, "Testing...\r\n", 50);
 		x++;
 
+			FIO1CLR = (1<<19);//turn on led on olimex 2378 Sdev board
+//			FIO1SET = (1<<19);//turn off led on olimex 2378 dev board
 		if (x == interval) {
-			FIO1SET = (1<<19);//turn on led on olimex 2378 dev board
+//			FIO1SET = (1<<19);//turn on led on olimex 2378 dev board
 			
 			pwmDutyCycle += 100;
 			if(pwmDutyCycle > 2000 ) {
@@ -151,7 +153,7 @@ static void i2cblinkmTask(void *pvParameters) {
 			setPWMDutyCycle(PWM1_1, microsecondsToCPUTicks(pwmDutyCycle));
 			
 		} else if (x >= (interval*2)) {
-			FIO1CLR = (1<<19);//turn off led on olimex 2378 Sdev board
+//			FIO1CLR = (1<<19);//turn off led on olimex 2378 Sdev board
 
 			x = 0;
 
@@ -163,23 +165,15 @@ static void i2cblinkmTask(void *pvParameters) {
                        printf2("VICRawIntr register is: 0x%X\n\r",VICRawIntr);
 
 		       printf2("sending c...\r\n");
-                       printf2("VICVectAddr9 is: 0x%X\n\r", VICVectAddr9);
-                       printf2("i2c0_isr is: 0x%X\n\r", i2c0_isr);
-                       printf2("VICIntEnable is: 0x%X\n\r", VICIntEnable);
 
                        I2C0MasterTX(BLINKM_ADDR, &myDataToSend, 1);
                        printf2("VICRawIntr register is: 0x%X\n\r",VICRawIntr);
 
                        myDataToSend = 0xff;
 
-		       printf2("sending ff...\r\n");
-                       printf2("VICRawIntr register is: 0x%X\n\r",VICRawIntr);
-
                        I2C0MasterTX(BLINKM_ADDR, &myDataToSend, 1);
 
                        myDataToSend = 0xc4;
-		       printf2("sending c4...\r\n");
-                       printf2("VICRawIntr register is: 0x%X\n\r",VICRawIntr);
 
                        I2C0MasterTX(BLINKM_ADDR, &myDataToSend, 1);
 
@@ -273,6 +267,8 @@ int main( void )
     // Initialize I2C0
     I2Cinit(I2C0);
 
+    printf2("B4 Task create: 0x%X\n\r",VICRawIntr);
+    printf2("I2C0CONSET B4: 0x%X\n\r",I2C0CONSET);
     xTaskCreate( i2cblinkmTask, 
             ( signed portCHAR * ) "i2cblinkmTask", 
             I2CTEST_STACK_SIZE, NULL, 

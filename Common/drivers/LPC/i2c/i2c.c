@@ -69,92 +69,97 @@ int I2C2ReceiveData[I2C_MAX_BUFFER];
  * 5. Continue initializing...tbd
  */
 void I2Cinit(i2c_iface channel) {
-    printf2("\tI2C Initialize block! ...\n\r");
-    switch(channel) {
-        case I2C0: 
-            printf2("\tI2C0 Init! ...\n\r");
-            // power
-            SET_BIT(PCONP, PCI2C0);
 
-            // Enable
-            printf2("\tBefore I2C0 I2C0CONSET: 0x%X\n\r", I2C0CONSET);
-            SET_BIT(I2C0CONSET, I2EN ); // master mode
-            printf2("\tafter I2EN I2C0 I2C0CONSET: 0x%X\n\r", I2C0CONSET);
-            ZERO_BIT(I2C0CONSET, AA );
-            printf2("\tafter AA I2C0 I2C0CONSET: 0x%X\n\r", I2C0CONSET);
+    printf2("Start Init Raw :  0x%X\n\r",VICRawIntr);
+    portENTER_CRITICAL();
+    {
 
-            // I2C clock
-            I2C0SCLL = I2SCLLOW;
-            I2C0SCLH = I2SCLHIGH;
+        switch(channel) {
+            case I2C0: 
+                printf2("\tI2C0 Init! ...\n\r");
+                // power
+                SET_BIT(PCONP, PCI2C0);
 
-            // 2368 is 100pin package use table 107 p158 lpc23xx usermanual
-            PINSEL1 &= SDA0MASK;
-            PINSEL1 |= SDA0;
-            PINSEL1 &= SCL0MASK;
-            PINSEL1 |= SCL0;
+                // Enable
+                I2C0CONCLR = 0x7C;
+                printf2("\tA: I2C0CONSET is: 0x%X\n\r",I2C0CONSET);
+                SET_BIT(I2C0CONSET, I2EN ); // master mode
+                ZERO_BIT(I2C0CONSET, AA );
+                printf2("\tB: I2C0CONSET is: 0x%X\n\r",I2C0CONSET);
 
-            // pinmode: I2C0 pins permanent open drain (pullup)
-            // reference: lpc23xx usermanual p158 table 107 footnote 2
+                // I2C clock
+                I2C0SCLL = I2SCLLOW;
+                I2C0SCLH = I2SCLHIGH;
 
-            // vic
-            // set up VIC p93 table 86 lpc23xx user manual
-            SET_BIT(VICIntEnable, VICI2C0EN);
-            VICVectAddr9 = (unsigned) i2c0_isr;
+                // 2368 is 100pin package use table 107 p158 lpc23xx usermanual
+                PINSEL1 &= SDA0MASK;
+                PINSEL1 |= SDA0;
+                PINSEL1 &= SCL0MASK;
+                PINSEL1 |= SCL0;
 
-            SET_BIT(I2C0CONCLR, SI);
-            // continue initializing...? stopped here on Wed 02 September 2009 11:04:10 (PDT)
-            //
-            break;
-        case I2C1: 
-            printf2("\tI2C1 Init! ...\n");
-            SET_BIT(PCONP, PCI2C1);
+                // pinmode: I2C0 pins permanent open drain (pullup)
+                // reference: lpc23xx usermanual p158 table 107 footnote 2
 
-            SET_BIT(I2C1CONSET, I2EN );
-            ZERO_BIT(I2C1CONSET, AA );
+                // vic
+                // set up VIC p93 table 86 lpc23xx user manual
+                SET_BIT(VICIntEnable, VICI2C0EN);
+                VICVectAddr9 = (unsigned) i2c0_isr;
 
-            I2C1SCLL = I2SCLLOW;
-            I2C1SCLH = I2SCLHIGH;
+                I2C0CONCLR = 0x1<<SI;
+                printf2("End Init Raw :  0x%X\n\r",VICRawIntr);
+                break;
+            case I2C1: 
+                printf2("\tI2C1 Init! ...\n");
+                SET_BIT(PCONP, PCI2C1);
 
-            PINSEL1 &= SDA1MASK;
-            PINSEL1 |= SDA1;
-            PINSEL1 &= SCL1MASK;
-            PINSEL1 |= SCL1;
+                SET_BIT(I2C1CONSET, I2EN );
+                ZERO_BIT(I2C1CONSET, AA );
 
-            PINMODE1 &= SDA1MASK;
-            PINMODE1 |= PULLUP;
-            PINMODE1 &= SCL1MASK;
-            PINMODE1 |= PULLUP;
+                I2C1SCLL = I2SCLLOW;
+                I2C1SCLH = I2SCLHIGH;
 
-            SET_BIT(VICIntEnable, VICI2C1EN);
-            VICVectAddr19 = (unsigned) i2c1_isr;
-            break;
-        case I2C2: 
-            printf2("\tI2C1 Init! ...\n");
-            SET_BIT(PCONP, PCI2C2);
+                PINSEL1 &= SDA1MASK;
+                PINSEL1 |= SDA1;
+                PINSEL1 &= SCL1MASK;
+                PINSEL1 |= SCL1;
 
-            SET_BIT(I2C2CONSET, I2EN );
-            ZERO_BIT(I2C2CONSET, AA );
+                PINMODE1 &= SDA1MASK;
+                PINMODE1 |= PULLUP;
+                PINMODE1 &= SCL1MASK;
+                PINMODE1 |= PULLUP;
 
-            I2C2SCLL = I2SCLLOW;
-            I2C2SCLH = I2SCLHIGH;
+                SET_BIT(VICIntEnable, VICI2C1EN);
+                VICVectAddr19 = (unsigned) i2c1_isr;
+                break;
+            case I2C2: 
+                printf2("\tI2C1 Init! ...\n");
+                SET_BIT(PCONP, PCI2C2);
 
-            PINSEL0 &= SDA2MASK;
-            PINSEL0 |= SDA2;
-            PINSEL0 &= SCL2MASK;
-            PINSEL0 |= SCL2;
+                SET_BIT(I2C2CONSET, I2EN );
+                ZERO_BIT(I2C2CONSET, AA );
 
-            PINMODE2 &= SDA2MASK;
-            PINMODE2 |= PULLUP;
-            PINMODE2 &= SCL2MASK;
-            PINMODE2 |= PULLUP;
+                I2C2SCLL = I2SCLLOW;
+                I2C2SCLH = I2SCLHIGH;
 
-            SET_BIT(VICIntEnable, VICI2C2EN);
-            VICVectAddr30 = (unsigned) i2c2_isr;
-            break;
-        default:
-            //  error         ???
-            break;
+                PINSEL0 &= SDA2MASK;
+                PINSEL0 |= SDA2;
+                PINSEL0 &= SCL2MASK;
+                PINSEL0 |= SCL2;
+
+                PINMODE2 &= SDA2MASK;
+                PINMODE2 |= PULLUP;
+                PINMODE2 &= SCL2MASK;
+                PINMODE2 |= PULLUP;
+
+                SET_BIT(VICIntEnable, VICI2C2EN);
+                VICVectAddr30 = (unsigned) i2c2_isr;
+                break;
+            default:
+                //  error         ???
+                break;
+        }
     }
+    portEXIT_CRITICAL();
 }
 
 //printf2("z%d", b1);
@@ -162,10 +167,13 @@ void I2Cinit(i2c_iface channel) {
  * i2c0_isr
  */
 void i2c0_isr(void) {
+
+    portSAVE_CONTEXT();
+
     uint32_t status;
     uint8_t  holdbyte;
 
-    printf2("\tI2C0 isr entry..\n\r");
+//    printf2("\tI2C0 isr entry..\n\r");
     status = I2C0STAT;
 
     //Read the I2C state from the correct I2STA register and then branch to
@@ -176,9 +184,9 @@ void i2c0_isr(void) {
         case 0x00:
             printf2("\tI2C0 State 0x00...\n");
             //write 0x14 to I2CONSET to set the STO and AA flags.
-            SET_BIT(I2C0CONCLR, STO);
-            SET_BIT(I2C0CONCLR, AA);
-            SET_BIT(I2C0CONCLR, SI);
+            SET_BIT(I2C0CONSET, STO);
+            SET_BIT(I2C0CONSET, AA);
+            I2C0CONCLR = 0x1<<SI;
             break;
 
             // State 0X08 - A start condition has been transmitted, The Slave Address 
@@ -192,7 +200,7 @@ void i2c0_isr(void) {
             SET_BIT(I2C0CONSET,AA);
 
             //write 0x08 to I2CONCLR to clear the SI flag
-            SET_BIT(I2C0CONCLR, SI);
+            I2C0CONCLR = 0x1<<SI;
             break;
 
 
@@ -208,7 +216,7 @@ void i2c0_isr(void) {
             SET_BIT(I2C0CONSET,AA);
 
             //write 0x08 to I2CONCLR to clear the SI flag
-            SET_BIT(I2C0CONCLR, SI);
+            I2C0CONCLR = 0x1<<SI;
             break;
 
             //State 0x18 - Previous state was 0x08 or 0x10.  Slave Address and Read or 
@@ -221,7 +229,7 @@ void i2c0_isr(void) {
                 SET_BIT(I2C0CONSET,AA);
                 I2C0DataCounter++;
             }
-            SET_BIT(I2C0CONCLR, SI);
+            I2C0CONCLR = 0x1<<SI;
             break;
 
             //State 0x20 - Slave Address + Write has been transmitted.  NOT ACK has been 
@@ -230,7 +238,7 @@ void i2c0_isr(void) {
             printf2("\tI2C0 State 0x20...\n");
             SET_BIT(I2C0CONSET, STO);
             SET_BIT(I2C0CONSET, AA);
-            SET_BIT(I2C0CONCLR, SI);
+            I2C0CONCLR = 0x1<<SI;
             break;
 
             //State 0x28 - Data has been transmitted, ACK has been received. If the 
@@ -248,7 +256,7 @@ void i2c0_isr(void) {
                     I2C0DataCounter++;
                 }
             }
-            SET_BIT(I2C0CONCLR, SI);
+            I2C0CONCLR = 0x1<<SI;
             break;
 
             //State 0x30 - Data has been transmitted, NOT ACK received. A Stop condition 
@@ -257,7 +265,7 @@ void i2c0_isr(void) {
             printf2("\tI2C0 State 0x30...\n");
             SET_BIT(I2C0CONSET, STO);
             SET_BIT(I2C0CONSET, AA);
-            SET_BIT(I2C0CONCLR, SI);
+            I2C0CONCLR = 0x1<<SI;
             break;
 
             //State 0x38 - Arbitration has been lost during Slave Address + Write or data. 
@@ -267,7 +275,7 @@ void i2c0_isr(void) {
             printf2("\tI2C0 State 0x38...\n");
             SET_BIT(I2C0CONSET, STA);
             SET_BIT(I2C0CONSET, AA);
-            SET_BIT(I2C0CONCLR, SI);
+            I2C0CONCLR = 0x1<<SI;
             break;
 
             //State 0x40
@@ -276,7 +284,7 @@ void i2c0_isr(void) {
         case 0x40:
             printf2("\tI2C0 State 0x40...\n");
             SET_BIT(I2C0CONSET, AA);
-            SET_BIT(I2C0CONCLR, SI);
+            I2C0CONCLR = 0x1<<SI;
             break;
 
             //State 0x48 - Slave Address + Read has been transmitted, NOT ACK has been received. 
@@ -285,7 +293,7 @@ void i2c0_isr(void) {
             printf2("\tI2C0 State 0x48...\n");
             SET_BIT(I2C0CONSET, STO);
             SET_BIT(I2C0CONSET, AA);
-            SET_BIT(I2C0CONCLR, SI);
+            I2C0CONCLR = 0x1<<SI;
             break;
 
             //State: 0x50 - Data has been received, ACK has been returned. Data will be read 
@@ -298,11 +306,11 @@ void i2c0_isr(void) {
             }
             I2C0DataCounter++;
             if(I2C0DataCounter == I2C0DataLength) {
-                SET_BIT(I2C0CONCLR, AA);
+                I2C0CONCLR = 0x1<<AA;
             } else if(I2C0DataCounter < I2C0DataLength) {
                 SET_BIT(I2C0CONSET, AA);
             }
-            SET_BIT(I2C0CONCLR, SI);
+            I2C0CONCLR = 0x1<<SI;
             break;
 
             //State: 0x58 - Data has been received, NOT ACK has been returned. Data will be read 
@@ -311,12 +319,14 @@ void i2c0_isr(void) {
             printf2("\tI2C0 State 0x58...\n");
             SET_BIT(I2C0CONSET, STO);
             SET_BIT(I2C0CONSET, AA);
-            SET_BIT(I2C0CONCLR, SI);
+            I2C0CONCLR = 0x1<<SI;
             break;
         default:
             printf2("*ERROR* Un-implemented state!\n");
             break;
     }
+    VICVectAddr = 0x0;   // clear VIC address
+    portRESTORE_CONTEXT();
 }
 
 /*
@@ -361,13 +371,9 @@ void I2C0MasterTX(int deviceAddr, int *myDataToSend, int dataLength) {
     I2C0ExtSlaveAddress &= WRITEMASK;
 
     //write 0x20 to I2CONSET to set the STA bit
-    printf2("In Send Start bit\n\r");
     printf2("Before STA: VICRawIntr register is: 0x%X\n\r",VICRawIntr);
     SET_BIT(I2C0CONSET, STA);
-    printf2("After STA: VICRawIntr register is: 0x%X\n\r",VICRawIntr);
-
-    printf2("I2C0STAT is: 0x%X\n\r", I2C0STAT);
-    printf2("I2C0CONSET is: 0x%X\n\r", I2C0CONSET);
+//    printf2("After STA:  0x%X\n\r",VICRawIntr);
 
 } 
 
@@ -376,7 +382,7 @@ void I2C0MasterTX(int deviceAddr, int *myDataToSend, int dataLength) {
 //takes a string containing the I2C channel to be set up
 //takes an int (should this be byte?) vector containing the data to recieve
 //takes a pointer to an int to contain the length of the received data (is this needed?)
-void I2C1MasterRX(int deviceAddr, int *myDataToSend, int dataLength) {
+void I2C0MasterRX(int deviceAddr, int *myDataToSend, int dataLength) {
     uint32_t i;
 
     //set up the data to be transmitted in the Master RX buffer

@@ -276,7 +276,7 @@ int main( void )
 	
 	enableSerial0();
 	xSerialPortInitMinimal(0, 115200, 250 );
-	vSerialPutString(0, "Starting up LPC23xx with FreeRTOS\n", 50);
+	vSerialPutString(0, "Starting up LPC23xx with FreeRTOS\n\r", 50);
 	
 	SCS |= 1; //Configure FIO
 	
