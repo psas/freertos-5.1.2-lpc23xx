@@ -50,9 +50,6 @@
 	licensing and training services.
 */
 
-
-
-
 /* Scheduler includes. */
 #include "FreeRTOS.h"
 #include "task.h"
@@ -74,8 +71,7 @@
 #include "serial/serial.h"
 #include "printf/uart0PutChar2.h"
 #include "printf/printf2.h"
-#include "gpio/gpio.h"
-#include "adc/adc.h"
+
 
 
 
@@ -140,63 +136,33 @@
 
 
 static void blinkyLightTask(void *pvParameters) {
-	
-	
-	int v = 0;
 	int x = 0;
-	//signed portCHAR theChar;
-	//signed portBASE_TYPE status;
-	//const int interval = 100000;
+	signed portCHAR theChar;
+	signed portBASE_TYPE status;
+	const int interval = 100000;
 	// echo any character received (do USB stuff in interrupt)
 	
 	for(;;) {
 		//vSerialPutString(0, "Testing...\r\n", 50);
-				//x++;
+		x++;
 
-		if ( ( ( FIO0PIN >> 6 ) & 0x00000001 ) == 0x00000001 ) {
-			
-			v = 1;
-		}
-		else if  ( ( ( FIO0PIN >> 6 ) & 0x00000001 ) == 0x00000000 ) {
-		
-			v = 0;
-		}
-
-		//printf2("%d", FIO0PIN);
-		//x = (int) ( ( FIO0PIN >> 6 ) & 0x00000001 );
-		//printf2("FIO0PIN = 0x%X\r\n", FIO0PIN);
-		printf2("v = %d\r\n", v);
-
-		if ( v == 1 ) {//(x == interval) {
-			//printf2("Flame off!\r\n");
+		if (x == interval) {
 			FIO1SET = (1<<19);//turn on led on olimex 2378 dev board
-		}
-		else if ( v == 0 ) {
-			//printf2("FLAME ON!\r\n");
-			FIO1CLR = (1<<19);//turn off led on olimex 2378 Sdev board
-		}	
 			
-/*		} else if (x >= (interval*2)) {
+		} else if (x >= (interval*2)) {
 			FIO1CLR = (1<<19);//turn off led on olimex 2378 Sdev board
 
 			x = 0;
-			//printf2("Blinky Light Task...\r\n");
+			printf2("Blinky Light Task...\r\n");
 			
 			status = xSerialGetChar(0, &theChar, 1);
 			if( status == pdTRUE ) {
 				printf2("You typed the character: '%c'\r\n", theChar);
 			}
 		}
-*/
 	}
 }
 
-static void ADCtestTask(void *pvParameters) {
-	
-	//initFGPIOPin(PORT1, 19, FALSE);  //Similar function from a similar location.  This one works if uncommented, the one below does not.  
-	configureADCPort( AD0_0 );
-	
-}
 
 /*-----------------------------------------------------------*/
 
@@ -249,13 +215,7 @@ static void prvSetupHardware( void )
 	*/
 	
 	/* Setup the led's on the MCB2300 board */
-	//doing this manually for now!
-	//vParTestInitialise();  
-	
-	//SCS |= 1;  //set to fast GPIO
-	//FIO1DIR |= (1<<19); //set P1.19 as output
-	initFGPIOPin(PORT1, 19, FALSE);
-	
+	vParTestInitialise();
 }
 
 
@@ -281,7 +241,6 @@ int main( void )
 	SCS |= 1; //Configure FIO
 	
 	xTaskCreate( blinkyLightTask, ( signed portCHAR * ) "BlinkyLight", configMINIMAL_STACK_SIZE, NULL, mainCHECK_TASK_PRIORITY - 1, NULL );
-	xTaskCreate( ADCtestTask, ( signed portCHAR * ) "ADCtest", configMINIMAL_STACK_SIZE, NULL, mainCHECK_TASK_PRIORITY - 1, NULL );
   
 	/* Start the scheduler. */
 	vTaskStartScheduler();

@@ -89,9 +89,15 @@
 
 typedef enum { I2C0=0, I2C1, I2C2} i2c_iface;
 
+/*
 void i2c0_isr(void) __attribute__ ((interrupt("IRQ")));
 void i2c1_isr(void) __attribute__ ((interrupt("IRQ")));
 void i2c2_isr(void) __attribute__ ((interrupt("IRQ")));
+*/
+
+void i2c0_isr(void) __attribute__ ((naked));
+void i2c1_isr(void) __attribute__ ((naked));
+void i2c2_isr(void) __attribute__ ((naked));
 
 void i2cinit(i2c_iface channel) ;
 void I2C0MasterRX(int deviceAddr, int *myDataToSend, int dataLength) ;
