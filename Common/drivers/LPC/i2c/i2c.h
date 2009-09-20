@@ -87,6 +87,12 @@
 #define READMASK         (0x1<<8) 
 #define WRITEMASK        ~(0x1<<8)
 
+// I2C bus control characters
+#define SEND_I2C_STOPSTART	0x3000
+#define SEND_I2C_REPEATEDSTART	0x2000
+#define SEND_I2C_STOP		0x1000
+
+
 typedef enum { I2C0=0, I2C1, I2C2} i2c_iface;
 
 /*

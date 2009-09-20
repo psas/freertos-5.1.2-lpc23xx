@@ -233,8 +233,20 @@ void i2c0_isr(void) {
             //will be transmitted, an ACK bit will be received.
         case 0x18:
             if(I2C0DataCounter < I2C0DataLength) {
-                I2C0DAT = I2C0TransmitData[I2C0DataCounter];
-                SET_BIT(I2C0CONSET,AA);
+            	if(I2C0TransmitData[I2C0DataCounter] == SEND_I2C_STOPSTART){
+            		SET_BIT(I2C0CONSET, STA);
+            		SET_BIT(I2C0CONSET, STO);
+            	}
+            	else if(I2C0TransmitData[I2C0DataCounter] == SEND_I2C_REPEATEDSTART){
+            		SET_BIT(I2C0CONSET, STA);
+            	}
+            	else if(I2C0TransmitData[I2C0DataCounter] == SEND_I2C_STOP){
+            		SET_BIT(I2C0CONSET, STO);
+            	}
+            	else{
+         	       I2C0DAT = I2C0TransmitData[I2C0DataCounter];
+         	       SET_BIT(I2C0CONSET,AA);
+         	}
                 I2C0DataCounter++;
             }
             I2C0CONCLR = 0x1<<SI;
@@ -255,12 +267,23 @@ void i2c0_isr(void) {
             if(I2C0DataCounter == I2C0DataLength) {
                 SET_BIT(I2C0CONSET, STO);
                 SET_BIT(I2C0CONSET, AA);
-            } else {
-                if(I2C0DataCounter < I2C0DataLength) {
+            } 
+            else if(I2C0DataCounter < I2C0DataLength) {
+            	if(I2C0TransmitData[I2C0DataCounter] == SEND_I2C_STOPSTART){
+            		SET_BIT(I2C0CONSET, STA);
+            		SET_BIT(I2C0CONSET, STO);
+            	}
+            	else if(I2C0TransmitData[I2C0DataCounter] == SEND_I2C_REPEATEDSTART){
+            		SET_BIT(I2C0CONSET, STA);
+            	}
+            	else if(I2C0TransmitData[I2C0DataCounter] == SEND_I2C_STOP){
+            		SET_BIT(I2C0CONSET, STO);
+            	}
+            	else{
                     I2C0DAT = I2C0TransmitData[I2C0DataCounter];
                     SET_BIT(I2C0CONSET,AA);
-                    I2C0DataCounter++;
                 }
+                    I2C0DataCounter++;
             }
             I2C0CONCLR = 0x1<<SI;
             break;
@@ -308,7 +331,8 @@ void i2c0_isr(void) {
             I2C0DataCounter++;
             if(I2C0DataCounter == I2C0DataLength) {
                 I2C0CONCLR = 0x1<<AA;
-            } else if(I2C0DataCounter < I2C0DataLength) {
+            }
+            else if(I2C0DataCounter < I2C0DataLength) {
                 SET_BIT(I2C0CONSET, AA);
             }
             I2C0CONCLR = 0x1<<SI;
