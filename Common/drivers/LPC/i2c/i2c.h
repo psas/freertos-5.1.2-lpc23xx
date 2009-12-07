@@ -57,9 +57,9 @@
 #define PCI2C2           26
 
     // I2C clock
-    // Table 446 p516 lpc23xx
-#define I2SCLHIGH        80
-#define I2SCLLOW         80
+    // Table 435 p496 lpc23xx
+#define I2SCLHIGH        200
+#define I2SCLLOW         200
 
     // PINSEL0
 #define SDA2             (0x2<<20)
@@ -85,7 +85,9 @@
 
 // Control
 #define READMASK         (0x1<<8) 
-#define WRITEMASK        ~(0x1<<8)
+// Thu 12 November 2009 10:44:04 (PST)
+// #define WRITEMASK        ~(0x1<<8)
+#define WRITEMASK ~(0x1)
 
 // I2C bus control characters
 #define SEND_I2C_STOPSTART	0x3000
@@ -107,7 +109,7 @@ void i2c2_isr(void) __attribute__ ((naked));
 
 void i2cinit(i2c_iface channel) ;
 void I2C0MasterRX(int deviceAddr, int *myDataToSend, int dataLength) ;
-void I2C0MasterTX(int deviceAddr, int *myDataToSend, int dataLength) ;
+void I2C0MasterTX(int deviceAddr, uint32_t *myDataToSend, int dataLength) ;
 
 #endif
 

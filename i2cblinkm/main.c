@@ -121,59 +121,126 @@ static void i2cblinkmTask(void *pvParameters) {
     int x = 0;
     signed portCHAR theChar;
     signed portBASE_TYPE status;
-    const int interval = 100000;
+    const int interval = 1000000;
 
     uint32_t blinkm_id;
 
-    uint32_t pwmDutyCycle = 1000;
+    // uint32_t pwmDutyCycle = 1000;
 
-    int myDataToSend;
+    uint32_t myDataToSend[100];
 
     printf2("VICIntEnable is: 0x%X\n\r", VICIntEnable);
+    FIO1CLR = (1<<19);//turn off p1.22 on olimex 2378 Sdev board
+    FIO1CLR = (1<<20);//turn off p1.20 on olimex 2378 Sdev board
+    FIO1CLR = (1<<22);//turn off p1.22 on olimex 2378 Sdev board
+    FIO1CLR = (1<<24);//turn off p1.24 on olimex 2378 Sdev board
+    FIO1CLR = (1<<25);//turn off p1.24 on olimex 2378 Sdev board
+    FIO1CLR = (1<<26);//turn off p1.26 on olimex 2378 Sdev board
+    FIO1CLR = (1<<27);//turn off p1.27 on olimex 2378 Sdev board
+    FIO1CLR = (1<<28);//turn off p1.28 on olimex 2378 Sdev board
+    FIO1CLR = (1<<31);//turn off p1.31 on olimex 2378 Sdev board
+
+    FIO0CLR = (1<<6);//turn off p0.6on olimex 2378 Sdev board
+
+    if(I2C0STAT & 1<<0) {
+        FIO1SET = (1<<28);
+    } else {
+        FIO1CLR = (1<<28);
+    }
+    if(I2C0STAT & 1<<1) {
+        FIO1SET = (1<<20);
+    } else {
+        FIO1CLR = (1<<20);
+    }
+    if(I2C0STAT & 1<<2) {
+        FIO1SET = (1<<22);
+    } else {
+        FIO1CLR = (1<<22);
+    }
+    if(I2C0STAT & 1<<3) {
+        FIO1SET = (1<<24);
+    } else {
+        FIO1CLR = (1<<24);
+    }
+    if(I2C0STAT & 1<<4) {
+        FIO1SET = (1<<25);
+    } else {
+        FIO1CLR = (1<<25);
+    }
+    if(I2C0STAT & 1<<5) {
+        FIO1SET = (1<<26);
+    } else {
+        FIO1CLR = (1<<26);
+    }
+    if(I2C0STAT & 1<<6) {
+        FIO1SET = (1<<27);
+    } else {
+        FIO1CLR = (1<<27);
+    }
+    if(I2C0STAT & 1<<7) {
+        FIO1SET = (1<<31);
+    } else {
+        FIO1CLR = (1<<31);
+    }
+
+
 
     for(;;) {
         //vSerialPutString(0, "Testing...\r\n", 50);
         x++;
 
+        //    FIO0SET = (1<<6);//turn on p0.6 on olimex 2378 Sdev board
+        //       vTaskDelay( 10 );
         if (x == interval) {
-//            FIO1SET = (1<<19);//turn on led on olimex 2378 dev board
-
-            pwmDutyCycle += 100;
-            if(pwmDutyCycle > 2000 ) {
-                pwmDutyCycle = 1000;
-            }
-            setPWMDutyCycle(PWM1_1, microsecondsToCPUTicks(pwmDutyCycle));
-
-        } else if (x >= (interval*2)) {
+            FIO0CLR = (1<<6);//turn on p0.6 on olimex 2378 Sdev board
             FIO1CLR = (1<<19);//turn off led on olimex 2378 Sdev board
-//            vTaskDelay( 1000 );
+
+//             pwmDutyCycle += 100;
+ //            if(pwmDutyCycle > 2000 ) {
+  //               pwmDutyCycle = 1000;
+   //          }
+    //         setPWMDutyCycle(PWM1_1, microsecondsToCPUTicks(pwmDutyCycle));
+
+        } else if (x >= (interval)) {
+            FIO0CLR = (1<<6);//turn on p0.6 on olimex 2378 Sdev board
+            FIO1SET = (1<<19);//turn on led on olimex 2378 dev board
+            //            FIO1CLR = (1<<22);//turn off p1.22 on olimex 2378 Sdev board
+            //                FIO1SET = FIO1SET ^ (1<<22);//invert state of p1.22 on olimex 2378 dev board
+            //            vTaskDelay( 10000 );
 
 
             x = 0;
 
-            printf2("i2c Light Task...\r\n");
+                   printf2("i2c Light Task...\r\n");
 
-            myDataToSend = 'c';
-            printf2("VICRawIntr register is: 0x%X\n\r",VICRawIntr);
+                       myDataToSend[0] = 'n';
+                       myDataToSend[1] = 0xff;
+                       myDataToSend[2] = 0x0;
+                       myDataToSend[3] = 0x0;
+            //             printf2("myDataToSend: %c 0x%X\n", myDataToSend[0], myDataToSend[0]);
+            //            printf2("VICRawIntr register is: 0x%X\n\r",VICRawIntr);
+            //           printf2("I2C0STAT register is:   0x%X\n\r",I2C0STAT);
 
-            printf2("sending c...\r\n");
+                       look at interrupt registers, machine hangs on second
+                           entry to interrupt, maybe i2c not exiting after
+                           completion properly? Sun 06 December 2009 23:39:23 (PST)
 
-            I2C0MasterTX(BLINKM_ADDR, &myDataToSend, 1);
+        //                I2C0MasterTX(BLINKM_ADDR, myDataToSend, 4);
 
-            printf2("VICRawIntr register is: 0x%X\n\r",VICRawIntr);
+            //            printf2("VICRawIntr register is: 0x%X\n\r",VICRawIntr);
 
-            myDataToSend = 0xff;
+            //            myDataToSend[0] = 0xff;
 
-            I2C0MasterTX(BLINKM_ADDR, &myDataToSend, 1);
+            //            I2C0MasterTX(BLINKM_ADDR, &myDataToSend, 1);
 
-            myDataToSend = 0xc4;
+            //            myDataToSend[0] = 0xc4;
 
-            I2C0MasterTX(BLINKM_ADDR, &myDataToSend, 1);
+            //            I2C0MasterTX(BLINKM_ADDR, &myDataToSend, 1);
 
-            status = xSerialGetChar(0, &theChar, 1);
-            if( status == pdTRUE ) {
-                printf2("You typed the character: '%c'\r\n", theChar);
-            }
+            //            status = xSerialGetChar(0, &theChar, 1);
+            //            if( status == pdTRUE ) {
+            //                printf2("You typed the character: '%c'\r\n", theChar);
+            //           }
         }
     }
 }
@@ -229,7 +296,17 @@ static void prvSetupHardware( void )
        MAMTIM = mainMAM_TIM_3;
        MAMCR = mainMAM_MODE_FULL;
        */
-       FIO1DIR |= (1<<19);
+    FIO1DIR |= (1<<19);
+    FIO1DIR |= (1<<20);
+    FIO1DIR |= (1<<22);
+    FIO1DIR |= (1<<24);
+    FIO1DIR |= (1<<25);
+    FIO1DIR |= (1<<26);
+    FIO1DIR |= (1<<27);
+    FIO1DIR |= (1<<28);
+    FIO1DIR |= (1<<31);
+
+    FIO0DIR |= (1<<6);
 
 }
 
@@ -246,21 +323,38 @@ void enableSerial0( void ) {
 //#define PCLK    48000000
 int main( void )
 {
+    uint32_t myDataToSend[100];
     prvSetupHardware();
 
     enableSerial0();
 
-    PWMinit (0, milisecondsToCPUTicks(30));                // 30ms period, given 48mhz CPU clock
+//    PWMinit (0, milisecondsToCPUTicks(30));                // 30ms period, given 48mhz CPU clock
 
-    setupPWMChannel(PWM1_1, microsecondsToCPUTicks(1500)); // 1ms duty cycle, given 48mhz CPU clock
+//    setupPWMChannel(PWM1_1, microsecondsToCPUTicks(1500)); // 1ms duty cycle, given 48mhz CPU clock
 
     xSerialPortInitMinimal(0, 115200, 250 );
     vSerialPutString(0, "Starting up LPC23xx with FreeRTOS\n\r", 50);
 
     SCS |= 1; //Configure FIO
 
+//     uint32_t pllcfg   = PLLCFG;
+//     uint32_t pllstat = PLLSTAT ;
+//     uint32_t cclkcfg  = CCLKCFG;
+//     uint32_t pclksel0 = PCLKSEL0 ;
+//     uint32_t pclksel1 = PCLKSEL1 ;
+//     uint32_t clksrcsel = CLKSRCSEL ;
+//    printf2("\tPLLCFG is: 0x%X\n\r", pllcfg);
+//    printf2("\tCCLKCFG is: 0x%X\n\r", cclkcfg);
+//    printf2("\tCLKSRCSEL is: 0x%X\n\r", clksrcsel);
+//    printf2("\tPCLKSEL0 is: 0x%X\n\r", pclksel0);
+//    printf2("\tPCLKSEL0 is: 0x%X\n\r", pclksel1);
+
     // Initialize I2C0
     I2Cinit(I2C0);
+
+//    myDataToSend[0] = 'c';
+//    myDataToSend[1] = 'f';
+//    I2C0MasterTX(BLINKM_ADDR, myDataToSend, 1);
 
 
     xTaskCreate( i2cblinkmTask, 
@@ -268,6 +362,7 @@ int main( void )
             I2CTEST_STACK_SIZE, NULL, 
             mainCHECK_TASK_PRIORITY - 1, 
             NULL );
+
 
     /* Start the scheduler. */
     vTaskStartScheduler();
@@ -326,6 +421,5 @@ void vApplicationTickHook( void )
         xHigherPriorityTaskWoken = pdFALSE;
     }
 }
-
 
 
