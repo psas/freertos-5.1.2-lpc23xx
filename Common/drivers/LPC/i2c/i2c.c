@@ -168,8 +168,6 @@ void I2Cinit(i2c_iface channel) {
 void i2c0_isr(void) {
 
     portSAVE_CONTEXT();
-    {
-        portENTER_CRITICAL();
 
         //        FIO1SET & (1<<22)
         //        FIO1CLR = (1<<22);
@@ -274,9 +272,7 @@ void i2c0_isr(void) {
 
                     I2C0DAT = I2C0TransmitData[I2C0DataCounter];
                     //                    I2C0DAT = 0x55;
-                    // SET_BIT(I2C0CONSET,AA);
-                    //               I2C0CONSET = 0x4;
-                    //              I2C0CONCLR = 0x1<<SI;
+                    SET_BIT(I2C0CONSET,AA);
                     I2C0CONCLR = 0x20;
                     I2C0CONCLR = 0x1<<SI;
                     //    ZERO_BIT(I2C0CONSET, STO);
@@ -371,8 +367,6 @@ void i2c0_isr(void) {
             default:
                 break;
         }
-    };
-    portEXIT_CRITICAL();
 
     VICVectAddr = 0x0;   // clear VIC address
 

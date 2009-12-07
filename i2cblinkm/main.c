@@ -201,7 +201,7 @@ static void i2cblinkmTask(void *pvParameters) {
    //          }
     //         setPWMDutyCycle(PWM1_1, microsecondsToCPUTicks(pwmDutyCycle));
 
-        } else if (x >= (interval)) {
+        } else if (x >= (interval* 2)) {
             FIO0CLR = (1<<6);//turn on p0.6 on olimex 2378 Sdev board
             FIO1SET = (1<<19);//turn on led on olimex 2378 dev board
             //            FIO1CLR = (1<<22);//turn off p1.22 on olimex 2378 Sdev board
@@ -213,19 +213,31 @@ static void i2cblinkmTask(void *pvParameters) {
 
                    printf2("i2c Light Task...\r\n");
 
-                       myDataToSend[0] = 'n';
-                       myDataToSend[1] = 0xff;
-                       myDataToSend[2] = 0x0;
+                       myDataToSend[0] = 'o';
+                       myDataToSend[1] = 'n';
+                       myDataToSend[2] = 0xff;
                        myDataToSend[3] = 0x0;
+                       myDataToSend[4] = 0x0;
+                       myDataToSend[5] = 'c';
+                       myDataToSend[6] = 0xff;
+                       myDataToSend[7] = 0xff;
+                       myDataToSend[8] = 0x00;
+                       myDataToSend[9] = 'p';
+                       myDataToSend[10] = 0x4;
+                       myDataToSend[11] = 0x2;
+                       myDataToSend[12] = 0x00;
+ 
             //             printf2("myDataToSend: %c 0x%X\n", myDataToSend[0], myDataToSend[0]);
             //            printf2("VICRawIntr register is: 0x%X\n\r",VICRawIntr);
             //           printf2("I2C0STAT register is:   0x%X\n\r",I2C0STAT);
 
+                       /*
                        look at interrupt registers, machine hangs on second
                            entry to interrupt, maybe i2c not exiting after
                            completion properly? Sun 06 December 2009 23:39:23 (PST)
+                           */
 
-        //                I2C0MasterTX(BLINKM_ADDR, myDataToSend, 4);
+                        I2C0MasterTX(BLINKM_ADDR, myDataToSend, 13);
 
             //            printf2("VICRawIntr register is: 0x%X\n\r",VICRawIntr);
 
