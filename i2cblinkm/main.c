@@ -224,6 +224,7 @@ static void i2cblinkmTask(void *pvParameters) {
              write=0;
             } else {
                 I2C0MasterRX(BLINKM_ADDR, myDataToGet, 1);
+                printf2("mydatatoget[0] is 0x%X\n\r",myDataToGet[0]);
                 write = 1;
             }
 

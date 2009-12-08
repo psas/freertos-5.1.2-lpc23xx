@@ -327,7 +327,10 @@ void i2c0_isr(void) {
                 //Previous state was State 08 or State 10. Slave Address + Read has been transmitted,
                 //ACK has been received. Data will be received and ACK returned.
             case 0x40:
-                SET_BIT(I2C0CONSET, AA);
+                if(I2C0DataCounter < I2C0DataLength) {
+                    I2C0CONCLR = 0x20;
+                    SET_BIT(I2C0CONSET, AA);
+                }
                 I2C0CONCLR = 0x1<<SI;
                 break;
 
@@ -343,15 +346,13 @@ void i2c0_isr(void) {
                 //from I2DAT. Additional data will be received. If this is the last data byte then 
                 //NOT ACK will be returned, otherwise ACK will be returned.
             case 0x50:
-                if(I2C0DataCounter < I2C0DataLength) {
-                    I2C0ReceiveData[I2C0DataCounter] = I2C0DAT;
-                }
-                I2C0DataCounter++;
                 if(I2C0DataCounter == I2C0DataLength) {
                     I2C0CONCLR = 0x1<<AA;
                 }
                 else if(I2C0DataCounter < I2C0DataLength) {
+                    I2C0ReceiveData[I2C0DataCounter] = I2C0DAT;
                     SET_BIT(I2C0CONSET, AA);
+                    I2C0DataCounter++;
                 }
                 I2C0CONCLR = 0x1<<SI;
                 break;
