@@ -121,13 +121,13 @@ static void i2cblinkmTask(void *pvParameters) {
     int x = 0;
     signed portCHAR theChar;
     signed portBASE_TYPE status;
-    const int interval = 1000000;
+    const int interval = 100000;
 
     uint32_t blinkm_id;
 
     // uint32_t pwmDutyCycle = 1000;
 
-    uint32_t myDataToSend[100];
+    uint32_t myDataToGet[100];
 
     printf2("VICIntEnable is: 0x%X\n\r", VICIntEnable);
     FIO1CLR = (1<<19);//turn off p1.22 on olimex 2378 Sdev board
@@ -184,6 +184,7 @@ static void i2cblinkmTask(void *pvParameters) {
     }
 
 
+    int write = 1;
 
     for(;;) {
         //vSerialPutString(0, "Testing...\r\n", 50);
@@ -201,7 +202,7 @@ static void i2cblinkmTask(void *pvParameters) {
    //          }
     //         setPWMDutyCycle(PWM1_1, microsecondsToCPUTicks(pwmDutyCycle));
 
-        } else if (x >= (interval* 2)) {
+        } else if (x >= (interval)) {
             FIO0CLR = (1<<6);//turn on p0.6 on olimex 2378 Sdev board
             FIO1SET = (1<<19);//turn on led on olimex 2378 dev board
             //            FIO1CLR = (1<<22);//turn off p1.22 on olimex 2378 Sdev board
@@ -211,35 +212,45 @@ static void i2cblinkmTask(void *pvParameters) {
 
             x = 0;
 
-                   printf2("i2c Light Task...\r\n");
+            printf2("i2c Light Task...\r\n");
 
-                       myDataToSend[0] = 'o';
-                       myDataToSend[1] = 'n';
-                       myDataToSend[2] = 0xff;
+            // uint32_t myDataToSend[100] = {'o', 'p', 0x4, 0x2, 0x0, 'a'};
+             uint32_t myDataToSend[100] = {'a'};
+            if(write==1) {
+            // printf2("i2c Light Task write cmd...\r\n");
+
+            //  I2C0MasterTX(BLINKM_ADDR, myDataToSend, 6);
+             I2C0MasterTX(BLINKM_ADDR, myDataToSend, 1);
+             write=0;
+            } else {
+                I2C0MasterRX(BLINKM_ADDR, myDataToGet, 1);
+                write = 1;
+            }
+
+            //           } else {
+            //      printf2("i2c Light Task read data ...\r\n");
+            //             printf2("mydatatoget[0] is 0x%X\n\r",myDataToGet[0]);
+            //            write=1;
+            //       }
+
+            /*                       myDataToSend[1] = 'n';
+                                     myDataToSend[2] = 0xff;
                        myDataToSend[3] = 0x0;
                        myDataToSend[4] = 0x0;
                        myDataToSend[5] = 'c';
                        myDataToSend[6] = 0xff;
                        myDataToSend[7] = 0xff;
-                       myDataToSend[8] = 0x00;
-                       myDataToSend[9] = 'p';
-                       myDataToSend[10] = 0x4;
-                       myDataToSend[11] = 0x2;
-                       myDataToSend[12] = 0x00;
- 
-            //             printf2("myDataToSend: %c 0x%X\n", myDataToSend[0], myDataToSend[0]);
-            //            printf2("VICRawIntr register is: 0x%X\n\r",VICRawIntr);
-            //           printf2("I2C0STAT register is:   0x%X\n\r",I2C0STAT);
+                       myDataToSend[8] = 0x00; */
 
-                       /*
-                       look at interrupt registers, machine hangs on second
-                           entry to interrupt, maybe i2c not exiting after
-                           completion properly? Sun 06 December 2009 23:39:23 (PST)
-                           */
 
-                        I2C0MasterTX(BLINKM_ADDR, myDataToSend, 13);
+            //         printf2("myDataToSend: %c 0x%X\n", myDataToSend[0], myDataToSend[0]);
+            //         printf2("VICRawIntr register is: 0x%X\n\r",VICRawIntr);
+            //         printf2("I2C0STAT register is:   0x%X\n\r",I2C0STAT);
 
-            //            printf2("VICRawIntr register is: 0x%X\n\r",VICRawIntr);
+
+//                vTaskDelay( 100 );
+//e
+                       // printf2("VICRawIntr register is: 0x%X\n\r",VICRawIntr);
 
             //            myDataToSend[0] = 0xff;
 

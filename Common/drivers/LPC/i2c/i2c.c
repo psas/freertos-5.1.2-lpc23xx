@@ -45,7 +45,7 @@ int I2C0ExtSlaveAddress = 0;    // Slave the bus is currently talking to.  NOT t
 int I2C0DataCounter     = 0;    // bytes sent
 int I2C0DataLength      = 0;    // total bytes to send
 uint32_t I2C0TransmitData[I2C_MAX_BUFFER];  //data to transmit buffer
-int I2C0ReceiveData[I2C_MAX_BUFFER];  //data to receive buffer
+int *I2C0ReceiveData;           // pointer to data to receive buffer
 
 int I2C1ExtSlaveAddress = 0;
 int I2C1DataCounter     = 0;
@@ -243,10 +243,9 @@ void i2c0_isr(void) {
                 SET_BIT(I2C0CONSET,AA);
 
                 //write 0x08 to I2CONCLR to clear the SI flag
-                ZERO_BIT(I2C0CONSET, STA);
+//                ZERO_BIT(I2C0CONSET, STA);
                 I2C0CONCLR = 0x1<<SI;
                 break;
-
 
                 //State 0x10 - A repeated start condition has been transmitted.  The Slave
                 //Address and Read or Write bit will be transmitted.  An ACK bit will be 
@@ -429,21 +428,19 @@ void I2C0MasterTX(int deviceAddr, uint32_t *myDataToSend, int dataLength) {
 //takes a string containing the I2C channel to be set up
 //takes an int (should this be byte?) vector containing the data to recieve
 //takes a pointer to an int to contain the length of the received data (is this needed?)
-void I2C0MasterRX(int deviceAddr, int *myDataToSend, int dataLength) {
+void I2C0MasterRX(int deviceAddr, int *myDataToGet, int dataLength) {
     uint32_t i;
 
     //set up the data to be transmitted in the Master RX buffer
-    for(i=0; i<dataLength; i++) {
-        I2C0ReceiveData[i] = myDataToSend[i];
-    }
+    I2C0ReceiveData = myDataToGet;
 
     //initialize master data counter
     I2C0DataLength  = dataLength;
     I2C0DataCounter = 0;
 
     // add the Read bit
-    I2C0ExtSlaveAddress = deviceAddr;
-    I2C0ExtSlaveAddress |= READMASK;
+    I2C0ExtSlaveAddress = (deviceAddr << 1);  // 7:1Address,0:high  means read
+    I2C0ExtSlaveAddress |= 0x1;
 
     SET_BIT(I2C0CONSET, STA);
 } 
