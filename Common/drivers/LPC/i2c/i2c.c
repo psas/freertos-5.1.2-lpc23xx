@@ -323,13 +323,33 @@ void i2c0_isr(void) {
                 I2C0CONCLR = 0x1<<SI;
                 break;
 
-                //State 0x40
-                //Previous state was State 08 or State 10. Slave Address + Read has been transmitted,
-                //ACK has been received. Data will be received and ACK returned.
-            case 0x40:
-                if(I2C0DataCounter < I2C0DataLength) {
-                    I2C0CONCLR = 0x20;
+            case 0x50:
+                {
+                    I2C0ReceiveData[I2C0DataCounter] = I2C0DAT;
+                    I2C0DataCounter++;
+                }
+                /*
+                if(I2C0DataCounter == I2C0DataLength) {
+                    // I2C0CONCLR = 0xc; // clear AA and SI
+                    // I2C0CONCLR = 0x20;   // not in documentation.
+                    ZERO_BIT(I2C0CONSET, AA );
+                    I2C0CONCLR = 0x1<<SI;
+                }
+                else if(I2C0DataCounter < I2C0DataLength) {
+                    I2C0CONCLR = 0x20;   // not in documentation.
                     SET_BIT(I2C0CONSET, AA);
+                    I2C0CONCLR = 0x1<<SI;
+                }
+                break;
+                */
+
+            case 0x40:
+                if(I2C0DataCounter < I2C0DataLength -1 ) {
+                    I2C0CONSET = 0x1 << AA;  // order important! this then clear start
+                    I2C0CONCLR = 0x20;   // not in documentation.
+                } else {
+//                     ZERO_BIT(I2C0CONSET, AA );
+                    I2C0CONCLR = 0x20 | 0x1<<AA;   // not in documentation.
                 }
                 I2C0CONCLR = 0x1<<SI;
                 break;
@@ -341,25 +361,11 @@ void i2c0_isr(void) {
                 SET_BIT(I2C0CONSET, AA);
                 I2C0CONCLR = 0x1<<SI;
                 break;
-
-                //State: 0x50 - Data has been received, ACK has been returned. Data will be read 
-                //from I2DAT. Additional data will be received. If this is the last data byte then 
-                //NOT ACK will be returned, otherwise ACK will be returned.
-            case 0x50:
-                if(I2C0DataCounter == I2C0DataLength) {
-                    I2C0CONCLR = 0x1<<AA;
-                }
-                else if(I2C0DataCounter < I2C0DataLength) {
-                    I2C0ReceiveData[I2C0DataCounter] = I2C0DAT;
-                    SET_BIT(I2C0CONSET, AA);
-                    I2C0DataCounter++;
-                }
-                I2C0CONCLR = 0x1<<SI;
-                break;
-
                 //State: 0x58 - Data has been received, NOT ACK has been returned. Data will be read 
                 //from I2DAT. A Stop condition will be transmitted.
             case 0x58:
+                I2C0ReceiveData[I2C0DataCounter] = I2C0DAT;
+                I2C0DataCounter++;
                 SET_BIT(I2C0CONSET, STO);
                 SET_BIT(I2C0CONSET, AA);
                 I2C0CONCLR = 0x1<<SI;
