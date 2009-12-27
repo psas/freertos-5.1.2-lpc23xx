@@ -127,8 +127,9 @@ static void i2cblinkmTask(void *pvParameters) {
 
     // uint32_t pwmDutyCycle = 1000;
 
-    uint32_t myDataToGet[100];
-
+    uint8_t myDataToGet[100];
+    uint8_t myDataToSend[100];
+ 
     printf2("VICIntEnable is: 0x%X\n\r", VICIntEnable);
     FIO1CLR = (1<<19);//turn off p1.22 on olimex 2378 Sdev board
     FIO1CLR = (1<<20);//turn off p1.20 on olimex 2378 Sdev board
@@ -202,7 +203,7 @@ static void i2cblinkmTask(void *pvParameters) {
    //          }
     //         setPWMDutyCycle(PWM1_1, microsecondsToCPUTicks(pwmDutyCycle));
 
-        } else if (x >= (interval)) {
+        } else if (x >= (6*interval)) {
             FIO0CLR = (1<<6);//turn on p0.6 on olimex 2378 Sdev board
             FIO1SET = (1<<19);//turn on led on olimex 2378 dev board
             //            FIO1CLR = (1<<22);//turn off p1.22 on olimex 2378 Sdev board
@@ -215,16 +216,20 @@ static void i2cblinkmTask(void *pvParameters) {
             printf2("i2c Light Task...\r\n");
 
             // uint32_t myDataToSend[100] = {'o', 'p', 0x4, 0x2, 0x0, 'a'};
-             uint32_t myDataToSend[100] = {'a'};
+            //  myDataToSend[0] = 'Z'; // current blinkm firmware version
+             myDataToSend[0] = 'g'; // current RGB color, 3 bytes
+
             if(write==1) {
             // printf2("i2c Light Task write cmd...\r\n");
-
+ 
             //  I2C0MasterTX(BLINKM_ADDR, myDataToSend, 6);
              I2C0MasterTX(BLINKM_ADDR, myDataToSend, 1);
              write=0;
             } else {
-                I2C0MasterRX(BLINKM_ADDR, myDataToGet, 1);
+                I2C0MasterRX(BLINKM_ADDR, myDataToGet, 3);
                 printf2("mydatatoget[0] is 0x%X\n\r",myDataToGet[0]);
+                printf2("mydatatoget[1] is 0x%X\n\r",myDataToGet[1]);
+                printf2("mydatatoget[2] is 0x%X\n\r",myDataToGet[2]);
                 write = 1;
             }
 
@@ -347,7 +352,7 @@ void enableSerial0( void ) {
 //#define PCLK    48000000
 int main( void )
 {
-    uint32_t myDataToSend[100];
+    uint8_t myDataToSend[100];
     prvSetupHardware();
 
     enableSerial0();
@@ -376,9 +381,17 @@ int main( void )
     // Initialize I2C0
     I2Cinit(I2C0);
 
-//    myDataToSend[0] = 'c';
-//    myDataToSend[1] = 'f';
-//    I2C0MasterTX(BLINKM_ADDR, myDataToSend, 1);
+    myDataToSend[0] = 'o'; 
+//    myDataToSend[1] = 'h'; 
+//    myDataToSend[2] = 128;
+//    myDataToSend[3] = 0x0f;
+//    myDataToSend[4] = 0x0f;
+    myDataToSend[1] = 'n'; 
+  myDataToSend[2] = 0xf;
+  myDataToSend[3] = 0xef;
+  myDataToSend[4] = 0xcf;
+ 
+    I2C0MasterTX(BLINKM_ADDR, myDataToSend, 5);
 
 
     xTaskCreate( i2cblinkmTask, 

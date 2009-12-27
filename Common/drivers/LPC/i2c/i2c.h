@@ -36,41 +36,68 @@
 #ifndef _I2C_H
 #define _I2C_H
 
-// MAX values
-#define I2C_MAX_BUFFER   16
+// Debug flags
+#define DEBUG_INIT       0
+#define DEBUG_TX         0
+#define DEBUG_RX         0
+
+// MAX values 
+#define I2C_MAX_BUFFER   64          // uint8_t
 
 // VIC table page 94 lpc23xx manual
 #define VICI2C0EN        9
 #define VICI2C1EN        19
 #define VICI2C2EN        30
 
-    // I2CnCONSET
+// I2CnCONSET
 #define AA               2
 #define SI               3
 #define STO              4
 #define STA              5
 #define I2EN             6
 
-    // PCONP
+// PCONP
 #define PCI2C0           7
 #define PCI2C1           19
 #define PCI2C2           26
 
-    // I2C clock
-    // Table 435 p496 lpc23xx
+// I2C clock
+// Table 435 p496 lpc23xx
+//
+// Here are some values I've verified trying to understand
+// the clock speed on the i2c:
+//
+// For our setup right now:
+// XTAL/oscillator input: 12Mhz
+//
+// Fcco = 288,000,000 Hz
+// CCLK  = 57,600,000 Hz
+// PCLK  = 14,400,000 Hz
+//
+// i2c0 clk = 29,8507 khz  (measured)
+//
+// This seems to match the table for
+// what we should expect. (i2cslhigh = i2csllow = 200 )
+//
+// i2c standard clock speed goes to 100kHz, so we're
+// in a conservative range.
+//
 #define I2SCLHIGH        200
 #define I2SCLLOW         200
 
-    // PINSEL0
+// Pinsel0 has builtin pullup. 
+// Pinsel1&2 do not. 
+#define PULLUP           0x0
+
+// PINSEL0
 #define SDA2             (0x2<<20)
 #define SDA2MASK         ~(0x3<<20)
 
 #define SCL2             0x2<<20
 #define SCL2MASK         ~(0x3<<22)
 
-#define PULLUP           0x0
 
-    // PINSEL1
+// PINSEL1
 #define SDA1             (0x3<<6)
 #define SDA1MASK         ~(0x3<<6)
 
@@ -82,18 +109,6 @@
 
 #define SCL0             0x1<<24
 #define SCL0MASK         ~(0x3<<24)
-
-// Control
-#define READMASK         (0x1<<8) 
-// Thu 12 November 2009 10:44:04 (PST)
-// #define WRITEMASK        ~(0x1<<8)
-#define WRITEMASK ~(0x1)
-
-// I2C bus control characters
-#define SEND_I2C_STOPSTART	0x3000
-#define SEND_I2C_REPEATEDSTART	0x2000
-#define SEND_I2C_STOP		0x1000
-
 
 typedef enum { I2C0=0, I2C1, I2C2} i2c_iface;
 
@@ -108,8 +123,8 @@ void i2c1_isr(void) __attribute__ ((naked));
 void i2c2_isr(void) __attribute__ ((naked));
 
 void i2cinit(i2c_iface channel) ;
-void I2C0MasterRX(int deviceAddr, int *myDataToSend, int dataLength) ;
-void I2C0MasterTX(int deviceAddr, uint32_t *myDataToSend, int dataLength) ;
+void I2C0MasterRX(int deviceAddr, uint8_t *myDataToSend, int dataLength) ;
+void I2C0MasterTX(int deviceAddr, uint8_t *myDataToSend, int dataLength) ;
 
 #endif
 

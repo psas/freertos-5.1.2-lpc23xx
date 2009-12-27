@@ -35,29 +35,35 @@ can be applied.
 
 #include <stdint.h>
 #include <stdio.h>
+
 #include "lpc23xx.h"
 #include "printf/printf2.h"
 #include "FreeRTOSConfig.h"
+
 #include "i2c.h"
 
 
-int I2C0ExtSlaveAddress = 0;    // Slave the bus is currently talking to.  NOT the slave address of the LPC23xx device!!!
-int I2C0DataCounter     = 0;    // bytes sent
-int I2C0DataLength      = 0;    // total bytes to send
-uint32_t I2C0TransmitData[I2C_MAX_BUFFER];  //data to transmit buffer
-int *I2C0ReceiveData;           // pointer to data to receive buffer
+uint32_t I2C0ExtSlaveAddress = 0;    // Slave the bus is currently talking to.  NOT the slave address of the LPC23xx device!!!
+uint32_t I2C0DataCounter     = 0;    // bytes sent
+uint32_t I2C0DataLength      = 0;    // total bytes to send
 
-int I2C1ExtSlaveAddress = 0;
-int I2C1DataCounter     = 0;
-int I2C1DataLength      = 0;
-int I2C1TransmitData[I2C_MAX_BUFFER];
-int I2C1ReceiveData[I2C_MAX_BUFFER];
+uint32_t I2C1ExtSlaveAddress = 0;
+uint32_t I2C1DataCounter     = 0;
+uint32_t I2C1DataLength      = 0;
 
-int I2C2ExtSlaveAddress = 0;
-int I2C2DataCounter     = 0;
-int I2C2DataLength      = 0;
-int I2C2TransmitData[I2C_MAX_BUFFER];
-int I2C2ReceiveData[I2C_MAX_BUFFER];
+uint32_t I2C2ExtSlaveAddress = 0;
+uint32_t I2C2DataCounter     = 0;
+uint32_t I2C2DataLength      = 0;
+
+uint8_t I2C0TransmitData[I2C_MAX_BUFFER];  // data to transmit buffer
+uint8_t *I2C0ReceiveData;                  // pointer to data to receive buffer
+
+uint8_t I2C1TransmitData[I2C_MAX_BUFFER]; 
+uint8_t *I2C1ReceiveData;           
+
+uint8_t I2C2TransmitData[I2C_MAX_BUFFER]; 
+uint8_t *I2C2ReceiveData;           
+
 
 /*
  * I2Cinit
@@ -74,7 +80,9 @@ void I2Cinit(i2c_iface channel) {
         portENTER_CRITICAL();
         switch(channel) {
             case I2C0: 
-                printf2("\tI2C0 Init! ...\n\r");
+
+//                printf2("\tI2C0 Init! ...\n\r");
+
                 // power
                 SET_BIT(PCONP, PCI2C0);
 
@@ -172,12 +180,12 @@ void i2c0_isr(void) {
         //        FIO1SET & (1<<22)
         //        FIO1CLR = (1<<22);
 
-        //     printf2("\tI2C0 ISR! ...\n\r");
         uint32_t status;
         uint8_t  holdbyte;
 
         status = I2C0STAT;
 
+        // status register observability to io pins
         if(I2C0STAT & 1<<0) {
             FIO1SET = (1<<28);
         } else {
@@ -228,7 +236,6 @@ void i2c0_isr(void) {
                 //write 0x14 to I2CONSET to set the STO and AA flags.
                 SET_BIT(I2C0CONSET, STO);
                 SET_BIT(I2C0CONSET, AA);
-
 
                 I2C0CONCLR = 0x1<<SI;
                 break;
@@ -323,6 +330,18 @@ void i2c0_isr(void) {
                 I2C0CONCLR = 0x1<<SI;
                 break;
 
+              // Data has been received, ACK has been returned. Data will be read from I2DAT. Additional
+              // data will be received. If this is the last data byte then NOT ACK will be returned, otherwise
+              // ACK will be returned.
+              //  1. Read data byte from I2DAT into Master Receive buffer.
+              //  2. Decrement the Master data counter, skip to step 5 if not the last data byte.
+              //  3. Write 0x0C to I2CONCLR to clear the SI flag and the AA bit.
+              //  4. Exit
+              //  5. Write 0x04 to I2CONSET to set the AA bit.
+              //  6. Write 0x08 to I2CONCLR to clear the SI flag.
+              //  7. Increment Master Receive buffer pointer
+              //  8. Exit
+
             case 0x50:
                 {
                     I2C0ReceiveData[I2C0DataCounter] = I2C0DAT;
@@ -343,12 +362,17 @@ void i2c0_isr(void) {
                 break;
                 */
 
+                //  Previous state was State 08 or State 10. Slave Address + Read has been transmitted,
+                //  ACK has been received. Data will be received and ACK returned.
+                //    1. Write 0x04 to I2CONSET to set the AA bit.
+                //    2. Write 0x08 to I2CONCLR to clear the SI flag.
+                //    3. Exit
             case 0x40:
                 if(I2C0DataCounter < I2C0DataLength -1 ) {
                     I2C0CONSET = 0x1 << AA;  // order important! this then clear start
-                    I2C0CONCLR = 0x20;   // not in documentation.
+                    I2C0CONCLR = 0x20;       //     not in documentation.
                 } else {
-//                     ZERO_BIT(I2C0CONSET, AA );
+                    //                     ZERO_BIT(I2C0CONSET, AA );
                     I2C0CONCLR = 0x20 | 0x1<<AA;   // not in documentation.
                 }
                 I2C0CONCLR = 0x1<<SI;
@@ -403,22 +427,25 @@ void i2c2_isr(void) {
  * takes an int (should this be byte?) vector containing the data to send
  * takes an int containing the length of the vector (is this needed?)
  */
-void I2C0MasterTX(int deviceAddr, uint32_t *myDataToSend, int dataLength) {
+void I2C0MasterTX(int deviceaddr, uint8_t *myDataToSend, int datalength) {
 
-    uint32_t i;
+    uint8_t i;
 
+    // check datalength - error handling is truncate the buffer requested
+    if (datalength >= I2C_MAX_BUFFER) {
+        datalength = I2C_MAX_BUFFER-1;
+    }
     //set up the data to be transmitted in the Master Transmit buffer
-    for(i=0; i<dataLength; i++) {
+    for(i=0; i<datalength; i++) {
         I2C0TransmitData[i] = myDataToSend[i];
     }
 
-
     //initialize master data counter
-    I2C0DataLength  = dataLength;
+    I2C0DataLength  = datalength;
     I2C0DataCounter = 0;
 
     //set up the Slave Address to transmit data to, and add the Write bit
-    I2C0ExtSlaveAddress = (deviceAddr << 1);  // 7:1Address 0:low  means write
+    I2C0ExtSlaveAddress = (deviceaddr << 1);  // 7:1Address 0:low  means write
     printf2("I2C0ExtSlaveAddress is: 0x%X\n\r", I2C0ExtSlaveAddress);
     printf2("I2C0TransmitData    is: 0x%X\n\r", I2C0TransmitData[0]);
     printf2("I2C0DataLength      is: 0x%X\n\r", I2C0DataLength);
@@ -435,14 +462,19 @@ void I2C0MasterTX(int deviceAddr, uint32_t *myDataToSend, int dataLength) {
 //takes a string containing the I2C channel to be set up
 //takes an int (should this be byte?) vector containing the data to recieve
 //takes a pointer to an int to contain the length of the received data (is this needed?)
-void I2C0MasterRX(int deviceAddr, int *myDataToGet, int dataLength) {
-    uint32_t i;
+void I2C0MasterRX(int deviceAddr, uint8_t *myDataToGet, int datalength) {
+    uint8_t i;
 
+    // check datalength - error handling is truncate the buffer requested
+    if (datalength >= I2C_MAX_BUFFER) {
+        datalength = I2C_MAX_BUFFER-1;
+    }
+  
     //set up the data to be transmitted in the Master RX buffer
     I2C0ReceiveData = myDataToGet;
 
     //initialize master data counter
-    I2C0DataLength  = dataLength;
+    I2C0DataLength  = datalength;
     I2C0DataCounter = 0;
 
     // add the Read bit
