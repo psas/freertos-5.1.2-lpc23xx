@@ -37,6 +37,7 @@
 #define _I2C_H
 
 // Debug flags
+#define DEBUG_ISR        1
 #define DEBUG_INIT       0
 #define DEBUG_TX         0
 #define DEBUG_RX         0

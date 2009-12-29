@@ -1,36 +1,37 @@
 
 
 /*
-   I2C handling suite
-   Jeremy Booth
-   Portland State Aerospace Society
-   http://psas.pdx.edu
-
-FreeRTOS is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-FreeRTOS is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with FreeRTOS; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-A special exception to the GPL can be applied should you wish to distribute
-a combined work that includes FreeRTOS, without being obliged to provide
-the source code for any proprietary components.  See the licensing section
-of http://www.FreeRTOS.org for full details of how and when the exception
-can be applied.
-
- ***************************************************************************
- See http://www.FreeRTOS.org for documentation, latest information, license
- and contact details.  Please ensure to read the configuration and relevant
- port sections of the online documentation.
- ***************************************************************************
+ *   I2C handling suite
+ *   Jeremy Booth
+ *   Portland State Aerospace Society
+ *
+ *   http://psas.pdx.edu
+ *   
+ *   FreeRTOS is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *   
+ *   FreeRTOS is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *   
+ *   You should have received a copy of the GNU General Public License
+ *   along with FreeRTOS; if not, write to the Free Software
+ *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *   
+ *   A special exception to the GPL can be applied should you wish to distribute
+ *   a combined work that includes FreeRTOS, without being obliged to provide
+ *   the source code for any proprietary components.  See the licensing section
+ *   of http://www.FreeRTOS.org for full details of how and when the exception
+ *   can be applied.
+ *   
+ *   ***************************************************************************
+ *   See http://www.FreeRTOS.org for documentation, latest information, license
+ *   and contact details.  Please ensure to read the configuration and relevant
+ *   port sections of the online documentation.
+ *   ***************************************************************************
  */
 
 #include <stdint.h>
@@ -41,7 +42,6 @@ can be applied.
 #include "FreeRTOSConfig.h"
 
 #include "i2c.h"
-
 
 uint32_t I2C0ExtSlaveAddress = 0;    // Slave the bus is currently talking to.  NOT the slave address of the LPC23xx device!!!
 uint32_t I2C0DataCounter     = 0;    // bytes sent
@@ -75,13 +75,14 @@ uint8_t *I2C2ReceiveData;
  * 5. Continue initializing...tbd
  */
 void I2Cinit(i2c_iface channel) {
-
-    {
-        portENTER_CRITICAL();
+    { portENTER_CRITICAL();
         switch(channel) {
             case I2C0: 
 
-//                printf2("\tI2C0 Init! ...\n\r");
+                //   printf2("\tI2C0 Init! ...\n\r");
+                //   possible to send stop condition as reset?
+                //   SET_BIT(I2C0CONSET, STO);
+                //   SET_BIT(I2C0CONSET, AA);
 
                 // power
                 SET_BIT(PCONP, PCI2C0);
@@ -102,7 +103,7 @@ void I2Cinit(i2c_iface channel) {
                 PINSEL1 &= SCL0MASK;
                 PINSEL1 |= SCL0;
 
-                // pinmode: I2C0 pins permanent open drain (pullup)
+                // pinmode:   I2C0 pins permanent open drain (pullup)
                 // reference: lpc23xx usermanual p158 table 107 footnote 2
 
                 // vic
@@ -161,12 +162,11 @@ void I2Cinit(i2c_iface channel) {
                 VICVectAddr30 = (unsigned) i2c2_isr;
                 break;
 
-
             default:
                 //  error         ???
                 break;
         }
-    };
+    }
     portEXIT_CRITICAL();
 }
 
@@ -177,226 +177,172 @@ void i2c0_isr(void) {
 
     portSAVE_CONTEXT();
 
-        //        FIO1SET & (1<<22)
-        //        FIO1CLR = (1<<22);
+    uint32_t status;
+    uint8_t  holdbyte;
 
-        uint32_t status;
-        uint8_t  holdbyte;
+    status = I2C0STAT;
 
-        status = I2C0STAT;
+#if DEBUG_ISR==1
+    // status (state) register observability to io pins
+#include "i2c_debug_isr_status.c"
+#endif
+    //Read the I2C state from the correct I2STA register and then branch to
+    //the corresponding state routine.
+    switch(status) {
 
-        // status register observability to io pins
-        if(I2C0STAT & 1<<0) {
-            FIO1SET = (1<<28);
-        } else {
-            FIO1CLR = (1<<28);
-        }
-        if(I2C0STAT & 1<<1) {
-            FIO1SET = (1<<20);
-        } else {
-            FIO1CLR = (1<<20);
-        }
-        if(I2C0STAT & 1<<2) {
-            FIO1SET = (1<<22);
-        } else {
-            FIO1CLR = (1<<22);
-        }
-        if(I2C0STAT & 1<<3) {
-            FIO1SET = (1<<24);
-        } else {
-            FIO1CLR = (1<<24);
-        }
-        if(I2C0STAT & 1<<4) {
-            FIO1SET = (1<<25);
-        } else {
-            FIO1CLR = (1<<25);
-        }
-        if(I2C0STAT & 1<<5) {
-            FIO1SET = (1<<26);
-        } else {
-            FIO1CLR = (1<<26);
-        }
-        if(I2C0STAT & 1<<6) {
-            FIO1SET = (1<<27);
-        } else {
-            FIO1CLR = (1<<27);
-        }
-        if(I2C0STAT & 1<<7) {
-            FIO1SET = (1<<31);
-        } else {
-            FIO1CLR = (1<<31);
-        }
+        //State 0x00 - Bus Error
+        case 0x00:
+            //write 0x14 to I2CONSET to set the STO and AA flags.
+            SET_BIT(I2C0CONSET, STO);
+            SET_BIT(I2C0CONSET, AA);
 
-        //Read the I2C state from the correct I2STA register and then branch to
-        //the corresponding state routine.
-        switch(status) {
+            I2C0CONCLR = 0x1<<SI;
+            break;
 
-            //State 0x00 - Bus Error
-            case 0x00:
-                //write 0x14 to I2CONSET to set the STO and AA flags.
-                SET_BIT(I2C0CONSET, STO);
-                SET_BIT(I2C0CONSET, AA);
+            // State 0X08 - A start condition has been transmitted, The Slave Address 
+            // and Read or Write bit will be transmitted.  An ACK bit will be received.
+        case 0x08:
+            //write the Slave Address with R/W bit to I2DAT
+            I2C0DAT = I2C0ExtSlaveAddress;
 
-                I2C0CONCLR = 0x1<<SI;
-                break;
+            //write 0x04 to I2CONSET to set the AA bit
+            SET_BIT(I2C0CONSET,AA);
 
-                // State 0X08 - A start condition has been transmitted, The Slave Address 
-                // and Read or Write bit will be transmitted.  An ACK bit will be received.
-            case 0x08:
-                //write the Slave Address with R/W bit to I2DAT
-                I2C0DAT = I2C0ExtSlaveAddress;
+            //write 0x08 to I2CONCLR to clear the SI flag
+            //                ZERO_BIT(I2C0CONSET, STA);
+            I2C0CONCLR = 0x1<<SI;
+            break;
 
-                //write 0x04 to I2CONSET to set the AA bit
-                SET_BIT(I2C0CONSET,AA);
+            //State 0x10 - A repeated start condition has been transmitted.  The Slave
+            //Address and Read or Write bit will be transmitted.  An ACK bit will be 
+            //received
+        case 0x10:
+            //write the Slave Address with R/W bit to I2DAT
+            I2C0DAT = I2C0ExtSlaveAddress;
 
-                //write 0x08 to I2CONCLR to clear the SI flag
-//                ZERO_BIT(I2C0CONSET, STA);
-                I2C0CONCLR = 0x1<<SI;
-                break;
+            //write 0x08 to I2CONCLR to clear the SI flag
+            ZERO_BIT(I2C0CONSET, STA);
+            I2C0CONCLR = 0x1<<SI;
+            break;
 
-                //State 0x10 - A repeated start condition has been transmitted.  The Slave
-                //Address and Read or Write bit will be transmitted.  An ACK bit will be 
-                //received
-            case 0x10:
-                //write the Slave Address with R/W bit to I2DAT
-                I2C0DAT = I2C0ExtSlaveAddress;
+            //State 0x18 - Previous state was 0x08 or 0x10.  Slave Address and Read or 
+            //Write has been transmitted.  An ACK has been received. The first data byte 
+            //will be transmitted, an ACK bit will be received.
+        case 0x18:
 
-                //write 0x08 to I2CONCLR to clear the SI flag
-                ZERO_BIT(I2C0CONSET, STA);
-                I2C0CONCLR = 0x1<<SI;
-                break;
-
-                //State 0x18 - Previous state was 0x08 or 0x10.  Slave Address and Read or 
-                //Write has been transmitted.  An ACK has been received. The first data byte 
-                //will be transmitted, an ACK bit will be received.
-            case 0x18:
+            FIO0SET = (1<<6);//turn on p0.6on olimex 2378 Sdev board
+            if(I2C0DataCounter < I2C0DataLength) {
 
                 FIO0SET = (1<<6);//turn on p0.6on olimex 2378 Sdev board
-                if(I2C0DataCounter < I2C0DataLength) {
 
-                    FIO0SET = (1<<6);//turn on p0.6on olimex 2378 Sdev board
-
-                    I2C0DAT = I2C0TransmitData[I2C0DataCounter];
-                    //                    I2C0DAT = 0x55;
-                    SET_BIT(I2C0CONSET,AA);
-                    I2C0CONCLR = 0x20;
-                    I2C0CONCLR = 0x1<<SI;
-                    //    ZERO_BIT(I2C0CONSET, STO);
-                    // ZERO_BIT(I2C0CONSET, STA);
-                    I2C0DataCounter++;
-                }
-                break;
-
-                //State 0x20 - Slave Address + Write has been transmitted.  NOT ACK has been 
-                //received. A Stop condition will be transmitted.
-            case 0x20:
-
-                SET_BIT(I2C0CONSET, STO);
-                SET_BIT(I2C0CONSET, AA);
+                I2C0DAT = I2C0TransmitData[I2C0DataCounter];
+                //                    I2C0DAT = 0x55;
+                SET_BIT(I2C0CONSET,AA);
+                I2C0CONCLR = 0x20;
                 I2C0CONCLR = 0x1<<SI;
-                break;
-
-                //State 0x28 - Data has been transmitted, ACK has been received. If the 
-                //transmitted data was the last data byte then transmit a Stop condition, 
-                //otherwise transmit the next data byte.
-            case 0x28:
-                if(I2C0DataCounter == I2C0DataLength) {
-                    SET_BIT(I2C0CONSET, STO);
-                    I2C0CONCLR = 0x20;
-                    // SET_BIT(I2C0CONSET, AA);
-                } 
-                else if(I2C0DataCounter < I2C0DataLength) {
-                    I2C0DAT = I2C0TransmitData[I2C0DataCounter];
-                    I2C0CONCLR = 0x20;
-                }
+                //    ZERO_BIT(I2C0CONSET, STO);
+                // ZERO_BIT(I2C0CONSET, STA);
                 I2C0DataCounter++;
-                I2C0CONCLR = 0x1<<SI;
-                break;
+            }
+            break;
 
-                //State 0x30 - Data has been transmitted, NOT ACK received. A Stop condition 
-                //will be transmitted.
-            case 0x30:
+            //State 0x20 - Slave Address + Write has been transmitted.  NOT ACK has been 
+            //received. A Stop condition will be transmitted.
+        case 0x20:
+
+            SET_BIT(I2C0CONSET, STO);
+            SET_BIT(I2C0CONSET, AA);
+            I2C0CONCLR = 0x1<<SI;
+            break;
+
+            //State 0x28 - Data has been transmitted, ACK has been received. If the 
+            //transmitted data was the last data byte then transmit a Stop condition, 
+            //otherwise transmit the next data byte.
+        case 0x28:
+            if(I2C0DataCounter == I2C0DataLength) {
                 SET_BIT(I2C0CONSET, STO);
-                SET_BIT(I2C0CONSET, AA);
-                I2C0CONCLR = 0x1<<SI;
-                break;
+                I2C0CONCLR = 0x20;
+                // SET_BIT(I2C0CONSET, AA);
+            } 
+            else if(I2C0DataCounter < I2C0DataLength) {
+                I2C0DAT = I2C0TransmitData[I2C0DataCounter];
+                I2C0CONCLR = 0x20;
+            }
+            I2C0DataCounter++;
+            I2C0CONCLR = 0x1<<SI;
+            break;
 
-                //State 0x38 - Arbitration has been lost during Slave Address + Write or data. 
-                //The bus has been released and not addressed Slave mode is entered. A new Start 
-                //condition will be transmitted when the bus is free again.
-            case 0x38:
-                SET_BIT(I2C0CONSET, STA);
-                SET_BIT(I2C0CONSET, AA);
-                I2C0CONCLR = 0x1<<SI;
-                break;
+            //State 0x30 - Data has been transmitted, NOT ACK received. A Stop condition 
+            //will be transmitted.
+        case 0x30:
+            SET_BIT(I2C0CONSET, STO);
+            SET_BIT(I2C0CONSET, AA);
+            I2C0CONCLR = 0x1<<SI;
+            break;
 
-              // Data has been received, ACK has been returned. Data will be read from I2DAT. Additional
-              // data will be received. If this is the last data byte then NOT ACK will be returned, otherwise
-              // ACK will be returned.
-              //  1. Read data byte from I2DAT into Master Receive buffer.
-              //  2. Decrement the Master data counter, skip to step 5 if not the last data byte.
-              //  3. Write 0x0C to I2CONCLR to clear the SI flag and the AA bit.
-              //  4. Exit
-              //  5. Write 0x04 to I2CONSET to set the AA bit.
-              //  6. Write 0x08 to I2CONCLR to clear the SI flag.
-              //  7. Increment Master Receive buffer pointer
-              //  8. Exit
+            //State 0x38 - Arbitration has been lost during Slave Address + Write or data. 
+            //The bus has been released and not addressed Slave mode is entered. A new Start 
+            //condition will be transmitted when the bus is free again.
+        case 0x38:
+            SET_BIT(I2C0CONSET, STA);
+            SET_BIT(I2C0CONSET, AA);
+            I2C0CONCLR = 0x1<<SI;
+            break;
 
-            case 0x50:
-                {
-                    I2C0ReceiveData[I2C0DataCounter] = I2C0DAT;
-                    I2C0DataCounter++;
-                }
-                /*
-                if(I2C0DataCounter == I2C0DataLength) {
-                    // I2C0CONCLR = 0xc; // clear AA and SI
-                    // I2C0CONCLR = 0x20;   // not in documentation.
-                    ZERO_BIT(I2C0CONSET, AA );
-                    I2C0CONCLR = 0x1<<SI;
-                }
-                else if(I2C0DataCounter < I2C0DataLength) {
-                    I2C0CONCLR = 0x20;   // not in documentation.
-                    SET_BIT(I2C0CONSET, AA);
-                    I2C0CONCLR = 0x1<<SI;
-                }
-                break;
-                */
+            // Data has been received, ACK has been returned. Data will be read from I2DAT. Additional
+            // data will be received. If this is the last data byte then NOT ACK will be returned, otherwise
+            // ACK will be returned.
+            //  1. Read data byte from I2DAT into Master Receive buffer.
+            //  2. Decrement the Master data counter, skip to step 5 if not the last data byte.
+            //  3. Write 0x0C to I2CONCLR to clear the SI flag and the AA bit.
+            //  4. Exit
+            //  5. Write 0x04 to I2CONSET to set the AA bit.
+            //  6. Write 0x08 to I2CONCLR to clear the SI flag.
+            //  7. Increment Master Receive buffer pointer
+            //  8. Exit
 
-                //  Previous state was State 08 or State 10. Slave Address + Read has been transmitted,
-                //  ACK has been received. Data will be received and ACK returned.
-                //    1. Write 0x04 to I2CONSET to set the AA bit.
-                //    2. Write 0x08 to I2CONCLR to clear the SI flag.
-                //    3. Exit
-            case 0x40:
-                if(I2C0DataCounter < I2C0DataLength -1 ) {
-                    I2C0CONSET = 0x1 << AA;  // order important! this then clear start
-                    I2C0CONCLR = 0x20;       //     not in documentation.
-                } else {
-                    //                     ZERO_BIT(I2C0CONSET, AA );
-                    I2C0CONCLR = 0x20 | 0x1<<AA;   // not in documentation.
-                }
-                I2C0CONCLR = 0x1<<SI;
-                break;
+        case 0x50:
+            I2C0ReceiveData[I2C0DataCounter] = I2C0DAT;
+            I2C0DataCounter++;
+            //////////////////////////////////////////////////////////////
+            //////////////  HACK ALERT ///////////////////////////////////
+            //  // drop through to next case(0x50->0x48), no 'break' // // 
+            //////////////////////////////////////////////////////////////
 
-                //State 0x48 - Slave Address + Read has been transmitted, NOT ACK has been received. 
-                //A Stop condition will be transmitted.
-            case 0x48:
-                SET_BIT(I2C0CONSET, STO);
-                SET_BIT(I2C0CONSET, AA);
-                I2C0CONCLR = 0x1<<SI;
-                break;
-                //State: 0x58 - Data has been received, NOT ACK has been returned. Data will be read 
-                //from I2DAT. A Stop condition will be transmitted.
-            case 0x58:
-                I2C0ReceiveData[I2C0DataCounter] = I2C0DAT;
-                I2C0DataCounter++;
-                SET_BIT(I2C0CONSET, STO);
-                SET_BIT(I2C0CONSET, AA);
-                I2C0CONCLR = 0x1<<SI;
-                break;
-            default:
-                break;
-        }
+            //  Previous state was State 0x08 or State 0x10 or state 0x50.
+        case 0x40:
+            if(I2C0DataCounter < I2C0DataLength -1 ) {
+                I2C0CONSET = 0x1 << AA;  // order important! this first then clear start
+                I2C0CONCLR = 0x20;       //     not in documentation!
+            } else {
+                I2C0CONCLR = 0x20 | 0x1<<AA;   // not in documentation!
+            }
+            I2C0CONCLR = 0x1<<SI;
+            break;
+
+            //State 0x48 - Slave Address + Read has been transmitted, NOT ACK has been received. 
+            //A Stop condition will be transmitted.
+        case 0x48:
+            SET_BIT(I2C0CONSET, STO);
+            SET_BIT(I2C0CONSET, AA);
+            I2C0CONCLR = 0x1<<SI;
+            break;
+            //State: 0x58 - Data has been received, NOT ACK has been returned. Data will be read 
+            //from I2DAT. A Stop condition will be transmitted.
+        case 0x58:
+            I2C0ReceiveData[I2C0DataCounter] = I2C0DAT;
+            I2C0DataCounter++;
+            SET_BIT(I2C0CONSET, STO);
+            SET_BIT(I2C0CONSET, AA);
+            I2C0CONCLR = 0x1<<SI;
+            break;
+        default:
+            // treat like state 0x0, bus error
+            SET_BIT(I2C0CONSET, STO);
+            SET_BIT(I2C0CONSET, AA);
+            I2C0CONCLR = 0x1<<SI;
+            break;
+    }
 
     VICVectAddr = 0x0;   // clear VIC address
 
@@ -469,7 +415,7 @@ void I2C0MasterRX(int deviceAddr, uint8_t *myDataToGet, int datalength) {
     if (datalength >= I2C_MAX_BUFFER) {
         datalength = I2C_MAX_BUFFER-1;
     }
-  
+
     //set up the data to be transmitted in the Master RX buffer
     I2C0ReceiveData = myDataToGet;
 
