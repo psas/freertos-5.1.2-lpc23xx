@@ -160,7 +160,7 @@ static void rollControlTask(void *pvParameters) {
 		x++;
 
 		if (x == interval) {
-			FIO1SET = (1<<19);//turn on led on olimex 2378 dev board
+			//FIO1SET = (1<<19);//turn on led on olimex 2378 dev board
 			
 			pwmDutyCycle += 100;
 			if(pwmDutyCycle > 2000 ) {
@@ -169,7 +169,7 @@ static void rollControlTask(void *pvParameters) {
 			setPWMDutyCycle(PWM1_1, microsecondsToCPUTicks(pwmDutyCycle));
 			
 		} else if (x >= (interval*2)) {
-			FIO1CLR = (1<<19);//turn off led on olimex 2378 Sdev board
+			//FIO1CLR = (1<<19);//turn off led on olimex 2378 Sdev board
 
 			x = 0;
 			printf2("Blinky Light Task...\r\n");
@@ -245,7 +245,12 @@ void enableSerial0( void ) {
 }
 
 
+
+
+
+
 /*-----------------------------------------------------------*/
+
 
 //#define PCLK    48000000
 int main( void )
@@ -254,6 +259,8 @@ int main( void )
 	
 	enableSerial0();
 	
+	FIO0DIR |= (1<<6);
+
 	PWMinit (0, milisecondsToCPUTicks(30));//30ms period, given 48mhz CPU clock
 	setupPWMChannel(PWM1_1, microsecondsToCPUTicks(1500)); //1ms duty cycle, given 48mhz CPU clock
 	
@@ -262,6 +269,7 @@ int main( void )
 	
 	SCS |= 1; //Configure FIO
 	
+	configure10khzTimer1();
 	
 	xTaskCreate( rollControlTask, ( signed portCHAR * ) "rollControlTask", ROLL_CONTROL_STACK_SIZE, NULL, mainCHECK_TASK_PRIORITY - 1, NULL );
   

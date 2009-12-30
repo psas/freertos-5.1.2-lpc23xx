@@ -40,7 +40,8 @@ LDSCRIPT=lpc2368.ld
 
 PROJECT_NAME=RollControl
 
-LINKER_FLAGS=-mthumb -nostartfiles -Xlinker -o$(PROJECT_NAME).elf -Xlinker -M -Xlinker -Map=$(PROJECT_NAME).map
+LINKER_FLAGS= -marm -nostartfiles -Xlinker -o$(PROJECT_NAME).elf -Xlinker -M -Xlinker -Map=$(PROJECT_NAME).map
+
 
 DEBUG=-g
 OPTIM=-O1
@@ -57,7 +58,7 @@ CFLAGS= $(DEBUG) \
 		-I ../Common/drivers/LPC/ \
 		-D ROWLEY_LPC23xx \
 		-D THUMB_INTERWORK \
-		-mcpu=arm7tdmi \
+		-mcpu=arm7tdmi-s \
 		-D PACK_STRUCT_END=__attribute\(\(packed\)\) \
 		-D ALIGN_STRUCT_END=__attribute\(\(aligned\(4\)\)\) \
 		-fomit-frame-pointer \
@@ -81,6 +82,7 @@ THUMB_SOURCE= \
 
 
 ARM_SOURCE= \
+		rollControl10khz.c \
 		../Common/drivers/LPC/peripherals/pwm.c \
 		../Common/drivers/LPC/serial/serial.c \
 		../Common/drivers/LPC/serial/serialISR.c \

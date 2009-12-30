@@ -1,6 +1,7 @@
 	/* Sample initialization file */
 
 	.extern main
+	.extern vRollControl10khzFIQ
 	.extern exit
 
 	.text
@@ -154,4 +155,4 @@ _fiq:   .word __fiq                     /* FIQ						*/
 __undf: b     .                         /* undefined				*/
 __pabt: b     .                         /* program abort			*/
 __dabt: b     .                         /* data abort				*/
-__fiq:  b     .                         /* FIQ						*/
+__fiq:  b     vRollControl10khzFIQ      /* FIQ						*/
