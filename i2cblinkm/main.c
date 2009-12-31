@@ -233,16 +233,26 @@ int main( void ) {
     I2Cinit(I2C0);
 
     myDataToSend[0] = 'o';   // stop the current blinkm light script 
-    //    myDataToSend[1] = 'h';  // set an hsv color
-    //    myDataToSend[2] = 128;
-    //    myDataToSend[3] = 0x0f;
-    //    myDataToSend[4] = 0x0f;
-    myDataToSend[1] = 'n';   // new color
-    myDataToSend[2] = 0xf;
-    myDataToSend[3] = 0xef;
-    myDataToSend[4] = 0xcf;
+//        myDataToSend[1] = 'h';  // set an hsv color
+ //       myDataToSend[2] = 228;
+  //      myDataToSend[3] = 0x80;
+   //     myDataToSend[4] = 0xff;
 
-    I2C0MasterTX(BLINKM_ADDR, myDataToSend, 5);
+     myDataToSend[1] = 'n';   // set rgb color
+     myDataToSend[2] = 0x0f;
+     myDataToSend[3] = 0x20;
+     myDataToSend[4] = 0xff;
+     I2C0MasterTX(BLINKM_ADDR, myDataToSend, 5);
+
+// i2c Light Task...                                                               
+// I2C0ExtSlaveAddress is: 0x12                                                    
+// I2C0TransmitData    is: 0x67                                                    
+// I2C0DataLength      is: 0x1                                                     
+// I2C0DataCounter     is: 0x00                                                    
+// i2c Light Task...                                                               
+// mydatatoget[0] is 0xF                                                           
+// mydatatoget[1] is 0x20                                                          
+// mydatatoget[2] is 0xFF 
 
     xTaskCreate( i2cblinkmtask, 
             ( signed portCHAR * ) "i2cblinkmtask", 
