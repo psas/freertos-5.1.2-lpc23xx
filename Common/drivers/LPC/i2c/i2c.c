@@ -392,10 +392,10 @@ void I2C0MasterTX(int deviceaddr, uint8_t *myDataToSend, int datalength) {
 
     //set up the Slave Address to transmit data to, and add the Write bit
     I2C0ExtSlaveAddress = (deviceaddr << 1);  // 7:1Address 0:low  means write
-    printf2("I2C0ExtSlaveAddress is: 0x%X\n\r", I2C0ExtSlaveAddress);
-    printf2("I2C0TransmitData    is: 0x%X\n\r", I2C0TransmitData[0]);
-    printf2("I2C0DataLength      is: 0x%X\n\r", I2C0DataLength);
-    printf2("I2C0DataCounter     is: 0x%X\n\r", I2C0DataCounter);
+//    printf2("I2C0ExtSlaveAddress is: 0x%X\n\r", I2C0ExtSlaveAddress);
+//    printf2("I2C0TransmitData    is: 0x%X\n\r", I2C0TransmitData[0]);
+//    printf2("I2C0DataLength      is: 0x%X\n\r", I2C0DataLength);
+//    printf2("I2C0DataCounter     is: 0x%X\n\r", I2C0DataCounter);
 
 
     //write 0x20 to I2CONSET to set the STA bit

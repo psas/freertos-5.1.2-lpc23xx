@@ -109,7 +109,7 @@ static void i2cblinkmtask(void *pvParameters) {
     signed    portCHAR      theChar;
     signed    portBASE_TYPE status;
 
-    const int interval      = 100000;
+    const int interval      = 10000;
 
     uint8_t myDataToGet[100];
     uint8_t myDataToSend[100];
@@ -122,7 +122,14 @@ static void i2cblinkmtask(void *pvParameters) {
         if (x == interval) {
             FIO0CLR = (1<<6);    // turn on  p0.6 on olimex 2378 Sdev board
             FIO1CLR = (1<<19);   // turn off led  on olimex 2378 Sdev board
-        } else if (x >= (6*interval)) {
+            myDataToSend[0] = 'o';   // sstop light task script
+            myDataToSend[1] = 'n';   // set rgb color
+            myDataToSend[2] = 0xbd;
+            myDataToSend[3] = 0x10;
+            myDataToSend[4] = 0x02;
+            I2C0MasterTX(BLINKM_ADDR, myDataToSend, 5);
+ 
+        } else if (x >= (2*interval)) {
             FIO0CLR = (1<<6);    // turn on p0.6 on olimex 2378 Sdev board
             FIO1SET = (1<<19);   // turn on led on olimex 2378 dev board
 

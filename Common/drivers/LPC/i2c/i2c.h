@@ -113,6 +113,10 @@
 
 typedef enum { I2C0=0, I2C1, I2C2} i2c_iface;
 
+static uint8_t I2C0_busy ; 
+static uint8_t I2C1_busy ; 
+static uint8_t I2C2_busy ; 
+
 /*
 void i2c0_isr(void) __attribute__ ((interrupt("IRQ")));
 void i2c1_isr(void) __attribute__ ((interrupt("IRQ")));
