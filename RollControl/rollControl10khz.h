@@ -24,6 +24,7 @@
 #include "printf/uart0PutChar2.h"
 #include "printf/printf2.h"
 #include "peripherals/pwm.h"
+#include "rollcontrol.h"
 
 
 void configure10khzTimer1(void);

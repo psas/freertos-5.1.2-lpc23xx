@@ -44,6 +44,7 @@
  * Simple parallel port IO routines.
  *-----------------------------------------------------------*/
 
+
 void vParTestInitialise( void )
 {
 	SCS |= 1;
@@ -58,61 +59,63 @@ void vParTestInitialise( void )
     FIO2CLR = partstALL_OUTPUTS_OFF;
     */
 }
-/*-----------------------------------------------------------*/
+
 
 void vParTestSetLED( unsigned portBASE_TYPE uxLED, signed portBASE_TYPE xValue )
 {
+	return;
 unsigned portLONG ulLED = partstFIRST_IO;
 
 	if( uxLED < partstNUM_LEDS )
 	{
-		/* Rotate to the wanted bit of port */
+		// Rotate to the wanted bit of port
 		//ulLED <<= ( unsigned portLONG ) uxLED;
 		ulLED = (1<<19);
 
 
-		/* Set of clear the output. */
+		// Set of clear the output.
 		if( xValue )
 		{
-			FIO1CLR = (1<<19);
+			//FIO1CLR = (1<<19);
 			//FIO2CLR = ulLED;
 		}
 		else
 		{
-			FIO1SET = (1<<19);
+			//FIO1SET = (1<<19);
 			//FIO2SET = ulLED;
 		}
 	}
 }
-/*-----------------------------------------------------------*/
+
+
 
 void vParTestToggleLED( unsigned portBASE_TYPE uxLED )
 {
+	return;
 unsigned portLONG ulLED = partstFIRST_IO, ulCurrentState;
 
 	if( uxLED < partstNUM_LEDS )
 	{
-		/* Rotate to the wanted bit of port 0.  Only P10 to P13 have an LED
-		attached. */
+		// Rotate to the wanted bit of port 0.  Only P10 to P13 have an LED attached.
+
 		//ulLED <<= ( unsigned portLONG ) uxLED;
 		ulLED = (1<<19);
 
-		/* If this bit is already set, clear it, and visa versa. */
+		// If this bit is already set, clear it, and visa versa.
 		ulCurrentState = FIO1PIN;
 		if( ulCurrentState & ulLED )
 		{
-			FIO1CLR = (1<<19);
+			//FIO1CLR = (1<<19);
 			//FIO2CLR = ulLED;
 		}
 		else
 		{
-			FIO1SET = (1<<19);
+			//FIO1SET = (1<<19);
 			//FIO2SET = ulLED;			
 		}
 	}	
 }
 
-/*-----------------------------------------------------------*/
 unsigned portBASE_TYPE uxParTextGetLED( unsigned portBASE_TYPE uxLED )
 {
 	//unsigned portLONG ulLED = partstFIRST_IO;
@@ -122,5 +125,6 @@ unsigned portBASE_TYPE uxParTextGetLED( unsigned portBASE_TYPE uxLED )
     //return ( FIO2PIN & ulLED );
     return ( FIO1PIN & (1<<19) );
 }
+
 
 

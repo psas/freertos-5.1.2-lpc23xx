@@ -62,7 +62,7 @@
 #define configUSE_IDLE_HOOK         0
 #define configUSE_TICK_HOOK         1
 #define configCPU_CLOCK_HZ          ( ( unsigned portLONG ) 48000000 )	/* =12Mhz xtal multiplied by 5 using the PLL. */
-#define configTICK_RATE_HZ          ( ( portTickType ) 1000 )
+#define configTICK_RATE_HZ          ( ( portTickType ) 10000 )
 #define configMAX_PRIORITIES		( ( unsigned portBASE_TYPE ) 4 )
 #define configMINIMAL_STACK_SIZE	( ( unsigned portSHORT ) 104 )
 #define configTOTAL_HEAP_SIZE		( ( size_t ) ( 18 * 1024 ) )

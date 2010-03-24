@@ -102,8 +102,8 @@ signed portBASE_TYPE xLEDTask;
 
 static portTASK_FUNCTION( vLEDFlashTask, pvParameters )
 {
-portTickType xFlashRate, xLastFlashTime;
-unsigned portBASE_TYPE uxLED;
+	portTickType xFlashRate, xLastFlashTime;
+	unsigned portBASE_TYPE uxLED;
 
 	/* The parameters are not used. */
 	( void ) pvParameters;

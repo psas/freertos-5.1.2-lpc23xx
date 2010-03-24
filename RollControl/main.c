@@ -72,6 +72,7 @@
 #include "printf/uart0PutChar2.h"
 #include "printf/printf2.h"
 #include "peripherals/pwm.h"
+#include "rollcontrol.h"
 
 
 
@@ -110,7 +111,7 @@
 #define mainPLL_DIV			( ( unsigned portLONG ) 0x0000 )
 #define mainCPU_CLK_DIV		( ( unsigned portLONG ) 0x0005 )
 
-#define PCLK ((12 * (mainPLL_MUL+1) * 2) / (mainPLL_DIV + 1)) / mainCPU_CLK_DIV
+//#define PCLK ((12 * (mainPLL_MUL+1) * 2) / (mainPLL_DIV + 1)) / mainCPU_CLK_DIV
 
 #define mainPLL_ENABLE		( ( unsigned portLONG ) 0x0001 )
 #define mainPLL_CONNECT		( ( ( unsigned portLONG ) 0x0002 ) | mainPLL_ENABLE )
@@ -146,6 +147,25 @@ uint32_t milisecondsToCPUTicks(const uint32_t miliseconds) {
 
 
 
+
+volatile uint32_t g_most_recent_buffer = 0;
+volatile uint32_t g_task_reading_flag = 0;
+
+volatile struct data_sample g_sample_data_A = DATA_SAMPLE_INITIALIZER;
+volatile struct data_sample g_sample_data_B = DATA_SAMPLE_INITIALIZER;
+
+volatile float randValue = 3456.19923;
+volatile float randResult = 3456.19923;
+volatile float val1 = 12345.798101;
+
+
+#define LONG_TIME 0xFFFF
+#define TICKS_TO_WAIT    10
+
+xSemaphoreHandle xSemaphore = NULL;
+
+volatile uint32_t go_flag = 0;
+
 static void rollControlTask(void *pvParameters) {
 	int x = 0;
 	signed portCHAR theChar;
@@ -155,7 +175,76 @@ static void rollControlTask(void *pvParameters) {
 	
 	uint32_t pwmDutyCycle = 1000;
 	
+	//taken from: http://www.freertos.org/index.html?http://www.freertos.org/a00124.html
+
+
 	for(;;) {
+		/* We want this task to run every 10 ticks of a timer.  The semaphore
+		was created before this task was started.
+
+		Block waiting for the semaphore to become available. */
+
+		if( xSemaphoreTake( xSemaphore, LONG_TIME ) == pdTRUE )
+		//if( go_flag )
+		{
+			go_flag = 0;
+			//------------------------------------------
+			//Debug LED
+			static uint32_t debugLEDCounter = 0;
+			debugLEDCounter++;
+
+/*
+			FIO0SET = (1<<13);//turn on led on olimex 2378 dev board
+
+			val1 = 12345.798101;
+			float val2 = 45677.34583;
+			int i;
+			for(i = 0; i < 100000; i++ ) {
+				val1 = val1 * val2;
+			}
+			randResult = val1;
+
+			FIO0CLR = (1<<13);//turn on led on olimex 2378 dev board
+*/
+
+
+			if( debugLEDCounter == 100 ) {
+				FIO0SET = (1<<13);//turn on led on olimex 2378 dev board
+			} else if( debugLEDCounter >= 200	 ) {
+				FIO0CLR = (1<<13);//turn off led on olimex 2378 Sdev board
+				debugLEDCounter = 0;
+			}
+
+
+			//------------------------------------------
+
+
+
+			/* It is time to execute. */
+
+
+
+			struct data_sample most_recent_sample;
+
+			g_task_reading_flag = 1;
+			if( g_most_recent_buffer == A_BUFFER ) {
+				most_recent_sample = g_sample_data_A;
+			} else {
+				most_recent_sample = g_sample_data_B;
+			}
+			g_task_reading_flag = 0;
+
+
+			/* We have finished our task.  Return to the top of the loop where
+			we will block on the semaphore until it is time to execute
+			again.  Note when using the semaphore for synchronisation with an
+			ISR in this manner there is no need to 'give' the semaphore back. */
+		}
+
+
+
+
+/*
 		//vSerialPutString(0, "Testing...\r\n", 50);
 		x++;
 
@@ -179,6 +268,8 @@ static void rollControlTask(void *pvParameters) {
 				printf2("You typed the character: '%c'\r\n", theChar);
 			}
 		}
+
+		*/
 	}
 }
 
@@ -260,6 +351,14 @@ int main( void )
 	enableSerial0();
 	
 	FIO0DIR |= (1<<6);
+	FIO0DIR |= (1<<13);//Set USBLINK led to output gpio on 2378 dev board
+	FIO1DIR |= (1<<19);
+
+
+	/* We are using the semaphore for synchronisation so we create a binary
+	semaphore rather than a mutex.  We must make sure that the interrupt
+	does not attempt to use the semaphore before it is created! */
+	vSemaphoreCreateBinary( xSemaphore );
 
 	PWMinit (0, milisecondsToCPUTicks(30));//30ms period, given 48mhz CPU clock
 	setupPWMChannel(PWM1_1, microsecondsToCPUTicks(1500)); //1ms duty cycle, given 48mhz CPU clock
@@ -269,7 +368,7 @@ int main( void )
 	
 	SCS |= 1; //Configure FIO
 	
-	configure10khzTimer1();
+	//configure10khzTimer1();
 	
 	xTaskCreate( rollControlTask, ( signed portCHAR * ) "rollControlTask", ROLL_CONTROL_STACK_SIZE, NULL, mainCHECK_TASK_PRIORITY - 1, NULL );
   
@@ -282,21 +381,27 @@ int main( void )
 }
 /*-----------------------------------------------------------*/
 
+
+extern void vRC(void);
+
 void vApplicationTickHook( void )
 {
+	vRC();
+
+	/*
 	unsigned portBASE_TYPE uxColumn = 0;
 	static xLCDMessage xMessage = { 0, "PASS" };
 	static unsigned portLONG ulTicksSinceLastDisplay = 0;
 	static portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
 
-	/* Called from every tick interrupt.  Have enough ticks passed to make it
-	time to perform our health status check again? */
+	// Called from every tick interrupt.  Have enough ticks passed to make it
+	// time to perform our health status check again?
 	ulTicksSinceLastDisplay++;
 	if( ulTicksSinceLastDisplay >= mainCHECK_DELAY )
 	{
 		ulTicksSinceLastDisplay = 0;
 		
-		/* Has an error been found in any task? */
+		// Has an error been found in any task?
 
         if( xAreBlockingQueuesStillRunning() != pdTRUE )
 		{
@@ -325,9 +430,10 @@ void vApplicationTickHook( void )
         
         xMessage.xColumn++;
 
-		/* Send the message to the LCD gatekeeper for display. */
+		// Send the message to the LCD gatekeeper for display.
 		xHigherPriorityTaskWoken = pdFALSE;
 	}
+	*/
 }
 
 

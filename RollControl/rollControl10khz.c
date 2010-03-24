@@ -1,36 +1,122 @@
 #include "rollControl10khz.h"
 
-__attribute__ ((interrupt ("FIQ"))) void vRollControl10khzFIQ( void )
-{
+
+
+extern volatile uint32_t g_most_recent_buffer;
+extern volatile uint32_t g_task_reading_flag;
+
+extern volatile struct data_sample g_sample_data_A;
+extern volatile struct data_sample g_sample_data_B;
+
+
+extern xSemaphoreHandle xSemaphore;
+
+#define FIQ_INTERVAL_DIVISOR   10
+
+uint32_t adc_fir_coefficients[FIQ_INTERVAL_DIVISOR];
+uint32_t gyro_fir_coefficients[FIQ_INTERVAL_DIVISOR];
+
+extern volatile uint32_t go_flag;
+
+void vRC(void) {
 	FIO0SET = (1<<6);
 
-	//Do somthing at 10khz
+	static struct data_sample the_decimated_sample = DATA_SAMPLE_INITIALIZER;
 	static uint32_t irqCounter = 0;
+	static signed portBASE_TYPE xHigherPriorityTaskWoken;
+
+	//Do somthing at 10khz
+
+	//Triger conversion
+
+	//Pull last data from the SPI FIFO
+	uint32_t adc_spi_sample = 111;
+	uint32_t gyro_spi_sample = 111;
+
+	//Multiply and accumilate FIR accumulator
+	the_decimated_sample.adc_reading += (adc_spi_sample * adc_fir_coefficients[irqCounter]);
+	the_decimated_sample.gyro_reading += (gyro_spi_sample * gyro_fir_coefficients[irqCounter]);
+
+	//Wait for conversion result, poll GPIO pin
+
+	//Write 4 dummy bytes, triggering the data transfer from the sensor, leaving it in the FIFO for the next ISR fireing
+
+
 	irqCounter++;
-	if( irqCounter >= 1000 ) {
-		//Do somthing at 100hz
+
+	xHigherPriorityTaskWoken = pdFALSE;
+	if( irqCounter >= FIQ_INTERVAL_DIVISOR ) {
+		//Do somthing at 1000hz
 		irqCounter = 0;
+
+		if ( g_task_reading_flag ) {
+			if( g_most_recent_buffer == B_BUFFER ) {
+				g_sample_data_A = the_decimated_sample;
+			} else {
+				g_sample_data_B = the_decimated_sample;
+			}
+
+			g_most_recent_buffer = !g_most_recent_buffer;
+		} else {
+			if( g_most_recent_buffer == A_BUFFER ) {
+				g_sample_data_A = the_decimated_sample;
+			} else {
+				g_sample_data_B = the_decimated_sample;
+			}
+		}
+
+		//Reset the accumulators
+		the_decimated_sample = DATA_SAMPLE_INITIALIZER;
+
+		/* Unblock the task by releasing the semaphore. */
+		xSemaphoreGiveFromISR( xSemaphore, &xHigherPriorityTaskWoken );
+		//go_flag = 1;
 	}
+
 
 	//------------------------------------------
 	//Debug LED
 	static uint32_t debugLEDCounter = 0;
 	debugLEDCounter++;
 
-	if( debugLEDCounter == 5000 ) {
+	if( debugLEDCounter == 500 ) {
 		FIO1SET = (1<<19);//turn on led on olimex 2378 dev board
-	} else if( debugLEDCounter >= 10000 ) {
+	} else if( debugLEDCounter >= 1000 ) {
 		FIO1CLR = (1<<19);//turn off led on olimex 2378 Sdev board
 		debugLEDCounter = 0;
 	}
 	//------------------------------------------
 
 
+
+
+	/* If xHigherPriorityTaskWoken was set to true you
+	we should yield.  The actual macro used here is
+	port specific. */
+	//portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
+	if( xHigherPriorityTaskWoken ) {
+		portYIELD_FROM_ISR();
+	}
+
 	FIO0CLR = (1<<6);
 	// Ready for the next interrupt.
+}
+
+
+
+
+
+
+
+
+
+__attribute__ ((interrupt ("FIQ"))) void vRollControl10khzFIQ( void )
+{
+	vRC();
 	T1IR = 2;
 	VICVectAddr = 0;
 }
+
 
 void configure10khzTimer1(void)
 {
@@ -60,3 +146,5 @@ void configure10khzTimer1(void)
 	 //so it is okay to do this here.
 	T1TCR = 0x01;
 }
+
+
