@@ -64,6 +64,34 @@ uint8_t *I2C1ReceiveData;
 uint8_t I2C2TransmitData[I2C_MAX_BUFFER]; 
 uint8_t *I2C2ReceiveData;           
 
+/*
+ * I2CGeneral_Call
+ * Issue a software reset using the general call address
+ * Philips i2c user manual p19 UM10204.pdf section 3.14 "Software Reset"
+ * 0x6 as second byte following general call (0x0)
+ * *** IF ANY SLAVE/BUS DEVICE IS HOLDING DOWN (LOW) SCL OR SDA THEN THIS WONT WORK ***
+ */
+void I2CGeneral_Call(i2c_iface channel) {
+    { portENTER_CRITICAL();
+        uint8_t num_bytes = 0x1;
+        uint8_t myDataToSend[num_bytes];
+        myDataToSend[0]     =   0x6;
+        switch(channel) {
+            case I2C0: 
+                I2C0MasterTX(0x0, myDataToSend, num_bytes); 
+                break;
+
+            case I2C1: 
+ //               I2C1MasterTX(0x0, myDataToSend, num_bytes); 
+                break;
+
+            case I2C2: 
+//                I2C2MasterTX(0x0, myDataToSend, num_bytes); 
+                break;
+        }
+        portEXIT_CRITICAL();
+    }
+}
 
 /*
  * I2Cinit

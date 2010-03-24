@@ -127,6 +127,7 @@ void i2c0_isr(void) __attribute__ ((naked));
 void i2c1_isr(void) __attribute__ ((naked));
 void i2c2_isr(void) __attribute__ ((naked));
 
+void I2CGeneral_Call(i2c_iface channel);
 void i2cinit(i2c_iface channel) ;
 void I2C0MasterRX(int deviceAddr, uint8_t *myDataToSend, int dataLength) ;
 void I2C0MasterTX(int deviceAddr, uint8_t *myDataToSend, int dataLength) ;
