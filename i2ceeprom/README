@@ -1,0 +1,10 @@
+Testing Microchip 24LC65 eeprom with i2c
+
+Manufacturer Microchip Technology Inc.
+
+This is an 8K x 8 i2c eeprom. 
+
+8 byte pages and byte addressable.
+
+
+
