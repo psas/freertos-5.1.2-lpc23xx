@@ -79,7 +79,7 @@
 #define mainMAM_MODE_FULL             ( ( unsigned portCHAR ) 0x02 )
 
 /* blinkm i2c address */
-#define EEPROM_ADDR                   0x09
+#define EEPROM_ADDR                   0x50
 
 /*
  * microsecondsToCPUTicks
@@ -120,12 +120,9 @@ static void i2ceepromtask(void *pvParameters) {
         if (x == interval) {
             FIO0CLR = (1<<6);    // turn on  p0.6 on olimex 2378 Sdev board
             FIO1CLR = (1<<19);   // turn off led  on olimex 2378 Sdev board
-            myDataToSend[0] = 'o';   // sstop light task script
-            myDataToSend[1] = 'n';   // set rgb color
-            myDataToSend[2] = 0xbd;
-            myDataToSend[3] = 0x10;
-            myDataToSend[4] = 0x02;
-            I2C0MasterTX(BLINKM_ADDR, myDataToSend, 5);
+            myDataToSend[0] = 0x0;   // Address 0
+            myDataToSend[1] = 0xa;   // data 0xa
+            I2C0MasterTX(EEPROM_ADDR, myDataToSend, 2);
 
         } else if (x >= (2*interval)) {
             FIO0CLR = (1<<6);    // turn on p0.6 on olimex 2378 Sdev board
@@ -133,23 +130,15 @@ static void i2ceepromtask(void *pvParameters) {
 
             x = 0;
 
-            printf2("i2c Light Task...\r\n");
+            printf2("i2c eeprom task...\r\n");
 
-            //  myDataToSend[0] = 'Z'; // current blinkm firmware version
-            myDataToSend[0] = 'g';     // current RGB color, 3 bytes
+            myDataToSend[0] = 0x0;     // current RGB color, 3 bytes
+            myDataToSend[1] = 0x0;     // current RGB color, 3 bytes
 
-            if(write==1) {
-                I2C0MasterTX(BLINKM_ADDR, myDataToSend, 1);
-                write=0;
-            } else {
-                I2C0MasterRX(BLINKM_ADDR, myDataToGet, 3);
-                printf2("mydatatoget[0] is 0x%X\n\r",myDataToGet[0]);
-                printf2("mydatatoget[1] is 0x%X\n\r",myDataToGet[1]);
-                printf2("mydatatoget[2] is 0x%X\n\r",myDataToGet[2]);
+            I2C0MasterRX(EEPROM_ADDR, myDataToSend, 1);
+            printf2("mydatatoget[0] is 0x%X\n\r",myDataToSend[0]);
 
-                I2CGeneral_Call(I2C0);
-                write = 1;
-            }
+            //   I2CGeneral_Call(I2C0);
 
             //   status = xSerialGetChar(0, &theChar, 1);
             //   if( status == pdTRUE ) {
