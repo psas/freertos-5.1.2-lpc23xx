@@ -1,0 +1,33 @@
+
+
+vSemaphoreCreateBinary
+
+http://www.freertos.org/index.html?http://www.freertos.org/a00121.html
+
+
+xSemaphoreGiveFromISR
+
+http://www.freertos.org/index.html?http://www.freertos.org/a00121.html
+
+
+Examples 
+
+in i2c.h
+
+#include "semphr.h"
+
+in i2c.c
+
+void I2Cinit(i2c_iface channel) {
+    {
+        portENTER_CRITICAL();
+
+        // Sat 27 March 2010 11:02:36 (PDT)
+        // only create one semaphore for now, maybe one for each
+        // channel later.
+        vSemaphoreCreateBinary( i2cSemaphore_g );
+        if( i2cSemaphore_g == NULL ) {
+            vSerialPutString(0, "Failed to create i2cSemaphore_g. I2CInit Failed!\n\r", 50);
+        } else {
+
+
