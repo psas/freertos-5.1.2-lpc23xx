@@ -76,7 +76,7 @@ void I2CGeneral_Call(i2c_iface channel) {
         myDataToSend[0]     =   0x6;
         switch(channel) {
             case I2C0: 
-                I2C0MasterTX(0x0, myDataToSend, num_bytes); 
+                I2C0MasterTX(0x0, myDataToSend, num_bytes, 0); 
                 break;
 
             case I2C1: 
@@ -296,16 +296,21 @@ void i2c0_isr(void) {
             //otherwise transmit the next data byte.
         case 0x28:
             if(I2C0DataCounter == I2C0DataLength) {
-                SET_BIT(I2C0CONSET, STO);
+                // test condition for repeated start. Don't send STO bit...
+                if(i2c_repeat_start_g != 1) {
+                    SET_BIT(I2C0CONSET, STO);
+                    I2C0CONCLR = 0x20;
+                } else {
+                    I2C0CONCLR = 0x20;
+                   // SET_BIT(I2C0CONSET, STA);
+                }
                 give_binsem = 1;
-                I2C0CONCLR = 0x20;
-                // SET_BIT(I2C0CONSET, AA);
-            } 
-            else if(I2C0DataCounter < I2C0DataLength) {
+                SET_BIT(I2C0CONSET, AA);
+            } else if(I2C0DataCounter < I2C0DataLength) {
                 I2C0DAT = I2C0TransmitData[I2C0DataCounter];
                 I2C0CONCLR = 0x20;
+                I2C0DataCounter++;
             }
-            I2C0DataCounter++;
             I2C0CONCLR = 0x1<<SI;
             break;
 
@@ -423,7 +428,7 @@ void i2c2_isr(void) {
  * takes an int (should this be byte?) vector containing the data to send
  * takes an int containing the length of the vector (is this needed?)
  */
-void I2C0MasterTX(int deviceaddr, uint8_t *myDataToSend, int datalength) {
+void I2C0MasterTX(int deviceaddr, uint8_t *myDataToSend, int datalength, uint8_t repeat_start) {
 
     uint8_t i;
 
@@ -431,6 +436,8 @@ void I2C0MasterTX(int deviceaddr, uint8_t *myDataToSend, int datalength) {
         // See if we can obtain the semaphore. If the semaphore is not available 
         // wait I2C_BINSEM_WAIT msecs to see if it becomes free. 
         if( xSemaphoreTake( i2cSemaphore_g, I2C_BINSEM_WAIT ) == pdTRUE ) { 
+
+            i2c_repeat_start_g = repeat_start;
 
             // check datalength - error handling is truncate the buffer requested
             if (datalength >= I2C_MAX_BUFFER) {
@@ -470,24 +477,34 @@ void I2C0MasterTX(int deviceaddr, uint8_t *myDataToSend, int datalength) {
 //takes a pointer to an int to contain the length of the received data (is this needed?)
 void I2C0MasterRX(int deviceAddr, uint8_t *myDataToGet, int datalength) {
     uint8_t i;
+    if( i2cSemaphore_g != NULL ) { 
+        // See if we can obtain the semaphore. If the semaphore is not available 
+        // wait I2C_BINSEM_WAIT msecs to see if it becomes free. 
+        if( xSemaphoreTake( i2cSemaphore_g, I2C_BINSEM_WAIT ) == pdTRUE ) { 
+            // check datalength - error handling is truncate the buffer requested
+            if (datalength >= I2C_MAX_BUFFER) {
+                datalength = I2C_MAX_BUFFER-1;
+            }
 
-    // check datalength - error handling is truncate the buffer requested
-    if (datalength >= I2C_MAX_BUFFER) {
-        datalength = I2C_MAX_BUFFER-1;
+            //set up the data to be transmitted in the Master RX buffer
+            I2C0ReceiveData = myDataToGet;
+
+            //initialize master data counter
+            I2C0DataLength  = datalength;
+            I2C0DataCounter = 0;
+
+            // add the Read bit
+            I2C0ExtSlaveAddress = (deviceAddr << 1);  // 7:1Address,0:high  means read
+            I2C0ExtSlaveAddress |= 0x1;
+            vSerialPutString(0, "*** I2C-INFO ***: Setting start bit in RX\n\r", 50);
+
+            SET_BIT(I2C0CONSET, STA);
+        } else { 
+            vSerialPutString(0, "*** I2C-ERROR ***: Timed out waiting for i2cSemaphore_g (MasterRX). Skipping Request.\n\r", 50);
+        } 
+    } else {
+        vSerialPutString(0, "*** I2C-ERROR ***: i2cSemaphore_g is NULL in I2C0MasterRX. Did you run I2CInit?\n\r", 50);
     }
-
-    //set up the data to be transmitted in the Master RX buffer
-    I2C0ReceiveData = myDataToGet;
-
-    //initialize master data counter
-    I2C0DataLength  = datalength;
-    I2C0DataCounter = 0;
-
-    // add the Read bit
-    I2C0ExtSlaveAddress = (deviceAddr << 1);  // 7:1Address,0:high  means read
-    I2C0ExtSlaveAddress |= 0x1;
-
-    SET_BIT(I2C0CONSET, STA);
 } 
 
 

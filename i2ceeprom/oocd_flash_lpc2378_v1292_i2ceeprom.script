@@ -42,7 +42,8 @@ flash erase_check 0
 sleep 100
 mdh 0x0 100
 #
-flash write_image ./i2cblinkm.hex 0x0
+# flash write_image ./i2cblinkm.hex 0x0
+flash write_image ./i2ceeprom.hex 0x0
 #flash write_image ./BlinkyLightSample.hex 0x0
 # flash write_image ./i2cblinkm.hex 0x0
 #

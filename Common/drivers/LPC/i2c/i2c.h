@@ -113,7 +113,7 @@
 #define SCL0             0x1<<24
 #define SCL0MASK         ~(0x3<<24)
 
-#define I2C_BINSEM_WAIT   ( ( portTickType ) 1000 / portTICK_RATE_MS )
+#define I2C_BINSEM_WAIT   ( ( portTickType ) 3000 / portTICK_RATE_MS )
 
 typedef enum { I2C0=0, I2C1, I2C2} i2c_iface;
 
@@ -131,10 +131,12 @@ void i2c2_isr(void) __attribute__ ((naked));
 // Ref: http://www.freertos.org/index.html?http://www.freertos.org/a00121.html
 xSemaphoreHandle i2cSemaphore_g;
 
+uint8_t i2c_repeat_start_g;
+
 void I2CGeneral_Call(i2c_iface channel);
 void i2cinit(i2c_iface channel) ;
+void I2C0MasterTX(int deviceAddr, uint8_t *myDataToSend, int dataLength, uint8_t repeat_start) ;
 void I2C0MasterRX(int deviceAddr, uint8_t *myDataToSend, int dataLength) ;
-void I2C0MasterTX(int deviceAddr, uint8_t *myDataToSend, int dataLength) ;
 
 #endif
 
