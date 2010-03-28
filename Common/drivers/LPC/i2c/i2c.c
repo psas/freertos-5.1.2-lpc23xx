@@ -1,5 +1,3 @@
-
-
 /*
  *   I2C handling suite
  *   Jeremy Booth
@@ -82,11 +80,11 @@ void I2CGeneral_Call(i2c_iface channel) {
                 break;
 
             case I2C1: 
- //               I2C1MasterTX(0x0, myDataToSend, num_bytes); 
+                //               I2C1MasterTX(0x0, myDataToSend, num_bytes); 
                 break;
 
             case I2C2: 
-//                I2C2MasterTX(0x0, myDataToSend, num_bytes); 
+                //                I2C2MasterTX(0x0, myDataToSend, num_bytes); 
                 break;
         }
         portEXIT_CRITICAL();
@@ -103,96 +101,100 @@ void I2CGeneral_Call(i2c_iface channel) {
  * 5. Continue initializing...tbd
  */
 void I2Cinit(i2c_iface channel) {
-    { portENTER_CRITICAL();
-        switch(channel) {
-            case I2C0: 
+    { 
+        portENTER_CRITICAL();
 
-                //   printf2("\tI2C0 Init! ...\n\r");
-                //   possible to send stop condition as reset?
-                //   SET_BIT(I2C0CONSET, STO);
-                //   SET_BIT(I2C0CONSET, AA);
+        // Sat 27 March 2010 11:02:36 (PDT)
+        // only create one semaphore for now, maybe one for each
+        // channel later.
+        vSemaphoreCreateBinary( i2cSemaphore_g );
+        if( i2cSemaphore_g == NULL ) {
+            vSerialPutString(0, "*** I2C-ERROR ***: Failed to create i2cSemaphore_g. I2CInit Failed!\n\r", 50);
+        } else {
+            switch(channel) {
+                case I2C0: 
+                    // power
+                    SET_BIT(PCONP, PCI2C0);
 
-                // power
-                SET_BIT(PCONP, PCI2C0);
+                    // Enable
+                    I2C0CONCLR = 0x7C;
+                    SET_BIT(I2C0CONSET, I2EN ); // master mode
+                    ZERO_BIT(I2C0CONSET, AA );
+                    printf2("I20Conset is 0x%X\n",I2C0CONSET);
 
-                // Enable
-                I2C0CONCLR = 0x7C;
-                SET_BIT(I2C0CONSET, I2EN ); // master mode
-                ZERO_BIT(I2C0CONSET, AA );
-                printf2("I20Conset is 0x%X\n",I2C0CONSET);
+                    // I2C clock
+                    I2C0SCLL = I2SCLLOW;
+                    I2C0SCLH = I2SCLHIGH;
 
-                // I2C clock
-                I2C0SCLL = I2SCLLOW;
-                I2C0SCLH = I2SCLHIGH;
+                    // 2368 is 100pin package use table 107 p158 lpc23xx usermanual
+                    PINSEL1 &= SDA0MASK;
+                    PINSEL1 |= SDA0;
+                    PINSEL1 &= SCL0MASK;
+                    PINSEL1 |= SCL0;
 
-                // 2368 is 100pin package use table 107 p158 lpc23xx usermanual
-                PINSEL1 &= SDA0MASK;
-                PINSEL1 |= SDA0;
-                PINSEL1 &= SCL0MASK;
-                PINSEL1 |= SCL0;
+                    // pinmode:   I2C0 pins permanent open drain (pullup)
+                    // reference: lpc23xx usermanual p158 table 107 footnote 2
 
-                // pinmode:   I2C0 pins permanent open drain (pullup)
-                // reference: lpc23xx usermanual p158 table 107 footnote 2
+                    // vic
+                    // set up VIC p93 table 86 lpc23xx user manual
+                    SET_BIT(VICIntEnable, VICI2C0EN);
+                    VICVectAddr9 = (unsigned) i2c0_isr;
 
-                // vic
-                // set up VIC p93 table 86 lpc23xx user manual
-                SET_BIT(VICIntEnable, VICI2C0EN);
-                VICVectAddr9 = (unsigned) i2c0_isr;
+                    I2C0CONCLR = 0x1<<SI;
+                    break;
 
-                I2C0CONCLR = 0x1<<SI;
-                break;
+                case I2C1: 
 
-            case I2C1: 
+                    SET_BIT(PCONP, PCI2C1);
 
-                SET_BIT(PCONP, PCI2C1);
+                    SET_BIT(I2C1CONSET, I2EN );
+                    ZERO_BIT(I2C1CONSET, AA );
 
-                SET_BIT(I2C1CONSET, I2EN );
-                ZERO_BIT(I2C1CONSET, AA );
+                    I2C1SCLL = I2SCLLOW;
+                    I2C1SCLH = I2SCLHIGH;
 
-                I2C1SCLL = I2SCLLOW;
-                I2C1SCLH = I2SCLHIGH;
+                    PINSEL1 &= SDA1MASK;
+                    PINSEL1 |= SDA1;
+                    PINSEL1 &= SCL1MASK;
+                    PINSEL1 |= SCL1;
 
-                PINSEL1 &= SDA1MASK;
-                PINSEL1 |= SDA1;
-                PINSEL1 &= SCL1MASK;
-                PINSEL1 |= SCL1;
+                    PINMODE1 &= SDA1MASK;
+                    PINMODE1 |= PULLUP;
+                    PINMODE1 &= SCL1MASK;
+                    PINMODE1 |= PULLUP;
 
-                PINMODE1 &= SDA1MASK;
-                PINMODE1 |= PULLUP;
-                PINMODE1 &= SCL1MASK;
-                PINMODE1 |= PULLUP;
+                    SET_BIT(VICIntEnable, VICI2C1EN);
+                    VICVectAddr19 = (unsigned) i2c1_isr;
+                    break;
 
-                SET_BIT(VICIntEnable, VICI2C1EN);
-                VICVectAddr19 = (unsigned) i2c1_isr;
-                break;
+                case I2C2: 
 
-            case I2C2: 
+                    SET_BIT(PCONP, PCI2C2);
 
-                SET_BIT(PCONP, PCI2C2);
+                    SET_BIT(I2C2CONSET, I2EN );
+                    ZERO_BIT(I2C2CONSET, AA );
 
-                SET_BIT(I2C2CONSET, I2EN );
-                ZERO_BIT(I2C2CONSET, AA );
+                    I2C2SCLL = I2SCLLOW;
+                    I2C2SCLH = I2SCLHIGH;
 
-                I2C2SCLL = I2SCLLOW;
-                I2C2SCLH = I2SCLHIGH;
+                    PINSEL0 &= SDA2MASK;
+                    PINSEL0 |= SDA2;
+                    PINSEL0 &= SCL2MASK;
+                    PINSEL0 |= SCL2;
 
-                PINSEL0 &= SDA2MASK;
-                PINSEL0 |= SDA2;
-                PINSEL0 &= SCL2MASK;
-                PINSEL0 |= SCL2;
+                    PINMODE2 &= SDA2MASK;
+                    PINMODE2 |= PULLUP;
+                    PINMODE2 &= SCL2MASK;
+                    PINMODE2 |= PULLUP;
 
-                PINMODE2 &= SDA2MASK;
-                PINMODE2 |= PULLUP;
-                PINMODE2 &= SCL2MASK;
-                PINMODE2 |= PULLUP;
+                    SET_BIT(VICIntEnable, VICI2C2EN);
+                    VICVectAddr30 = (unsigned) i2c2_isr;
+                    break;
 
-                SET_BIT(VICIntEnable, VICI2C2EN);
-                VICVectAddr30 = (unsigned) i2c2_isr;
-                break;
-
-            default:
-                //  error         ???
-                break;
+                default:
+                    //  error         ???
+                    break;
+            }
         }
     }
     portEXIT_CRITICAL();
@@ -205,8 +207,13 @@ void i2c0_isr(void) {
 
     portSAVE_CONTEXT();
 
-    uint32_t status;
-    uint8_t  holdbyte;
+    uint32_t      status;
+    uint8_t       holdbyte;
+    uint8_t       give_binsem;
+    static signed portBASE_TYPE xHigherPriorityTaskWoken; 
+
+    xHigherPriorityTaskWoken = pdFALSE;
+    give_binsem              = 0;
 
     status = I2C0STAT;
 
@@ -217,11 +224,11 @@ void i2c0_isr(void) {
     //Read the I2C state from the correct I2STA register and then branch to
     //the corresponding state routine.
     switch(status) {
-
         //State 0x00 - Bus Error
         case 0x00:
             //write 0x14 to I2CONSET to set the STO and AA flags.
             SET_BIT(I2C0CONSET, STO);
+            give_binsem = 1;
             SET_BIT(I2C0CONSET, AA);
 
             I2C0CONCLR = 0x1<<SI;
@@ -279,6 +286,7 @@ void i2c0_isr(void) {
         case 0x20:
 
             SET_BIT(I2C0CONSET, STO);
+            give_binsem = 1;
             SET_BIT(I2C0CONSET, AA);
             I2C0CONCLR = 0x1<<SI;
             break;
@@ -289,6 +297,7 @@ void i2c0_isr(void) {
         case 0x28:
             if(I2C0DataCounter == I2C0DataLength) {
                 SET_BIT(I2C0CONSET, STO);
+                give_binsem = 1;
                 I2C0CONCLR = 0x20;
                 // SET_BIT(I2C0CONSET, AA);
             } 
@@ -304,6 +313,7 @@ void i2c0_isr(void) {
             //will be transmitted.
         case 0x30:
             SET_BIT(I2C0CONSET, STO);
+            give_binsem = 1;
             SET_BIT(I2C0CONSET, AA);
             I2C0CONCLR = 0x1<<SI;
             break;
@@ -352,6 +362,7 @@ void i2c0_isr(void) {
             //A Stop condition will be transmitted.
         case 0x48:
             SET_BIT(I2C0CONSET, STO);
+            give_binsem = 1;
             SET_BIT(I2C0CONSET, AA);
             I2C0CONCLR = 0x1<<SI;
             break;
@@ -361,18 +372,29 @@ void i2c0_isr(void) {
             I2C0ReceiveData[I2C0DataCounter] = I2C0DAT;
             I2C0DataCounter++;
             SET_BIT(I2C0CONSET, STO);
+            give_binsem = 1;
             SET_BIT(I2C0CONSET, AA);
             I2C0CONCLR = 0x1<<SI;
             break;
         default:
             // treat like state 0x0, bus error
             SET_BIT(I2C0CONSET, STO);
+            give_binsem = 1;
             SET_BIT(I2C0CONSET, AA);
             I2C0CONCLR = 0x1<<SI;
             break;
     }
 
     VICVectAddr = 0x0;   // clear VIC address
+    if(give_binsem == 1) {  // STOP Bit has been set
+        xSemaphoreGiveFromISR( i2cSemaphore_g, &xHigherPriorityTaskWoken );
+    }
+
+  /* If xHigherPriorityTaskWoken was set to true you
+    we should yield.  The actual macro used here is 
+    port specific. */
+//  Sat 27 March 2010 12:46:21 (PDT):Only needed if context switch in i2c_isr?
+//     portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
 
     portRESTORE_CONTEXT();
 }
@@ -405,30 +427,40 @@ void I2C0MasterTX(int deviceaddr, uint8_t *myDataToSend, int datalength) {
 
     uint8_t i;
 
-    // check datalength - error handling is truncate the buffer requested
-    if (datalength >= I2C_MAX_BUFFER) {
-        datalength = I2C_MAX_BUFFER-1;
-    }
-    //set up the data to be transmitted in the Master Transmit buffer
-    for(i=0; i<datalength; i++) {
-        I2C0TransmitData[i] = myDataToSend[i];
-    }
+    if( i2cSemaphore_g != NULL ) { 
+        // See if we can obtain the semaphore. If the semaphore is not available 
+        // wait I2C_BINSEM_WAIT msecs to see if it becomes free. 
+        if( xSemaphoreTake( i2cSemaphore_g, I2C_BINSEM_WAIT ) == pdTRUE ) { 
 
-    //initialize master data counter
-    I2C0DataLength  = datalength;
-    I2C0DataCounter = 0;
+            // check datalength - error handling is truncate the buffer requested
+            if (datalength >= I2C_MAX_BUFFER) {
+                datalength = I2C_MAX_BUFFER-1;
+            }
+            //set up the data to be transmitted in the Master Transmit buffer
+            for(i=0; i<datalength; i++) {
+                I2C0TransmitData[i] = myDataToSend[i];
+            }
 
-    //set up the Slave Address to transmit data to, and add the Write bit
-    I2C0ExtSlaveAddress = (deviceaddr << 1);  // 7:1Address 0:low  means write
-//    printf2("I2C0ExtSlaveAddress is: 0x%X\n\r", I2C0ExtSlaveAddress);
-//    printf2("I2C0TransmitData    is: 0x%X\n\r", I2C0TransmitData[0]);
-//    printf2("I2C0DataLength      is: 0x%X\n\r", I2C0DataLength);
-//    printf2("I2C0DataCounter     is: 0x%X\n\r", I2C0DataCounter);
+            //initialize master data counter
+            I2C0DataLength  = datalength;
+            I2C0DataCounter = 0;
 
+            //set up the Slave Address to transmit data to, and add the Write bit
+            I2C0ExtSlaveAddress = (deviceaddr << 1);  // 7:1Address 0:low  means write
+            //    printf2("I2C0ExtSlaveAddress is: 0x%X\n\r", I2C0ExtSlaveAddress);
+            //    printf2("I2C0TransmitData    is: 0x%X\n\r", I2C0TransmitData[0]);
+            //    printf2("I2C0DataLength      is: 0x%X\n\r", I2C0DataLength);
+            //    printf2("I2C0DataCounter     is: 0x%X\n\r", I2C0DataCounter);
 
-    //write 0x20 to I2CONSET to set the STA bit
-    SET_BIT(I2C0CONSET, STA);
+            //write 0x20 to I2CONSET to set the STA bit
+            SET_BIT(I2C0CONSET, STA);
 
+        } else { 
+            vSerialPutString(0, "*** I2C-ERROR ***: Timed out waiting for i2cSemaphore_g. Skipping Request.\n\r", 50);
+        } 
+    } else {
+        vSerialPutString(0, "*** I2C-ERROR ***: i2cSemaphore_g is NULL in I2C0MasterTX. Did you run I2CInit?\n\r", 50);
+    } 
 } 
 
 //Master Recieve - Begin a master recieve by setting up the buffer,

@@ -36,6 +36,8 @@
 #ifndef _I2C_H
 #define _I2C_H
 
+#include "semphr.h" 
+
 // Debug flags
 #define DEBUG_ISR        1
 #define DEBUG_INIT       0
@@ -111,11 +113,9 @@
 #define SCL0             0x1<<24
 #define SCL0MASK         ~(0x3<<24)
 
-typedef enum { I2C0=0, I2C1, I2C2} i2c_iface;
+#define I2C_BINSEM_WAIT   ( ( portTickType ) 1000 / portTICK_RATE_MS )
 
-static uint8_t I2C0_busy ; 
-static uint8_t I2C1_busy ; 
-static uint8_t I2C2_busy ; 
+typedef enum { I2C0=0, I2C1, I2C2} i2c_iface;
 
 /*
 void i2c0_isr(void) __attribute__ ((interrupt("IRQ")));
@@ -126,6 +126,10 @@ void i2c2_isr(void) __attribute__ ((interrupt("IRQ")));
 void i2c0_isr(void) __attribute__ ((naked));
 void i2c1_isr(void) __attribute__ ((naked));
 void i2c2_isr(void) __attribute__ ((naked));
+
+// Use a binary semaphore for mutual exclusion on the i2c interface.
+// Ref: http://www.freertos.org/index.html?http://www.freertos.org/a00121.html
+xSemaphoreHandle i2cSemaphore_g;
 
 void I2CGeneral_Call(i2c_iface channel);
 void i2cinit(i2c_iface channel) ;
