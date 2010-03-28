@@ -41,59 +41,25 @@
 
 #include "i2c.h"
 
-uint32_t I2C0ExtSlaveAddress = 0;    // Slave the bus is currently talking to.  NOT the slave address of the LPC23xx device!!!
-uint32_t I2C0DataCounter     = 0;    // bytes sent
-uint32_t I2C0DataLength      = 0;    // total bytes to send
-
-uint32_t I2C1ExtSlaveAddress = 0;
-uint32_t I2C1DataCounter     = 0;
-uint32_t I2C1DataLength      = 0;
-
-uint32_t I2C2ExtSlaveAddress = 0;
-uint32_t I2C2DataCounter     = 0;
-uint32_t I2C2DataLength      = 0;
-
-uint8_t I2C0TransmitData[I2C_MAX_BUFFER];  // data to transmit buffer
-uint8_t *I2C0ReceiveData;                  // pointer to data to receive buffer
-
-uint8_t I2C1TransmitData[I2C_MAX_BUFFER]; 
-uint8_t *I2C1ReceiveData;           
-
-uint8_t I2C2TransmitData[I2C_MAX_BUFFER]; 
-uint8_t *I2C2ReceiveData;           
-
 /*
- * I2CGeneral_Call
- * Issue a software reset using the general call address
- * Philips i2c user manual p19 UM10204.pdf section 3.14 "Software Reset"
- * 0x6 as second byte following general call (0x0)
- * *** IF ANY SLAVE/BUS DEVICE IS HOLDING DOWN (LOW) SCL OR SDA THEN THIS WONT WORK ***
+ * I2CInit_State
  */
-void I2CGeneral_Call(i2c_iface channel) {
-    { portENTER_CRITICAL();
-        uint8_t num_bytes = 0x1;
-        uint8_t myDataToSend[num_bytes];
-        myDataToSend[0]     =   0x6;
-        switch(channel) {
-            case I2C0: 
-                I2C0MasterTX(0x0, myDataToSend, num_bytes, 0); 
-                break;
+void I2CInit_State(i2c_master_t* s) {
+    int i = 0;
 
-            case I2C1: 
-                //               I2C1MasterTX(0x0, myDataToSend, num_bytes); 
-                break;
-
-            case I2C2: 
-                //                I2C2MasterTX(0x0, myDataToSend, num_bytes); 
-                break;
-        }
-        portEXIT_CRITICAL();
+    s->I2Cstate             = I2C_IDLE;
+    for(i=0, i<I2C_MAX_BUFFER; i++) {
+        s.I2Cbuffer[i] = 0
     }
+    s->I2Cext_slave_address = 0x0;
+    s->write_length         = 0x0;
+    s->read_length          = 0x0;
 }
 
 /*
  * I2Cinit
  *
+ * 0. Init xaction structure.
  * 1. Turn on the power to the channel
  * 2. Configure the clock for the channel
  * 3. Set I/O pins to correct mode
@@ -113,6 +79,9 @@ void I2Cinit(i2c_iface channel) {
         } else {
             switch(channel) {
                 case I2C0: 
+                    // structure
+                    I2CInit_State( &i2c0_s_g );
+
                     // power
                     SET_BIT(PCONP, PCI2C0);
 
@@ -144,6 +113,9 @@ void I2Cinit(i2c_iface channel) {
                     break;
 
                 case I2C1: 
+                    // structure
+                    I2CInit_State( &i2c1_s_g );
+
 
                     SET_BIT(PCONP, PCI2C1);
 
@@ -168,6 +140,9 @@ void I2Cinit(i2c_iface channel) {
                     break;
 
                 case I2C2: 
+                    // structure
+                    I2CInit_State( &i2c2_s_g );
+
 
                     SET_BIT(PCONP, PCI2C2);
 
@@ -421,23 +396,18 @@ void i2c2_isr(void) {
 
 
 /*
- * I2CMasterTX
- * Master Transmit - Begin a master transmit by setting up the buffer,
- * pointer, and data count, then sending a START
- * takes a string containing the I2C channel to be set up
- * takes an int (should this be byte?) vector containing the data to send
- * takes an int containing the length of the vector (is this needed?)
+ * I2C_master_xact
+ * Input: Pointer to i2c_master_t structure with xaction data
  */
-void I2C0MasterTX(int deviceaddr, uint8_t *myDataToSend, int datalength, uint8_t repeat_start) {
+void I2C0_master_xact(i2c_master_t* s) {
 
     uint8_t i;
 
     if( i2cSemaphore_g != NULL ) { 
         // See if we can obtain the semaphore. If the semaphore is not available 
         // wait I2C_BINSEM_WAIT msecs to see if it becomes free. 
+        Sun 28 March 2010 16:41:40 (PDT)  stop here for day
         if( xSemaphoreTake( i2cSemaphore_g, I2C_BINSEM_WAIT ) == pdTRUE ) { 
-
-            i2c_repeat_start_g = repeat_start;
 
             // check datalength - error handling is truncate the buffer requested
             if (datalength >= I2C_MAX_BUFFER) {
@@ -470,41 +440,36 @@ void I2C0MasterTX(int deviceaddr, uint8_t *myDataToSend, int datalength, uint8_t
     } 
 } 
 
-//Master Recieve - Begin a master recieve by setting up the buffer,
-//pointer, and data count, then sending a START
-//takes a string containing the I2C channel to be set up
-//takes an int (should this be byte?) vector containing the data to recieve
-//takes a pointer to an int to contain the length of the received data (is this needed?)
-void I2C0MasterRX(int deviceAddr, uint8_t *myDataToGet, int datalength) {
-    uint8_t i;
-    if( i2cSemaphore_g != NULL ) { 
-        // See if we can obtain the semaphore. If the semaphore is not available 
-        // wait I2C_BINSEM_WAIT msecs to see if it becomes free. 
-        if( xSemaphoreTake( i2cSemaphore_g, I2C_BINSEM_WAIT ) == pdTRUE ) { 
-            // check datalength - error handling is truncate the buffer requested
-            if (datalength >= I2C_MAX_BUFFER) {
-                datalength = I2C_MAX_BUFFER-1;
-            }
 
-            //set up the data to be transmitted in the Master RX buffer
-            I2C0ReceiveData = myDataToGet;
+/*
+ * I2CGeneral_Call
+ * Issue a software reset using the general call address
+ * Philips i2c user manual p19 UM10204.pdf section 3.14 "Software Reset"
+ * 0x6 as second byte following general call (0x0)
+ * *** IF ANY SLAVE/BUS DEVICE IS HOLDING DOWN (LOW) SCL OR SDA THEN THIS WONT WORK ***
+ */
+/*
+void I2CGeneral_Call(i2c_iface channel) {
+    { portENTER_CRITICAL();
+        uint8_t num_bytes = 0x1;
+        uint8_t myDataToSend[num_bytes];
+        myDataToSend[0]     =   0x6;
+        switch(channel) {
+            case I2C0: 
+                I2C0MasterTX(0x0, myDataToSend, num_bytes, 0); 
+                break;
 
-            //initialize master data counter
-            I2C0DataLength  = datalength;
-            I2C0DataCounter = 0;
+            case I2C1: 
+                //               I2C1MasterTX(0x0, myDataToSend, num_bytes); 
+                break;
 
-            // add the Read bit
-            I2C0ExtSlaveAddress = (deviceAddr << 1);  // 7:1Address,0:high  means read
-            I2C0ExtSlaveAddress |= 0x1;
-            vSerialPutString(0, "*** I2C-INFO ***: Setting start bit in RX\n\r", 50);
-
-            SET_BIT(I2C0CONSET, STA);
-        } else { 
-            vSerialPutString(0, "*** I2C-ERROR ***: Timed out waiting for i2cSemaphore_g (MasterRX). Skipping Request.\n\r", 50);
-        } 
-    } else {
-        vSerialPutString(0, "*** I2C-ERROR ***: i2cSemaphore_g is NULL in I2C0MasterRX. Did you run I2CInit?\n\r", 50);
+            case I2C2: 
+                //                I2C2MasterTX(0x0, myDataToSend, num_bytes); 
+                break;
+        }
+        portEXIT_CRITICAL();
     }
-} 
+}
+*/
 
 

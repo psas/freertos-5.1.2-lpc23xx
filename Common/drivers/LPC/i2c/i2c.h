@@ -115,7 +115,28 @@
 
 #define I2C_BINSEM_WAIT   ( ( portTickType ) 3000 / portTICK_RATE_MS )
 
+
 typedef enum { I2C0=0, I2C1, I2C2} i2c_iface;
+
+typedef enum { 
+    I2C_IDLE = 0, 
+    I2C_START,
+    I2C_RESTART,
+    I2C_REPEATED_START,
+    I2C_ACK,
+    I2C_NOACK
+} i2c_state;
+
+typedef struct i2c_master_xact {
+    i2c_state I2Cstate;
+
+    uint8_t   I2Cbuffer[I2C_MAX_BUFFER];  // stream data for transaction
+    uint8_t   I2Cext_slave_address;
+    uint8_t   write_length;
+    uint8_t   read_length;
+
+} i2c_master_xact_t;
+
 
 /*
 void i2c0_isr(void) __attribute__ ((interrupt("IRQ")));
@@ -131,12 +152,19 @@ void i2c2_isr(void) __attribute__ ((naked));
 // Ref: http://www.freertos.org/index.html?http://www.freertos.org/a00121.html
 xSemaphoreHandle i2cSemaphore_g;
 
-uint8_t i2c_repeat_start_g;
+// One structure for each i2c channel
+static i2c_master_t     i2c0_s_g;
+static i2c_master_t     i2c1_s_g;
+static i2c_master_t     i2c2_s_g;
 
-void I2CGeneral_Call(i2c_iface channel);
-void i2cinit(i2c_iface channel) ;
-void I2C0MasterTX(int deviceAddr, uint8_t *myDataToSend, int dataLength, uint8_t repeat_start) ;
-void I2C0MasterRX(int deviceAddr, uint8_t *myDataToSend, int dataLength) ;
+// void I2CGeneral_Call(i2c_iface channel);
+void i2c_init(i2c_iface channel) ;
+void I2C0_master_xact(i2c_master_xact_t&  s) ;
+
+/*
+void I2C1_master_xact(i2c_master_xact_t&  s) ;
+void I2C2_master_xact(i2c_master_xact_t&  s) ;
+*/
 
 #endif
 
