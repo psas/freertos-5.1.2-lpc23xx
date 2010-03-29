@@ -413,6 +413,34 @@ void i2c2_isr(void) {
     // not implemented
 }
 
+/*
+ * I2C0_get_read_data
+ * Input: Pointer to i2c_master_t structure with xaction data
+ * This will copy data from local i2c0_s_g structure to same
+ * type of structure passed as pointer from outside i2c scope.
+ */
+void I2C0_get_read_data(i2c_master_xact_t* s) {
+    uint32_t i;
+
+    if(s !=NULL ) {
+        if( i2cSemaphore_g != NULL ) { 
+            // See if we can obtain the semaphore. If the semaphore is not available 
+            // wait I2C_BINSEM_WAIT msecs to see if it becomes free. 
+            if( xSemaphoreTake( i2cSemaphore_g, I2C_BINSEM_WAIT ) == pdTRUE ) { 
+                for(i=0; i<I2C_MAX_BUFFER; i++) {
+                    s->I2C_RD_buffer[i] = i2c0_s_g.I2C_RD_buffer[i];
+                }
+            } else { 
+                vSerialPutString(0, "*** I2C-ERROR ***: I2C0_get_read_data Timed out waiting for i2cSemaphore_g. Skipping Request.\n\r", 50);
+            }
+        } else {
+            vSerialPutString(0, "*** I2C-ERROR ***: I2C0_get_read_data i2cSemaphore_g is NULL in I2C0MasterTX. Did you run I2CInit?\n\r", 50);
+        }
+    } else {
+        vSerialPutString(0, "*** I2C-ERROR ***: I2C0_get_read_data, structure pointer is NULL. Skipping.\n\r", 50);
+    }
+}
+
 
 /*
  * I2C_master_xact
@@ -421,31 +449,35 @@ void i2c2_isr(void) {
 void I2C0_master_xact(i2c_master_xact_t* s) {
 
     uint8_t i;
+    if(s!=NULL) {
+        if( i2cSemaphore_g != NULL ) { 
+            // See if we can obtain the semaphore. If the semaphore is not available 
+            // wait I2C_BINSEM_WAIT msecs to see if it becomes free. 
+            if( xSemaphoreTake( i2cSemaphore_g, I2C_BINSEM_WAIT ) == pdTRUE ) { 
+                for(i=0; i<I2C_MAX_BUFFER; i++){
+                    i2c0_s_g.I2C_TX_buffer[i] = s->I2C_TX_buffer[i];
+                    i2c0_s_g.I2C_RD_buffer[i] = s->I2C_RD_buffer[i];
+                }
+                i2c0_s_g.I2Cext_slave_address = s->I2Cext_slave_address;
+                i2c0_s_g.write_length         = s->write_length;
+                i2c0_s_g.read_length          = s->read_length;
 
-    if( i2cSemaphore_g != NULL ) { 
-        // See if we can obtain the semaphore. If the semaphore is not available 
-        // wait I2C_BINSEM_WAIT msecs to see if it becomes free. 
-        if( xSemaphoreTake( i2cSemaphore_g, I2C_BINSEM_WAIT ) == pdTRUE ) { 
-            for(i=0; i<I2C_MAX_BUFFER; i++){
-                i2c0_s_g.I2C_TX_buffer[i] = s->I2C_TX_buffer[i];
-                i2c0_s_g.I2C_RD_buffer[i] = s->I2C_RD_buffer[i];
-            }
-            i2c0_s_g.I2Cext_slave_address = s->I2Cext_slave_address;
-            i2c0_s_g.write_length         = s->write_length;
-            i2c0_s_g.read_length          = s->read_length;
+//                 printf2("write_length: 0x%X\r\n", s->write_length);
+                //write 0x20 to I2CONSET to set the STA bit
+                I2C0CONSET                    = I2C_STA;
 
-
-            printf2("write_length: 0x%X\r\n", s->write_length);
-            //write 0x20 to I2CONSET to set the STA bit
-            I2C0CONSET                    = I2C_STA;
-
-        } else { 
-            vSerialPutString(0, "*** I2C-ERROR ***: Timed out waiting for i2cSemaphore_g. Skipping Request.\n\r", 50);
-        } 
+            } else { 
+                vSerialPutString(0, "*** I2C-ERROR ***: I2C0_master_xact, Timed out waiting for i2cSemaphore_g. Skipping Request.\n\r", 50);
+            } 
+        } else {
+            vSerialPutString(0, "*** I2C-ERROR ***: I2C0_master_xact, i2cSemaphore_g is NULL in I2C0MasterTX. Did you run I2CInit?\n\r", 50);
+        }  
     } else {
-        vSerialPutString(0, "*** I2C-ERROR ***: i2cSemaphore_g is NULL in I2C0MasterTX. Did you run I2CInit?\n\r", 50);
-    } 
-} 
+        vSerialPutString(0, "*** I2C-ERROR ***: I2C0_master_xact, structure pointer is NULL. Skipping.\n\r", 50);
+    }
+}
+
+
 
 
 /*

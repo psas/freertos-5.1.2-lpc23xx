@@ -1,4 +1,14 @@
 
+Mon 29 March 2010 13:51:21 (PDT)
+
+First successful repeated start read.
+
+Need to implement scoping on i2c structure. Can't
+bring read data back out yet. Use semaphore
+to wait on read routine then read data with return
+function? Messy messy
+
+
 Sat 27 March 2010 15:39:39 (PDT)
 Basic outlines for testing i2c with eeprom. 
 

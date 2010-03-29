@@ -172,6 +172,7 @@ static volatile uint32_t         i2c_rdindex_g;
 // void I2CGeneral_Call(i2c_iface channel);
 void I2CInit_State( i2c_master_xact_t* s) ;
 void i2c_init(i2c_iface channel) ;
+void I2C0_get_read_data(i2c_master_xact_t* s) ;
 void I2C0_master_xact(i2c_master_xact_t*  s) ;
 
 /*
