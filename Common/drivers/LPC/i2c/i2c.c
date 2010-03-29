@@ -226,11 +226,10 @@ void i2c0_isr(void) {
         case 0x08:
             i2c_wrindex_g     = 0;
 
-            //write the Slave Address with R/W bit to I2DAT
+            // write the Slave Address with R/W bit to I2DAT
             I2C0DAT           = i2c0_s_g.I2C_TX_buffer[i2c_wrindex_g++] ;
             i2c0_s_g.state    = I2C_START;
 
-            I2C0CONSET        = I2C_AA;
             break;
 
             // State 0x10 - 
@@ -256,7 +255,8 @@ void i2c0_isr(void) {
             if(i2c0_s_g.state == I2C_START) {
                 I2C0DAT           = i2c0_s_g.I2C_TX_buffer[i2c_wrindex_g++] ;
                 I2C0CONSET        = I2C_AA;
-                i2c0_s_g.state = I2C_ACK;
+                I2C0CONCLR        = I2C_STAC; // undocumented clear start flag
+                i2c0_s_g.state    = I2C_ACK;
             }
             break;
 
@@ -283,7 +283,7 @@ void i2c0_isr(void) {
             } else {
                 if (i2c0_s_g.read_length != 0) {
                     I2C0CONSET        = I2C_STA;  // repeated start
-                    i2c0_s_g.state = I2C_REPEATED_START;
+                    i2c0_s_g.state    = I2C_REPEATED_START;
                 } else {
                     I2C0CONSET        = (I2C_STO | I2C_AA);
                     give_binsem = 1;
@@ -323,10 +323,12 @@ void i2c0_isr(void) {
         case 0x40:
             if (i2c0_s_g.read_length == 1) {
                 // go to state 0x58
-                I2C0CONCLR    = I2C_AAC;
+                I2C0CONCLR        = I2C_AAC;
+                I2C0CONCLR        = I2C_STAC; // undocumented clear start flag
             } else {
                 // go to state 0x50
-                I2C0CONSET    = I2C_AA;
+                I2C0CONSET        = I2C_AA;
+                I2C0CONCLR        = I2C_STAC; // undocumented clear start flag
             }
             break;
 
@@ -432,6 +434,8 @@ void I2C0_master_xact(i2c_master_xact_t* s) {
             i2c0_s_g.write_length         = s->write_length;
             i2c0_s_g.read_length          = s->read_length;
 
+
+            printf2("write_length: 0x%X\r\n", s->write_length);
             //write 0x20 to I2CONSET to set the STA bit
             I2C0CONSET                    = I2C_STA;
 
