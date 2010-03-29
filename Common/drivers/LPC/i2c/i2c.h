@@ -128,12 +128,12 @@ typedef enum {
 } i2c_state;
 
 typedef struct i2c_master_xact {
-    i2c_state I2Cstate;
+    volatile i2c_state I2Cstate;
 
-    uint8_t   I2Cbuffer[I2C_MAX_BUFFER];  // stream data for transaction
-    uint8_t   I2Cext_slave_address;
-    uint8_t   write_length;
-    uint8_t   read_length;
+    volatile uint8_t  I2Cbuffer[I2C_MAX_BUFFER];  // stream data for transaction
+    volatile uint8_t  I2Cext_slave_address;
+    volatile uint8_t  write_length;
+    volatile uint8_t  read_length;
 
 } i2c_master_xact_t;
 
@@ -150,14 +150,15 @@ void i2c2_isr(void) __attribute__ ((naked));
 
 // Use a binary semaphore for mutual exclusion on the i2c interface.
 // Ref: http://www.freertos.org/index.html?http://www.freertos.org/a00121.html
-xSemaphoreHandle i2cSemaphore_g;
+static xSemaphoreHandle volatile i2cSemaphore_g;
 
 // One structure for each i2c channel
-static i2c_master_t     i2c0_s_g;
-static i2c_master_t     i2c1_s_g;
-static i2c_master_t     i2c2_s_g;
+static volatile i2c_master_t     i2c0_s_g;
+static volatile i2c_master_t     i2c1_s_g;
+static volatile i2c_master_t     i2c2_s_g;
 
 // void I2CGeneral_Call(i2c_iface channel);
+void I2CInit_State(i2c_master_t* s) ;
 void i2c_init(i2c_iface channel) ;
 void I2C0_master_xact(i2c_master_xact_t&  s) ;
 

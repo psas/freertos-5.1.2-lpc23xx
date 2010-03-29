@@ -406,28 +406,13 @@ void I2C0_master_xact(i2c_master_t* s) {
     if( i2cSemaphore_g != NULL ) { 
         // See if we can obtain the semaphore. If the semaphore is not available 
         // wait I2C_BINSEM_WAIT msecs to see if it becomes free. 
-        Sun 28 March 2010 16:41:40 (PDT)  stop here for day
         if( xSemaphoreTake( i2cSemaphore_g, I2C_BINSEM_WAIT ) == pdTRUE ) { 
-
-            // check datalength - error handling is truncate the buffer requested
-            if (datalength >= I2C_MAX_BUFFER) {
-                datalength = I2C_MAX_BUFFER-1;
+            for(i=0; i<I2C_MAX_BUFFER; i++){
+               i2c0_s_g.I2Cbuffer[i] = s->I2Cbuffer[i];
             }
-            //set up the data to be transmitted in the Master Transmit buffer
-            for(i=0; i<datalength; i++) {
-                I2C0TransmitData[i] = myDataToSend[i];
-            }
-
-            //initialize master data counter
-            I2C0DataLength  = datalength;
-            I2C0DataCounter = 0;
-
-            //set up the Slave Address to transmit data to, and add the Write bit
-            I2C0ExtSlaveAddress = (deviceaddr << 1);  // 7:1Address 0:low  means write
-            //    printf2("I2C0ExtSlaveAddress is: 0x%X\n\r", I2C0ExtSlaveAddress);
-            //    printf2("I2C0TransmitData    is: 0x%X\n\r", I2C0TransmitData[0]);
-            //    printf2("I2C0DataLength      is: 0x%X\n\r", I2C0DataLength);
-            //    printf2("I2C0DataCounter     is: 0x%X\n\r", I2C0DataCounter);
+            i2c0_s_g.I2Cext_slave_address = s->I2Cext_slave_address;
+            i2c0_s_g.write_length         = s->write_length;
+            i2c0_s_g.read_length          = s->read_length;
 
             //write 0x20 to I2CONSET to set the STA bit
             SET_BIT(I2C0CONSET, STA);
