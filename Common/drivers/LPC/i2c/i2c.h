@@ -52,12 +52,19 @@
 #define VICI2C1EN        19
 #define VICI2C2EN        30
 
-// I2CnCONSET
-#define AA               2
-#define SI               3
-#define STO              4
-#define STA              5
-#define I2EN             6
+// I2C CONSET and CONCLR Bits
+// SET
+#define I2C_I2EN           0x40
+#define I2C_AA             0x04
+#define I2C_SI             0x08
+#define I2C_STO            0x10
+#define I2C_STA            0x20
+        
+// CLEAR
+#define I2C_I2ENC          0x40
+#define I2C_AAC            0x04 
+#define I2C_SIC            0x08
+#define I2C_STAC           0x20
 
 // PCONP
 #define PCI2C0           7
@@ -124,13 +131,15 @@ typedef enum {
     I2C_RESTART,
     I2C_REPEATED_START,
     I2C_ACK,
-    I2C_NOACK
+    I2C_NOTACK,
+    I2C_ERROR
 } i2c_state;
 
 typedef struct i2c_master_xact {
-    volatile i2c_state I2Cstate;
+    volatile i2c_state state;
 
-    volatile uint8_t  I2Cbuffer[I2C_MAX_BUFFER];  // stream data for transaction
+    volatile uint8_t  I2C_TX_buffer[I2C_MAX_BUFFER];  // Transmit data for transaction
+    volatile uint8_t  I2C_RD_buffer[I2C_MAX_BUFFER];  // Receive  data for transaction
     volatile uint8_t  I2Cext_slave_address;
     volatile uint8_t  write_length;
     volatile uint8_t  read_length;
@@ -150,17 +159,20 @@ void i2c2_isr(void) __attribute__ ((naked));
 
 // Use a binary semaphore for mutual exclusion on the i2c interface.
 // Ref: http://www.freertos.org/index.html?http://www.freertos.org/a00121.html
-static xSemaphoreHandle volatile i2cSemaphore_g;
+static volatile xSemaphoreHandle i2cSemaphore_g;
 
 // One structure for each i2c channel
-static volatile i2c_master_t     i2c0_s_g;
-static volatile i2c_master_t     i2c1_s_g;
-static volatile i2c_master_t     i2c2_s_g;
+static i2c_master_xact_t     i2c0_s_g;
+static i2c_master_xact_t     i2c1_s_g;
+static i2c_master_xact_t     i2c2_s_g;
+
+static volatile uint32_t         i2c_wrindex_g;
+static volatile uint32_t         i2c_rdindex_g;
 
 // void I2CGeneral_Call(i2c_iface channel);
-void I2CInit_State(i2c_master_t* s) ;
+void I2CInit_State( i2c_master_xact_t* s) ;
 void i2c_init(i2c_iface channel) ;
-void I2C0_master_xact(i2c_master_xact_t&  s) ;
+void I2C0_master_xact(i2c_master_xact_t*  s) ;
 
 /*
 void I2C1_master_xact(i2c_master_xact_t&  s) ;
