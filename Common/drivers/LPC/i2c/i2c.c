@@ -430,6 +430,9 @@ void I2C0_get_read_data(i2c_master_xact_t* s) {
                 for(i=0; i<I2C_MAX_BUFFER; i++) {
                     s->I2C_RD_buffer[i] = i2c0_s_g.I2C_RD_buffer[i];
                 }
+                if( xSemaphoreGive( i2cSemaphore_g ) != pdTRUE ) {
+                    vSerialPutString(0, "*** I2C-ERROR ***: I2C0_master_xact, Give semaphore fail should not be possible.\n\r", 50);
+                }
             } else { 
                 vSerialPutString(0, "*** I2C-ERROR ***: I2C0_get_read_data Timed out waiting for i2cSemaphore_g. Skipping Request.\n\r", 50);
             }
@@ -465,8 +468,7 @@ void I2C0_master_xact(i2c_master_xact_t* s) {
 //                 printf2("write_length: 0x%X\r\n", s->write_length);
                 //write 0x20 to I2CONSET to set the STA bit
                 I2C0CONSET                    = I2C_STA;
-
-            } else { 
+           } else { 
                 vSerialPutString(0, "*** I2C-ERROR ***: I2C0_master_xact, Timed out waiting for i2cSemaphore_g. Skipping Request.\n\r", 50);
             } 
         } else {
