@@ -140,10 +140,9 @@ static void i2ceepromtask(void *pvParameters) {
             xact_s.I2C_TX_buffer[0] =  i2c_create_write_address(EEPROM_ADDR);
             xact_s.I2C_TX_buffer[1] =  0x0;
             xact_s.I2C_TX_buffer[2] =  0x0;
-            xact_s.I2C_TX_buffer[3] =  0x2;
-            xact_s.write_length     =  0x4;
+            xact_s.write_length     =  0x3;
             xact_s.I2C_TX_buffer[3] =  i2c_create_read_address(EEPROM_ADDR);
-            printf2("read address is: 0x%X\r\n", xact_s.I2C_TX_buffer[3] );
+//            printf2("read address is: 0x%X\r\n", xact_s.I2C_TX_buffer[4] );
             xact_s.read_length      =  0x1;
             I2C0_master_xact(&xact_s);
 
@@ -152,6 +151,7 @@ static void i2ceepromtask(void *pvParameters) {
             printf2("Read data is 0x%X\n\r",xact_s.I2C_RD_buffer[0]);
 
 
+            /*
             printf2("i2c write byte task...\r\n");
 
             xact_s.I2C_TX_buffer[0] =  i2c_create_write_address(EEPROM_ADDR);
@@ -203,6 +203,7 @@ static void i2ceepromtask(void *pvParameters) {
             for (i=0; i<0x10; i++){
                 printf2("Read data is 0x%X\n\r",xact_s.I2C_RD_buffer[i]);
             }
+            */
         }
     }
 }
