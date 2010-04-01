@@ -110,10 +110,10 @@ static void i2cblinkmtask(void *pvParameters) {
 
     const int interval      = 100000;
 
-    uint8_t myDataToGet[100];
-    uint8_t myDataToSend[100];
 
-    FIO0CLR = (1<<6);            // turn off p0.6on olimex 2378 Sdev board
+   i2c_master_xact_t       xact_s;
+
+   FIO0CLR = (1<<6);            // turn off p0.6on olimex 2378 Sdev board
 
     for(;;) {
         x++;
@@ -128,26 +128,34 @@ static void i2cblinkmtask(void *pvParameters) {
 
             x = 0;
 
-            printf2("i2c Light Task...\r\n");
+            printf2("i2c Change Color Task...\r\n");
 
-            myDataToSend[0] = 'o';   // sstop light task script
-            myDataToSend[1] = 'n';   // set rgb color
-            myDataToSend[2] = 0xbd;
-            myDataToSend[3] = 0x10;
-            myDataToSend[4] = 0x02;
-            I2C0MasterTX(BLINKM_ADDR, myDataToSend, 5);
-            printf2("Changed light color\n\r");
- 
+            xact_s.I2C_TX_buffer[0] =  i2c_create_write_address(BLINKM_ADDR);
+            xact_s.I2C_TX_buffer[1] =  'o';
+            xact_s.I2C_TX_buffer[2] =  'n';
+            xact_s.I2C_TX_buffer[3] =  0xbd;
+            xact_s.I2C_TX_buffer[4] =  0x10;
+            xact_s.I2C_TX_buffer[5] =  0x03;
+            xact_s.write_length     =  0x06;
+            xact_s.read_length      =  0x0;
+            I2C0_master_xact(&xact_s);
 
-            //  myDataToSend[0] = 'Z'; // current blinkm firmware version
-            myDataToSend[0] = 'g';     // current RGB color, 3 bytes 'g' is 0x67
-            I2C0MasterTX(BLINKM_ADDR, myDataToSend, 1);
-            printf2("Read 'g' Data sent is\n\r");
+            printf2("i2c Read Color Task...\r\n");
 
-            I2C0MasterRX(BLINKM_ADDR, myDataToGet, 3);
-            printf2("mydatatoget[0] is 0x%X\n\r",myDataToGet[0]);
-            printf2("mydatatoget[1] is 0x%X\n\r",myDataToGet[1]);
-            printf2("mydatatoget[2] is 0x%X\n\r",myDataToGet[2]);
+            // xact_s.I2C_TX_buffer[1] =  'Z';
+            //
+            xact_s.I2C_TX_buffer[0] =  i2c_create_write_address(BLINKM_ADDR);
+            xact_s.I2C_TX_buffer[1] =  'g';
+            xact_s.write_length     =  0x02;
+            xact_s.I2C_TX_buffer[2] =  i2c_create_read_address(BLINKM_ADDR);
+            xact_s.read_length      =  0x03;
+            I2C0_master_xact(&xact_s);
+
+            I2C0_get_read_data(&xact_s);
+
+            printf2("Read data 0 is 0x%X\n\r",xact_s.I2C_RD_buffer[0]);
+            printf2("Read data 1 is 0x%X\n\r",xact_s.I2C_RD_buffer[1]);
+            printf2("Read data 2 is 0x%X\n\r",xact_s.I2C_RD_buffer[2]);
 
 
             //   status = xSerialGetChar(0, &theChar, 1);
@@ -157,45 +165,6 @@ static void i2cblinkmtask(void *pvParameters) {
         }
     }
 }
-
-/*
- * i2ceepromtask
- */
-static void i2ceepromtask(void *pvParameters) {
-    uint32_t  x             = 0;
-    uint32_t  write         = 1;
-
-    signed    portCHAR      theChar;
-    signed    portBASE_TYPE status;
-
-    const int interval      = 100000;
-
-    uint8_t myDataToGet[100];
-    uint8_t myDataToSend[100];
-
-    FIO0CLR = (1<<6);            // turn off p0.6on olimex 2378 Sdev board
-
-    for(;;) {
-        x++;
-
-        if (x == interval) {
-            FIO0CLR = (1<<6);    // turn on  p0.6 on olimex 2378 Sdev board
-            FIO1CLR = (1<<19);   // turn off led  on olimex 2378 Sdev board
-
-        } else if (x >= (2*interval)) {
-            FIO0CLR = (1<<6);    // turn on p0.6 on olimex 2378 Sdev board
-            FIO1SET = (1<<19);   // turn on led on olimex 2378 dev board
-
-            x = 0;
-
-            printf2("i2c eeprom Task...\r\n");
-
-            I2C0MasterTX(BLINKM_ADDR, myDataToSend, 5);
-
-        }
-    }
-}
-
 
 
 /*-----------------------------------------------------------*/
@@ -276,18 +245,6 @@ int main( void ) {
 
     // Initialize I2C0
     I2Cinit(I2C0);
-
-    myDataToSend[0] = 'o';   // stop the current blinkm light script  'o' is 0x6F
-    //     myDataToSend[1] = 'h';  // set an hsv color
-    //     myDataToSend[2] = 228;
-    //     myDataToSend[3] = 0x80;
-    //     myDataToSend[4] = 0xff;
-
-    myDataToSend[1] = 'n';   // set rgb color   'n' is 0x6E
-    myDataToSend[2] = 0x0f;
-    myDataToSend[3] = 0x20;
-    myDataToSend[4] = 0xff;
-    I2C0MasterTX(BLINKM_ADDR, myDataToSend, 5);
 
     xTaskCreate( i2cblinkmtask, 
             ( signed portCHAR * ) "i2cblinkmtask", 

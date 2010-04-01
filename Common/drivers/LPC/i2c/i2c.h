@@ -84,16 +84,24 @@
 // CCLK  = 57,600,000 Hz
 // PCLK  = 14,400,000 Hz
 //
-// i2c0 clk = 29,8507 khz  (measured)
 //
-// This seems to match the table for
-// what we should expect. (i2cslhigh = i2csllow = 200 )
+// ( i2c clock speed ref: lpc23xx user manual p516)
 //
-// i2c standard clock speed goes to 100kHz, so we're
-// in a conservative range.
+// i2c standard clock speed goes to 100kHz
 //
-#define I2SCLHIGH        200
-#define I2SCLLOW         200
+// This is about 30Khz
+// #define I2SCLHIGH        200
+// #define I2SCLLOW         200
+//
+// This is about 62Khz
+#define I2SCLHIGH        100
+#define I2SCLLOW         100
+
+//
+// This is about 120khz 
+// #define I2SCLHIGH        50
+// #define I2SCLLOW         50
+
 
 // Pinsel0 has builtin pullup. 
 // Pinsel1&2 do not. 
