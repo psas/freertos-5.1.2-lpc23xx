@@ -1,29 +1,3 @@
-/*
- * Portions of this code:
- * FreeRTOS.org V5.1.2 - Copyright (C) 2003-2009 Richard Barry.
- *
- * This file is part of the FreeRTOS.org distribution.
- *
- * FreeRTOS.org is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * FreeRTOS.org is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with FreeRTOS.org; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- * A special exception to the GPL can be applied should you wish to distribute
- * a combined work that includes FreeRTOS.org, without being obliged to provide
- * the source code for any proprietary components.  See the licensing section 
- * of http://www.FreeRTOS.org for full details of how and when the exception
- * can be applied.
- */
 
 /* Scheduler includes. */
 #include "FreeRTOS.h"
@@ -99,10 +73,27 @@ uint32_t milisecondsToCPUTicks(const uint32_t miliseconds) {
 }
 
 /*
- * i2ceepromtask
+ * set_blinkm_rgb
  */
-static void i2ceepromtask(void *pvParameters) {
-    uint8_t hsb_color[3];
+void set_blinkm_rgb(i2c_master_xact_t* xact_s, int8_t red, uint8_t green, uint8_t blue) {
+    xact_s->I2C_TX_buffer[0] =  i2c_create_write_address(BLINKM_ADDR);
+    xact_s->I2C_TX_buffer[1] =  'o';
+    xact_s->I2C_TX_buffer[2] =  'n';
+    xact_s->I2C_TX_buffer[3] =  red;
+    xact_s->I2C_TX_buffer[4] =  green;
+    xact_s->I2C_TX_buffer[5] =  blue;
+    xact_s->write_length     =  0x06;
+    xact_s->read_length      =  0x0;
+    I2C0_master_xact(xact_s);
+}
+
+
+/*
+ * i2cmultitask
+ */
+static void i2cmultitask(void *pvParameters) {
+    uint8_t rgb_color[3];
+    uint8_t stop, down;
 
     uint32_t  x             = 0;
     uint32_t  i             = 0;
@@ -111,7 +102,7 @@ static void i2ceepromtask(void *pvParameters) {
     signed    portCHAR      theChar;
     signed    portBASE_TYPE status;
 
-    const int interval      = 100000;
+    const int interval      = 1000;
 
     i2c_master_xact_t       xact_s;
 
@@ -125,11 +116,11 @@ static void i2ceepromtask(void *pvParameters) {
     xact_s.read_length           = 0;
     xact_s.I2Cext_slave_address  = 0;
 
-    hsb_color[0] = 0x0;
-    hsb_color[1] = 0x0;
-    hsb_color[2] = 0x0;
+    rgb_color[0] = 0x0;
+    rgb_color[1] = 0x0;
+    rgb_color[2] = 0x0;
 
-    uint32_t  hsb_c = 0;
+    uint32_t  rgb_c = 0;
 
     printf2("i2c initial write byte 0xc to 0xf  ...\r\n");
 
@@ -140,6 +131,11 @@ static void i2ceepromtask(void *pvParameters) {
     xact_s.write_length     =  0x4;
     xact_s.read_length      =  0x0;
     I2C0_master_xact(&xact_s);
+
+    stop = 0;
+    down = 0;
+
+    set_blinkm_rgb(&xact_s, 0xff, 0xff, 0xff);
 
     for(;;) {
         x++;
@@ -156,10 +152,10 @@ static void i2ceepromtask(void *pvParameters) {
 
             xact_s.I2C_RD_buffer[0] =  0x0;
 
-            printf2("i2c eeprom 1 read byte...\r\n");
+            //            printf2("i2c eeprom 1 read byte...\r\n");
             xact_s.I2C_TX_buffer[0] =  i2c_create_write_address(EEPROM_ADDR);
             xact_s.I2C_TX_buffer[1] =  0x0;
-            xact_s.I2C_TX_buffer[2] =  0x0;
+            xact_s.I2C_TX_buffer[2] =  0xf;
             xact_s.write_length     =  0x3;
             xact_s.I2C_TX_buffer[3] =  i2c_create_read_address(EEPROM_ADDR);
             xact_s.read_length      =  0x1;
@@ -168,69 +164,36 @@ static void i2ceepromtask(void *pvParameters) {
             I2C0_get_read_data(&xact_s);
             if(xact_s.I2C_RD_buffer[0] != 0xc) {
                 printf2("*** I2C Read Error***: Read data is 0x%X\n\r",xact_s.I2C_RD_buffer[0]);
+                printf2("*** I2C Read Error***: Stopping.");
+                rgb_color[0] = 0xff;
+                rgb_color[1] = 0x0;
+                rgb_color[2] = 0x0;
+                stop         = 1;
             } else {
-                xact_s.I2C_TX_buffer[0] =  i2c_create_write_address(BLINKM_ADDR);
-                xact_s.I2C_TX_buffer[1] =  'o';
-                xact_s.I2C_TX_buffer[2] =  'h';
-                xact_s.I2C_TX_buffer[3] =  hsb_color[0];
-                xact_s.I2C_TX_buffer[4] =  hsb_color[1];
-                xact_s.I2C_TX_buffer[5] =  hsb_color[2];
-                xact_s.write_length     =  0x06;
-                xact_s.read_length      =  0x0;
-                I2C0_master_xact(&xact_s);
-                // increment hsb (hsv) color on successful xaction
-                if(++hsb_c > 63) {
-                    hsb_c = 0;
+                //   printf2("*** I2C Info ***: Read data is 0x%X\n\r",xact_s.I2C_RD_buffer[0]);
+                //  printf2("*** I2C Info ***: rgb_c is 0x%X\n\r",rgb_c);
+                // increment rgb on successful xaction
+                // rgb_color[0]++;
+                
+                if(rgb_color[1] == 0) {
+                    down = 0;
                 }
-                hsb_color[0] = hsb_c & 0xf;
-                hsb_color[1] = (hsb_c & 0xf0)>>4;
-                hsb_color[2] = (hsb_c & 0xf00)>>8;
+                if (rgb_color[1] == 255) { 
+                    down = 1;
+                }
+                if( down == 1){
+                    rgb_color[1]--;
+                } else {
+                    rgb_color[1]++;
+                }
+
+                //rgb_color[2]++;
             }
 
-
-            /*
-               printf2("i2c write bytes task...\r\n");
-
-               xact_s.I2C_TX_buffer[0] =  i2c_create_write_address(EEPROM_ADDR);
-               xact_s.I2C_TX_buffer[1] =  0x0;
-               xact_s.I2C_TX_buffer[2] =  0x0;
-               xact_s.I2C_TX_buffer[3] =  0x0b;
-               xact_s.I2C_TX_buffer[4] =  0x0c;
-               xact_s.I2C_TX_buffer[5] =  0x0d;
-               xact_s.I2C_TX_buffer[6] =  0x0e;
-               xact_s.I2C_TX_buffer[7] =  0x0f;
-               xact_s.write_length     =  0x8;
-               xact_s.read_length      =  0x0;
-               I2C0_master_xact(&xact_s);
-
-
-               printf2("i2c eeprom read byte using repeated start...\r\n");
-               xact_s.I2C_TX_buffer[0] =  i2c_create_write_address(EEPROM_ADDR);
-               xact_s.I2C_TX_buffer[1] =  0x0;
-               xact_s.I2C_TX_buffer[2] =  0x0;
-               xact_s.write_length     =  0x3;
-               xact_s.I2C_TX_buffer[3] =  i2c_create_read_address(EEPROM_ADDR);
-               printf2("read address is: 0x%X\r\n", xact_s.I2C_TX_buffer[3] );
-               xact_s.read_length      =  0x1;
-               I2C0_master_xact(&xact_s);
-
-               I2C0_get_read_data(&xact_s);
-
-               printf2("Read data is 0x%X\n\r",xact_s.I2C_RD_buffer[0]);
-
-               printf2("i2c sequential read\r\n");
-               xact_s.I2C_TX_buffer[0] =  i2c_create_read_address(EEPROM_ADDR);
-               xact_s.write_length     =  0x1;
-               printf2("read address is: 0x%X\r\n", xact_s.I2C_TX_buffer[3] );
-               xact_s.read_length      =  0x10;
-               I2C0_master_xact(&xact_s);
-
-               I2C0_get_read_data(&xact_s);
-
-               for (i=0; i<0x10; i++){
-               printf2("Read data is 0x%X\n\r",xact_s.I2C_RD_buffer[i]);
-               }
-               */
+            set_blinkm_rgb(&xact_s, rgb_color[0], rgb_color[1], rgb_color[2]);
+            if(stop==1) {
+                while(1);
+            }
         }
     }
 }
@@ -314,8 +277,10 @@ int main( void ) {
 
     // Initialize I2C0
     I2Cinit(I2C0);
-    xTaskCreate( i2ceepromtask, 
-            ( signed portCHAR * ) "i2ceepromtask", 
+
+
+    xTaskCreate( i2cmultitask, 
+            ( signed portCHAR * ) "i2cmultitask", 
             I2CTEST_STACK_SIZE, NULL, 
             mainCHECK_TASK_PRIORITY - 1, 
             NULL );
