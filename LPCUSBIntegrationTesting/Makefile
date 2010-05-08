@@ -37,14 +37,15 @@ LPCUSB_COMMON_DIR=../Common/drivers/LPC/usb
 CC=arm-elf-gcc
 OBJCOPY=arm-elf-objcopy
 LDSCRIPT=lpc2368.ld
+CD = arm-elf-objdump
 
 PROJECT_NAME=LPCUPSIntegrationTesting
 
 
-LINKER_FLAGS=-mthumb -nostartfiles -Xlinker -o$(PROJECT_NAME).elf -Xlinker -M -Xlinker -Map=$(PROJECT_NAME).map
+LINKER_FLAGS= -g3 -nostartfiles -Xlinker -o$(PROJECT_NAME).elf -Xlinker -M -Xlinker -Map=$(PROJECT_NAME).map
 
-DEBUG=-g
-OPTIM=-O1
+DEBUG=-g3
+OPTIM=-O0
 
 
 CFLAGS= $(DEBUG) \
@@ -58,14 +59,13 @@ CFLAGS= $(DEBUG) \
 		-I $(LPCUSB_COMMON_DIR) -D LPC23xx -DLPC2378_PORTB \
 		-D ROWLEY_LPC23xx \
 		-D THUMB_INTERWORK \
-		-mcpu=arm7tdmi \
+		-mcpu=arm7tdmi-s \
 		-D PACK_STRUCT_END=__attribute\(\(packed\)\) \
 		-D ALIGN_STRUCT_END=__attribute\(\(aligned\(4\)\)\) \
-		-fomit-frame-pointer \
-		-mthumb-interwork
+		-g3
 										
 THUMB_SOURCE= \
-		main.c \
+		main_usb.c \
 		./ParTest/ParTest.c \
 		$(DEMO_COMMON_DIR)/BlockQ.c \
 		$(DEMO_COMMON_DIR)/blocktim.c \
@@ -84,7 +84,12 @@ THUMB_SOURCE= \
 ARM_SOURCE= \
 		../Common/drivers/LPC/serial/serial.c \
 		../Common/drivers/LPC/serial/serialISR.c \
+		$(LPCUSB_COMMON_DIR)/examples/serial_fifo.c \
+		$(LPCUSB_COMMON_DIR)/examples/armVIC.c \
+		$(LPCUSB_COMMON_DIR)/examples/halsys.c \
+		$(LPCUSB_COMMON_DIR)/examples/console.c \
 		$(RTOS_SOURCE_DIR)/portable/GCC/ARM7_LPC23xx/portISR.c \
+		usb.c \
 		$(LPCUSB_COMMON_DIR)/usbcontrol.c \
 		$(LPCUSB_COMMON_DIR)/usbhw_lpc.c \
 		$(LPCUSB_COMMON_DIR)/usbinit.c \
@@ -104,9 +109,11 @@ $(PROJECT_NAME).hex : $(PROJECT_NAME).elf
 
 $(PROJECT_NAME).elf : $(THUMB_OBJS) $(ARM_OBJS) boot.s Makefile
 	$(CC) $(CFLAGS) $(ARM_OBJS) $(THUMB_OBJS) $(LIBS) boot.s $(LINKER_FLAGS) 
+	$(CD) -l -S $(PROJECT_NAME).elf > $(PROJECT_NAME).elf.asm
+	
 
 $(THUMB_OBJS) : %.o : %.c Makefile FreeRTOSConfig.h
-	$(CC) -c $(CFLAGS) -mthumb $< -o $@
+	$(CC) -c $(CFLAGS) $< -o $@
 
 $(ARM_OBJS) : %.o : %.c Makefile FreeRTOSConfig.h
 	$(CC) -c $(CFLAGS) $< -o $@

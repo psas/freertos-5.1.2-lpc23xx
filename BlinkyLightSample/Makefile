@@ -36,13 +36,14 @@ LPCUSB_COMMON_DIR=../Common/drivers/LPC/usb
 
 CC=arm-elf-gcc
 OBJCOPY=arm-elf-objcopy
+CD = arm-elf-objdump
 LDSCRIPT=lpc2368.ld
 
 PROJECT_NAME=BlinkyLightSample
 
-LINKER_FLAGS=-mthumb -nostartfiles -Xlinker -o$(PROJECT_NAME).elf -Xlinker -M -Xlinker -Map=$(PROJECT_NAME).map
+LINKER_FLAGS= -g3 -mthumb -nostartfiles -Xlinker -o$(PROJECT_NAME).elf -Xlinker -M -Xlinker -Map=$(PROJECT_NAME).map
 
-DEBUG=-g
+DEBUG=-g3
 OPTIM=-O1
 
 
@@ -106,6 +107,8 @@ $(PROJECT_NAME).hex : $(PROJECT_NAME).elf
 
 $(PROJECT_NAME).elf : $(THUMB_OBJS) $(ARM_OBJS) boot.s Makefile
 	$(CC) $(CFLAGS) $(ARM_OBJS) $(THUMB_OBJS) $(LIBS) boot.s $(LINKER_FLAGS) 
+	$(CD) -l -S $(PROJECT_NAME).elf > $(PROJECT_NAME).elf.asm
+	
 
 $(THUMB_OBJS) : %.o : %.c Makefile FreeRTOSConfig.h
 	$(CC) -c $(CFLAGS) -mthumb $< -o $@

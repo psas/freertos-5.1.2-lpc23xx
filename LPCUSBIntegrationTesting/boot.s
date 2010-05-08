@@ -22,9 +22,9 @@
 	/* Stack Sizes */
     .set  UND_STACK_SIZE, 0x00000004
     .set  ABT_STACK_SIZE, 0x00000004
-    .set  FIQ_STACK_SIZE, 0x00000004
-    .set  IRQ_STACK_SIZE, 0X00000100
-    .set  SVC_STACK_SIZE, 0x00000100
+    .set  FIQ_STACK_SIZE, 0x00000200
+    .set  IRQ_STACK_SIZE, 0X00000200
+    .set  SVC_STACK_SIZE, 0x00000400
 
 	/* Standard definitions of Mode bits and Interrupt (I & F) flags in PSRs */
     .set  MODE_USR, 0x10            /* User Mode */
