@@ -50,6 +50,10 @@
 #include "type.h"
 #include "debug.h"
 
+
+
+
+
 #ifdef LPC214x
 #include "lpc214x.h"
 #endif
@@ -64,6 +68,9 @@
 #include "usbapi.h"
 
 #include "../Common/drivers/LPC/usb/examples/serial_fifo.h"
+
+
+#include "FreeRTOS.h"
 
 int ledStatus = 0;
 
@@ -110,7 +117,9 @@ static fifo_t txfifo;
 static fifo_t rxfifo;
 
 // forward declaration of interrupt handler
-__attribute__ ((interrupt("IRQ")))  void USBIntHandler(void);
+//__attribute__ ((interrupt("IRQ")))  void USBIntHandler(void);
+void USBIntHandler(void) __attribute__ ((naked));
+
 
 
 static const U8 abDescriptors[] = {
@@ -414,10 +423,13 @@ int VCOM_getchar(void)
  */
 void USBIntHandler(void)
 {
-
+	portSAVE_CONTEXT();
 
 	USBHwISR();
-	VICVectAddr = 0x00;    // dummy write to VIC to signal end of ISR
+	//VICVectAddr = 0x00;    // dummy write to VIC to signal end of ISR
+	/* Clear the ISR in the VIC. */
+	VICVectAddr = 0x00;
+	portRESTORE_CONTEXT();
 }
 
 /**
@@ -462,7 +474,7 @@ int usbInit(void)
 	int c;
 
 	// PLL and MAM
-	HalSysInit();
+	//HalSysInit();
 
 #ifdef LPC214x
 	// init DBG
@@ -511,7 +523,7 @@ int usbInit(void)
 	VICIntSelect &= ~(1<<22);               // select IRQ for USB
 	VICIntEnable |= (1<<22);
 
-	enableIRQ();
+	//enableIRQ();
 	// connect to bus
 	USBHwConnect(TRUE);
 
