@@ -481,7 +481,7 @@ int usbInit(void)
 	ConsoleInit(60000000 / (16 * BAUD_RATE));
 #else
 	// init DBG
-	ConsoleInit(48000000 / (16 * BAUD_RATE));
+	//ConsoleInit(48000000 / (16 * BAUD_RATE));
 #endif
 
 	DBG("Initialising USB stack\n");
@@ -523,6 +523,9 @@ int usbInit(void)
 	VICIntSelect &= ~(1<<22);               // select IRQ for USB
 	VICIntEnable |= (1<<22);
 
+	//NOTE: When integrating with FreeRTOS, you cannot enable IRQ's prior to the RTOS setting up it's
+	// internals because the IRQ save/restore code assumes that the RTOS has already been setup,
+	// and if it hasn't, it will destroy the stack, thus, DO NOT ENABLE IRQ's here, let the RTOS do it.
 	//enableIRQ();
 	// connect to bus
 	USBHwConnect(TRUE);
