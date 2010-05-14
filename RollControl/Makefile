@@ -94,9 +94,14 @@ ARM_SOURCE= \
 		$(LPCUSB_COMMON_DIR)/usbhw_lpc.c \
 		$(LPCUSB_COMMON_DIR)/usbinit.c \
 		$(LPCUSB_COMMON_DIR)/usbstdreq.c
+		
+ARM_SOURCE_C99= \
+		../Common/drivers/LPC/peripherals/ssp.c \
+		
 
 THUMB_OBJS = $(THUMB_SOURCE:.c=.o)
 ARM_OBJS = $(ARM_SOURCE:.c=.o)
+ARM_OBJS_C99 = $(ARM_SOURCE_C99:.c=.o)
 
 
 all: $(PROJECT_NAME).bin
@@ -107,14 +112,17 @@ $(PROJECT_NAME).bin : $(PROJECT_NAME).hex
 $(PROJECT_NAME).hex : $(PROJECT_NAME).elf
 	$(OBJCOPY) $(PROJECT_NAME).elf -O ihex $(PROJECT_NAME).hex
 
-$(PROJECT_NAME).elf : $(THUMB_OBJS) $(ARM_OBJS) boot.s Makefile
-	$(CC) $(CFLAGS) $(ARM_OBJS) $(THUMB_OBJS) $(LIBS) boot.s $(LINKER_FLAGS) 
+$(PROJECT_NAME).elf : $(THUMB_OBJS) $(ARM_OBJS) $(ARM_OBJS_C99) boot.s Makefile
+	$(CC) $(CFLAGS) $(ARM_OBJS) $(ARM_OBJS_C99) $(THUMB_OBJS) $(LIBS) boot.s $(LINKER_FLAGS) 
 
 $(THUMB_OBJS) : %.o : %.c Makefile FreeRTOSConfig.h
 	$(CC) -c $(CFLAGS) -mthumb $< -o $@
 
 $(ARM_OBJS) : %.o : %.c Makefile FreeRTOSConfig.h
 	$(CC) -c $(CFLAGS) $< -o $@
+
+$(ARM_OBJS_C99) : %.o : %.c Makefile FreeRTOSConfig.h
+	$(CC) -c -std=c99 $(CFLAGS) $< -o $@
 
 clean :
 	rm -f $(THUMB_OBJS)

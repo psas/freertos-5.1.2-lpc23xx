@@ -67,8 +67,10 @@
 #include "QPeek.h"
 #include "dynamic.h"
 #include <stdint.h>
+#include <stdbool.h>
 #include "debug.h"
 #include "serial/serial.h"
+#include "peripherals/ssp.h"
 #include "printf/uart0PutChar2.h"
 #include "printf/printf2.h"
 #include "peripherals/pwm.h"
@@ -145,7 +147,7 @@ uint32_t millisecondsToCPUTicks(const uint32_t miliseconds) {
 }
 
 
-
+#define ROLL_SENSOR_BAUD_RATE_PRESCALER 2 // BRP set for sensors. Must be an EVEN number
 
 
 volatile uint32_t g_most_recent_buffer = 0;
@@ -167,9 +169,14 @@ xSemaphoreHandle xSemaphore = NULL;
 volatile uint32_t go_flag = 0;
 
 
+
+
+
+
+
+
 #define BIN14_SCALER_VALUE   16384
 #define BIN14_SCALER_VALUE_ONE_MICROSECOND   (BIN14_SCALER_VALUE/1000)
-
 
 void setServoDutyCycle(const uint16_t u16ServoTimeMillisecondsBin14)
 {
@@ -398,6 +405,28 @@ int main( void )
 	PWMinit (0, microsecondsToCPUTicks(3300));//3.3ms period, 300hz, given 48mhz CPU clock
 	setupPWMChannel(PWM1_1, microsecondsToCPUTicks(150)); //150us duty cycle, given 48mhz CPU clock
 	
+
+	// Initialize SPI ADC communication
+	// Set to 4 MHz baud rate
+	//SSPx_Open( MODULE_SSP0, EIGHT_BITS, SSP_SPI_FORMAT, 0, 0, NINE_CLCKS_BIT,
+	//                          SSP_MASTER, 0, ROLL_SENSOR_BAUD_RATE_PRESCALER );
+
+	const uint32_t ssp0_serial_clock_rate = 4000000;
+	const uint8_t ssp0ClocksPerBit = (PCLK / ssp0_serial_clock_rate) - 1;
+
+	initSSP0(
+			SSP_EIGHT_BITS,
+			SSP_SPI_FORMAT,
+			false,
+			false,
+			false,
+			ssp0ClocksPerBit,
+			ROLL_SENSOR_BAUD_RATE_PRESCALER,
+			SSP_MASTER,
+			false);
+
+
+
 	xSerialPortInitMinimal(0, 115200, 250 );
 	vSerialPutString(0, "Starting up LPC23xx with FreeRTOS\n", 50);
 	

@@ -21,6 +21,10 @@ poll
 # Force into supervisor mode
 reg cpsr 0x13
 
+# Turn off the PWM to stop driving the servo
+mww 0xE0018004 0x00
+mdw 0xE0018004
+
 # Check/Set memory maping to flash
 mww 0xE01FC040 1
 mdw 0xE01FC040

@@ -8,6 +8,7 @@ struct data_sample {
 };
 
 #define DATA_SAMPLE_INITIALIZER  (struct data_sample) {.gyro_reading = 0, .adc_reading = 0}
+#define DATA_SAMPLE_INITIALIZER2  {.gyro_reading = 0, .adc_reading = 0}
 
 enum {
 	A_BUFFER,
