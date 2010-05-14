@@ -166,6 +166,23 @@ xSemaphoreHandle xSemaphore = NULL;
 
 volatile uint32_t go_flag = 0;
 
+
+#define BIN14_SCALER_VALUE   16384
+#define BIN14_SCALER_VALUE_ONE_MICROSECOND   (BIN14_SCALER_VALUE/1000)
+
+
+void setServoDutyCycle(const uint16_t u16ServoTimeMillisecondsBin14)
+{
+	//The passed in value is 2^14 times larger then need be
+	//Note: the millisecondsToCPUTicks function has an output max value of about 3 billion when were running at 48mhz, which is within range of a uint32_t...
+	const uint32_t duty_cycle_in_ticks = millisecondsToCPUTicks(u16ServoTimeMillisecondsBin14) / BIN14_SCALER_VALUE;
+
+	setPWMDutyCycle(PWM1_1, duty_cycle_in_ticks);
+}
+
+
+
+
 static void rollControlTask(void *pvParameters) {
 	const int debugLedCounterThreshold = 400;
 
@@ -177,10 +194,26 @@ static void rollControlTask(void *pvParameters) {
 	
 	uint32_t pwmDutyCycle = 1000;
 	
+
+
+
+	const uint16_t pwmLowerBound = 100 * BIN14_SCALER_VALUE_ONE_MICROSECOND;
+	const uint16_t pwmUpperBound = 200 * BIN14_SCALER_VALUE_ONE_MICROSECOND;
+	uint16_t pwmDutyCycleMsBin14 = pwmUpperBound;
+
+
 	//taken from: http://www.freertos.org/index.html?http://www.freertos.org/a00124.html
 
 
 	for(;;) {
+
+		pwmDutyCycleMsBin14++;
+		if( pwmDutyCycleMsBin14 > pwmUpperBound ) {
+			pwmDutyCycleMsBin14 = pwmLowerBound;
+		}
+		setServoDutyCycle(pwmDutyCycleMsBin14);
+
+
 		/* We want this task to run every 10 ticks of a timer.  The semaphore
 		was created before this task was started.
 
