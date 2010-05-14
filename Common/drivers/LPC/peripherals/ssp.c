@@ -510,6 +510,22 @@ bool readSSP1_SPI(const uint32_t timeout, uint16_t  *dest ) {
 }
 
 
+void clearFIFO_SSP0(void)
+{
+	uint16_t trash;
+	while( readSSP0_SPI(0, &trash)) {
+
+	}
+}
+
+void clearFIFO_SSP1(void)
+{
+	uint16_t trash;
+	while( readSSP1_SPI(0, &trash)) {
+
+	}
+}
+
 
 
 /**

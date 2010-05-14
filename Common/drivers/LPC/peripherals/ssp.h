@@ -47,6 +47,9 @@ bool enqueueSSP0_SPI(const uint16_t byte1);
 bool readSSP0_SPI(const uint32_t timeout, uint16_t  *dest );
 bool readSSP1_SPI(const uint32_t timeout, uint16_t  *dest );
 
+void clearFIFO_SSP0(void);
+void clearFIFO_SSP1(void);
+
 bool ssp0_SPI_transfer(
 		const uint8_t *outData, const uint8_t numOutBytes, 
 		uint8_t *inData, const uint8_t inDataSize, 
