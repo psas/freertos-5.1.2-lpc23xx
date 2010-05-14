@@ -189,6 +189,13 @@ void setServoDutyCycle(const uint16_t u16ServoTimeMillisecondsBin14)
 
 
 
+static void testSSP0(void)
+{
+	uint16_t data = 0x5A;
+
+	transmitSSP0_SPI_1byte(data);
+}
+
 
 static void rollControlTask(void *pvParameters) {
 	const int debugLedCounterThreshold = 400;
@@ -249,6 +256,9 @@ static void rollControlTask(void *pvParameters) {
 			FIO0CLR = (1<<13);//turn on led on olimex 2378 dev board
 */
 
+			if( debugLEDCounter % 100 == 0 ) {
+				testSSP0();
+			}
 
 			if( debugLEDCounter == debugLedCounterThreshold ) {
 				FIO0SET = (1<<13);//turn on led on olimex 2378 dev board
@@ -412,7 +422,7 @@ int main( void )
 	//                          SSP_MASTER, 0, ROLL_SENSOR_BAUD_RATE_PRESCALER );
 
 	const uint32_t ssp0_serial_clock_rate = 4000000;
-	const uint8_t ssp0ClocksPerBit = (PCLK / ssp0_serial_clock_rate) - 1;
+	const uint8_t ssp0ClocksPerBit = ((PCLK / ssp0_serial_clock_rate) / ROLL_SENSOR_BAUD_RATE_PRESCALER) - 1;
 
 	initSSP0(
 			SSP_EIGHT_BITS,
@@ -425,6 +435,7 @@ int main( void )
 			SSP_MASTER,
 			false);
 
+	testSSP0();
 
 
 	xSerialPortInitMinimal(0, 115200, 250 );

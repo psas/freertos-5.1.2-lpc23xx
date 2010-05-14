@@ -61,17 +61,6 @@ static void waitForSSP1TransmitFifoEmpty(void) {
 }
 */
 
-
-void SSPx_Open( 			unsigned char module,
-                               unsigned char dataSize,
-                               unsigned char frameFormat,
-                               unsigned char clockOutPolarity,
-                               unsigned char clockPhase,
-                               unsigned char clocksPerBit,
-                               unsigned char master,
-                               unsigned char slaveOutDisable,
-                               unsigned char clockPrescale);
-
 /**
  * Description: Initialized the SSP0 control into SPI mode. 
  * 
