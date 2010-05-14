@@ -167,6 +167,8 @@ xSemaphoreHandle xSemaphore = NULL;
 volatile uint32_t go_flag = 0;
 
 static void rollControlTask(void *pvParameters) {
+	const int debugLedCounterThreshold = 400;
+
 	int x = 0;
 	signed portCHAR theChar;
 	signed portBASE_TYPE status;
@@ -208,9 +210,9 @@ static void rollControlTask(void *pvParameters) {
 */
 
 
-			if( debugLEDCounter == 100 ) {
+			if( debugLEDCounter == debugLedCounterThreshold ) {
 				FIO0SET = (1<<13);//turn on led on olimex 2378 dev board
-			} else if( debugLEDCounter >= 200	 ) {
+			} else if( debugLEDCounter >= (debugLedCounterThreshold * 2) ) {
 				FIO0CLR = (1<<13);//turn off led on olimex 2378 Sdev board
 				debugLEDCounter = 0;
 			}
