@@ -362,8 +362,8 @@ int main( void )
 	does not attempt to use the semaphore before it is created! */
 	vSemaphoreCreateBinary( xSemaphore );
 
-	PWMinit (0, millisecondsToCPUTicks(30));//30ms period, given 48mhz CPU clock
-	setupPWMChannel(PWM1_1, microsecondsToCPUTicks(1500)); //1ms duty cycle, given 48mhz CPU clock
+	PWMinit (0, microsecondsToCPUTicks(3300));//3.3ms period, 300hz, given 48mhz CPU clock
+	setupPWMChannel(PWM1_1, microsecondsToCPUTicks(150)); //150us duty cycle, given 48mhz CPU clock
 	
 	xSerialPortInitMinimal(0, 115200, 250 );
 	vSerialPutString(0, "Starting up LPC23xx with FreeRTOS\n", 50);
