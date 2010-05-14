@@ -15,14 +15,30 @@ arm7_9 dcc_downloads enable
 wait_halt
 sleep 100
 poll
+
+
+
 # Force into supervisor mode
 reg cpsr 0x13
-# Set the MEMMAP reg to point to flash (avoids problems while trying to flash)
+
+# Check/Set memory maping to flash
 mww 0xE01FC040 1
-# Turn off the PLL and run the PLL feed sequence (avoids problems while trying to flash)
-#mww 0xe01fc080 0
-#mww 0xe01fc08c 0xaa
-#mww 0xe01fc08c 0x55
+mdw 0xE01FC040
+
+# Check/Set MAM control for programming
+mww 0xe01fc000 0
+mdw 0xe01fc000
+
+# Check/Set MAM timing for programming
+mww 0xe01fc004 3
+mdw 0xe01fc004
+
+# Turn off the PLL and run the PLL feed sequence
+mdw 0xe01fc080
+mww 0xe01fc080 0
+mww 0xe01fc08c 0xaa
+mww 0xe01fc08c 0x55
+
 
 
 soft_reset_halt
@@ -53,5 +69,5 @@ soft_reset_halt
 sleep 100
 resume
 sleep 100
-#shutdown
+
 
