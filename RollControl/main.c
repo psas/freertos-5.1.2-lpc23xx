@@ -195,15 +195,6 @@ static void rollControlTask(void *pvParameters) {
 
 /*
 			FIO0SET = (1<<13);//turn on led on olimex 2378 dev board
-
-			val1 = 12345.798101;
-			float val2 = 45677.34583;
-			int i;
-			for(i = 0; i < 100000; i++ ) {
-				val1 = val1 * val2;
-			}
-			randResult = val1;
-
 			FIO0CLR = (1<<13);//turn on led on olimex 2378 dev board
 */
 
@@ -216,14 +207,6 @@ static void rollControlTask(void *pvParameters) {
 			}
 
 
-			//------------------------------------------
-
-
-
-			/* It is time to execute. */
-
-
-
 			struct data_sample most_recent_sample;
 
 			g_task_reading_flag = 1;
@@ -234,10 +217,16 @@ static void rollControlTask(void *pvParameters) {
 			}
 			g_task_reading_flag = 0;
 
+			//------------------------------------------
+			/* It is time to execute. */
+
+
+
+
 
 			/* We have finished our task.  Return to the top of the loop where
 			we will block on the semaphore until it is time to execute
-			again.  Note when using the semaphore for synchronisation with an
+			again.  Note when using the semaphore for synchronization with an
 			ISR in this manner there is no need to 'give' the semaphore back. */
 		}
 
