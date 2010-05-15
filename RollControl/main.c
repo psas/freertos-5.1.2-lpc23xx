@@ -399,6 +399,14 @@ int main(void)
 
 	enableSerial0();
 
+	SCS |= 1; //Configure FIO
+
+    FIO0DIR = 0x00000000; // Set all ports to inputs
+    FIO1DIR = 0x00000000;
+    FIO2DIR = 0x00000000;
+    FIO3DIR = 0x00000000;
+    FIO4DIR = 0x00000000;
+
 	FIO0DIR |= (1 << 6);
 	FIO0DIR |= (1 << 13);//Set USBLINK led to output gpio on 2378 dev board
 	FIO1DIR |= (1 << 19);
@@ -430,8 +438,6 @@ int main(void)
 
 	xSerialPortInitMinimal(0, 115200, 250);
 	vSerialPutString(0, "Starting up LPC23xx with FreeRTOS\n", 50);
-
-	SCS |= 1; //Configure FIO
 
 	//configure10khzTimer1();
 
