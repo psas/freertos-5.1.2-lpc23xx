@@ -1,54 +1,54 @@
 /*
-	FreeRTOS.org V5.1.2 - Copyright (C) 2003-2009 Richard Barry.
+ FreeRTOS.org V5.1.2 - Copyright (C) 2003-2009 Richard Barry.
 
-	This file is part of the FreeRTOS.org distribution.
+ This file is part of the FreeRTOS.org distribution.
 
-	FreeRTOS.org is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation; either version 2 of the License, or
-	(at your option) any later version.
+ FreeRTOS.org is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
 
-	FreeRTOS.org is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+ FreeRTOS.org is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with FreeRTOS.org; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ You should have received a copy of the GNU General Public License
+ along with FreeRTOS.org; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-	A special exception to the GPL can be applied should you wish to distribute
-	a combined work that includes FreeRTOS.org, without being obliged to provide
-	the source code for any proprietary components.  See the licensing section 
-	of http://www.FreeRTOS.org for full details of how and when the exception
-	can be applied.
+ A special exception to the GPL can be applied should you wish to distribute
+ a combined work that includes FreeRTOS.org, without being obliged to provide
+ the source code for any proprietary components.  See the licensing section
+ of http://www.FreeRTOS.org for full details of how and when the exception
+ can be applied.
 
-    ***************************************************************************
-    ***************************************************************************
-    *                                                                         *
-    * Get the FreeRTOS eBook!  See http://www.FreeRTOS.org/Documentation      *
-	*                                                                         *
-	* This is a concise, step by step, 'hands on' guide that describes both   *
-	* general multitasking concepts and FreeRTOS specifics. It presents and   *
-	* explains numerous examples that are written using the FreeRTOS API.     *
-	* Full source code for all the examples is provided in an accompanying    *
-	* .zip file.                                                              *
-    *                                                                         *
-    ***************************************************************************
-    ***************************************************************************
+ ***************************************************************************
+ ***************************************************************************
+ *                                                                         *
+ * Get the FreeRTOS eBook!  See http://www.FreeRTOS.org/Documentation      *
+ *                                                                         *
+ * This is a concise, step by step, 'hands on' guide that describes both   *
+ * general multitasking concepts and FreeRTOS specifics. It presents and   *
+ * explains numerous examples that are written using the FreeRTOS API.     *
+ * Full source code for all the examples is provided in an accompanying    *
+ * .zip file.                                                              *
+ *                                                                         *
+ ***************************************************************************
+ ***************************************************************************
 
-	Please ensure to read the configuration and relevant port sections of the
-	online documentation.
+ Please ensure to read the configuration and relevant port sections of the
+ online documentation.
 
-	http://www.FreeRTOS.org - Documentation, latest information, license and 
-	contact details.
+ http://www.FreeRTOS.org - Documentation, latest information, license and
+ contact details.
 
-	http://www.SafeRTOS.com - A version that is certified for use in safety 
-	critical systems.
+ http://www.SafeRTOS.com - A version that is certified for use in safety
+ critical systems.
 
-	http://www.OpenRTOS.com - Commercial support, development, porting, 
-	licensing and training services.
-*/
+ http://www.OpenRTOS.com - Commercial support, development, porting,
+ licensing and training services.
+ */
 
 /* Scheduler includes. */
 #include "FreeRTOS.h"
@@ -67,14 +67,16 @@
 #include "QPeek.h"
 #include "dynamic.h"
 #include <stdint.h>
+#include <stdbool.h>
 #include "debug.h"
 #include "serial/serial.h"
+#include "peripherals/ssp.h"
 #include "printf/uart0PutChar2.h"
 #include "printf/printf2.h"
 #include "peripherals/pwm.h"
 #include "rollcontrol.h"
 
-
+#include "PathPlanning0.h"
 
 #define ROLL_CONTROL_STACK_SIZE 1024
 
@@ -82,11 +84,11 @@
 #define mainTX_ENABLE	( ( unsigned portLONG ) (1<<4) )
 #define mainRX_ENABLE	( ( unsigned portLONG ) (1<<6) )
 /*
-#define mainTX_ENABLE	( ( unsigned portLONG ) 0x0001 )
-#define mainRX_ENABLE	( ( unsigned portLONG ) 0x0004 )
-#define mainTX1_ENABLE	( ( unsigned portLONG ) 0x10000 )
-#define mainRX1_ENABLE	( ( unsigned portLONG ) 0x40000 )
-*/
+ #define mainTX_ENABLE	( ( unsigned portLONG ) 0x0001 )
+ #define mainRX_ENABLE	( ( unsigned portLONG ) 0x0004 )
+ #define mainTX1_ENABLE	( ( unsigned portLONG ) 0x10000 )
+ #define mainRX1_ENABLE	( ( unsigned portLONG ) 0x40000 )
+ */
 
 /* Demo application definitions. */
 #define mainQUEUE_SIZE						( 3 )
@@ -127,26 +129,21 @@
 #define mainMAM_TIM_3		( ( unsigned portCHAR ) 0x03 )
 #define mainMAM_MODE_FULL	( ( unsigned portCHAR ) 0x02 )
 
-
-
 #define PCLK    configCPU_CLOCK_HZ
 
-
-
-
-uint32_t microsecondsToCPUTicks(const uint32_t microseconds) {
+uint32_t microsecondsToCPUTicks(const uint32_t microseconds)
+{
 	uint32_t ret = (configCPU_CLOCK_HZ / 1000000) * microseconds;
-	return(ret);
+	return (ret);
 }
 
-uint32_t milisecondsToCPUTicks(const uint32_t miliseconds) {
+uint32_t millisecondsToCPUTicks(const uint32_t miliseconds)
+{
 	uint32_t ret = (configCPU_CLOCK_HZ / 1000) * miliseconds;
-	return(ret);
+	return (ret);
 }
 
-
-
-
+#define ROLL_SENSOR_BAUD_RATE_PRESCALER 2 // BRP set for sensors. Must be an EVEN number
 
 volatile uint32_t g_most_recent_buffer = 0;
 volatile uint32_t g_task_reading_flag = 0;
@@ -158,59 +155,101 @@ volatile float randValue = 3456.19923;
 volatile float randResult = 3456.19923;
 volatile float val1 = 12345.798101;
 
-
 #define LONG_TIME 0xFFFF
 #define TICKS_TO_WAIT    10
 
 xSemaphoreHandle xSemaphore = NULL;
 
-volatile uint32_t go_flag = 0;
+#define BIN14_SCALER_VALUE   16384
+#define BIN14_SCALER_VALUE_ONE_MICROSECOND   (BIN14_SCALER_VALUE/1000)
 
-static void rollControlTask(void *pvParameters) {
+void setServoDutyCycle(const uint16_t u16ServoTimeMillisecondsBin14)
+{
+	//The passed in value is 2^14 times larger then need be
+	//Note: the millisecondsToCPUTicks function has an output max value of about 3 billion when were running at 48mhz, which is within range of a uint32_t...
+	const uint32_t duty_cycle_in_ticks = millisecondsToCPUTicks(
+			u16ServoTimeMillisecondsBin14) / BIN14_SCALER_VALUE;
+
+	setPWMDutyCycle(PWM1_1, duty_cycle_in_ticks);
+}
+
+static void testSSP0(void)
+{
+	uint16_t data = 0x5A;
+
+	transmitSSP0_SPI_1byte(data);
+}
+
+static void rollControlTask(void *pvParameters)
+{
+	const int debugLedCounterThreshold = 400;
+
 	int x = 0;
 	signed portCHAR theChar;
 	signed portBASE_TYPE status;
 	const int interval = 100000;
 	// echo any character received (do USB stuff in interrupt)
-	
+
 	uint32_t pwmDutyCycle = 1000;
-	
+
+	const uint16_t pwmLowerBound = 100 * BIN14_SCALER_VALUE_ONE_MICROSECOND;
+	const uint16_t pwmUpperBound = 200 * BIN14_SCALER_VALUE_ONE_MICROSECOND;
+	uint16_t pwmDutyCycleMsBin14 = pwmUpperBound;
+
 	//taken from: http://www.freertos.org/index.html?http://www.freertos.org/a00124.html
 
+	uint32_t currentTimeMs = 0;
+	const uint16_t bin6TicksPerMillisecond = 16; //1000 / (2^6)
 
-	for(;;) {
+	for (;;) {
 		/* We want this task to run every 10 ticks of a timer.  The semaphore
-		was created before this task was started.
+		 was created before this task was started.
 
-		Block waiting for the semaphore to become available. */
+		 Block waiting for the semaphore to become available. */
 
-		if( xSemaphoreTake( xSemaphore, LONG_TIME ) == pdTRUE )
-		//if( go_flag )
-		{
-			go_flag = 0;
-			//------------------------------------------
-			//Debug LED
-			static uint32_t debugLEDCounter = 0;
-			debugLEDCounter++;
+		if (xSemaphoreTake( xSemaphore, LONG_TIME ) == pdTRUE) {
+			FIO1SET = (1 << 29);//turn on debug GPIO line
 
 /*
 			FIO0SET = (1<<13);//turn on led on olimex 2378 dev board
 			FIO0CLR = (1<<13);//turn on led on olimex 2378 dev board
 */
 
+			static uint32_t debugLEDCounter = 0;
 
-			if( debugLEDCounter == 100 ) {
-				FIO0SET = (1<<13);//turn on led on olimex 2378 dev board
-			} else if( debugLEDCounter >= 200	 ) {
-				FIO0CLR = (1<<13);//turn off led on olimex 2378 Sdev board
+			/*Code for testing perepherials, DELETE THIS after hardware comm is verified*/
+			pwmDutyCycleMsBin14++;
+			if (pwmDutyCycleMsBin14 > pwmUpperBound) {
+				pwmDutyCycleMsBin14 = pwmLowerBound;
+			}
+			setServoDutyCycle(pwmDutyCycleMsBin14);
+
+			if (debugLEDCounter % 100 == 0) {
+				testSSP0();
+			}
+
+			//------------------------------------------
+
+
+			currentTimeMs++;
+			const uint16_t currentTime = (currentTimeMs << 6)/1000;//FIXME should be a faster way to do this...
+
+			//------------------------------------------
+			//Debug LED
+			debugLEDCounter++;
+
+			if (debugLEDCounter == debugLedCounterThreshold) {
+				FIO0SET = (1 << 13);//turn on led on olimex 2378 dev board
+			} else if (debugLEDCounter >= (debugLedCounterThreshold * 2)) {
+				FIO0CLR = (1 << 13);//turn off led on olimex 2378 Sdev board
 				debugLEDCounter = 0;
 			}
 
-
+			//------------------------------------------
 			struct data_sample most_recent_sample;
 
 			g_task_reading_flag = 1;
-			if( g_most_recent_buffer == A_BUFFER ) {
+			if (g_most_recent_buffer == A_BUFFER) {
 				most_recent_sample = g_sample_data_A;
 			} else {
 				most_recent_sample = g_sample_data_B;
@@ -218,6 +257,7 @@ static void rollControlTask(void *pvParameters) {
 			g_task_reading_flag = 0;
 
 			//------------------------------------------
+
 			/* It is time to execute. */
 
 
@@ -228,62 +268,86 @@ static void rollControlTask(void *pvParameters) {
 			we will block on the semaphore until it is time to execute
 			again.  Note when using the semaphore for synchronization with an
 			ISR in this manner there is no need to 'give' the semaphore back. */
+
+			/* Set Inputs for Model */
+			PathPlanning0_U.Launch = 1;
+			PathPlanning0_U.u16TimeBin6 = currentTime;
+
+			//------------------------------------------
+			/* It is time to execute. */
+			PathPlanning0_step();
+
+			const int16_t targetPositionBin7 = PathPlanning0_Y.s16TargetPositionBin7;
+
+			static int16_t lastTargetPosition = INT16_MAX;
+			if (targetPositionBin7 != lastTargetPosition) {
+				printf2("Setting targetPosition to %d\r\n",
+						targetPositionBin7);
+				lastTargetPosition = targetPositionBin7;
+			}
+
+
+			/* We have finished our task.  Return to the top of the loop where
+			 we will block on the semaphore until it is time to execute
+			 again.  Note when using the semaphore for synchronisation with an
+			 ISR in this manner there is no need to 'give' the semaphore back. */
+
+
+			FIO1CLR = (1 << 29);//turn off debug GPIO line
+
 		}
 
+		/*
+		 //vSerialPutString(0, "Testing...\r\n", 50);
+		 x++;
 
+		 if (x == interval) {
+		 //FIO1SET = (1<<19);//turn on led on olimex 2378 dev board
 
+		 pwmDutyCycle += 100;
+		 if(pwmDutyCycle > 2000 ) {
+		 pwmDutyCycle = 1000;
+		 }
+		 setPWMDutyCycle(PWM1_1, microsecondsToCPUTicks(pwmDutyCycle));
 
-/*
-		//vSerialPutString(0, "Testing...\r\n", 50);
-		x++;
+		 } else if (x >= (interval*2)) {
+		 //FIO1CLR = (1<<19);//turn off led on olimex 2378 Sdev board
 
-		if (x == interval) {
-			//FIO1SET = (1<<19);//turn on led on olimex 2378 dev board
-			
-			pwmDutyCycle += 100;
-			if(pwmDutyCycle > 2000 ) {
-				pwmDutyCycle = 1000;
-			}
-			setPWMDutyCycle(PWM1_1, microsecondsToCPUTicks(pwmDutyCycle));
-			
-		} else if (x >= (interval*2)) {
-			//FIO1CLR = (1<<19);//turn off led on olimex 2378 Sdev board
+		 x = 0;
+		 printf2("Blinky Light Task...\r\n");
 
-			x = 0;
-			printf2("Blinky Light Task...\r\n");
-			
-			status = xSerialGetChar(0, &theChar, 1);
-			if( status == pdTRUE ) {
-				printf2("You typed the character: '%c'\r\n", theChar);
-			}
-		}
+		 status = xSerialGetChar(0, &theChar, 1);
+		 if( status == pdTRUE ) {
+		 printf2("You typed the character: '%c'\r\n", theChar);
+		 }
+		 }
 
-		*/
+		 */
 	}
 }
 
-
 /*-----------------------------------------------------------*/
 
-static void prvSetupHardware( void )
+static void prvSetupHardware(void)
 {
-	#ifdef RUN_FROM_RAM
-		/* Remap the interrupt vectors to RAM if we are are running from RAM. */
-		SCB_MEMMAP = 2;
-	#endif
-	
+#ifdef RUN_FROM_RAM
+	/* Remap the interrupt vectors to RAM if we are are running from RAM. */
+	SCB_MEMMAP = 2;
+#endif
+
 	/* Disable the PLL. */
 	PLLCON = 0;
 	PLLFEED = mainPLL_FEED_BYTE1;
 	PLLFEED = mainPLL_FEED_BYTE2;
-	
+
 	/* Configure clock source. */
 	SCS |= mainOSC_ENABLE;
-	while( !( SCS & mainOSC_STAT ) );
-	CLKSRCSEL = mainOSC_SELECT; 
-	
+	while (!(SCS & mainOSC_STAT))
+		;
+	CLKSRCSEL = mainOSC_SELECT;
+
 	/* Setup the PLL to multiply the XTAL input by 4. */
-	PLLCFG = ( mainPLL_MUL | mainPLL_DIV );
+	PLLCFG = (mainPLL_MUL | mainPLL_DIV);
 	PLLFEED = mainPLL_FEED_BYTE1;
 	PLLFEED = mainPLL_FEED_BYTE2;
 
@@ -291,142 +355,152 @@ static void prvSetupHardware( void )
 	PLLCON = mainPLL_ENABLE;
 	PLLFEED = mainPLL_FEED_BYTE1;
 	PLLFEED = mainPLL_FEED_BYTE2;
-	CCLKCFG = mainCPU_CLK_DIV;	
-	while( !( PLLSTAT & mainPLL_LOCK ) );
-	
+	CCLKCFG = mainCPU_CLK_DIV;
+	while (!(PLLSTAT & mainPLL_LOCK))
+		;
+
 	/* Connecting the clock. */
 	PLLCON = mainPLL_CONNECT;
 	PLLFEED = mainPLL_FEED_BYTE1;
 	PLLFEED = mainPLL_FEED_BYTE2;
-	while( !( PLLSTAT & mainPLL_CONNECTED ) ); 
-	
+	while (!(PLLSTAT & mainPLL_CONNECTED))
+		;
+
 	/* 
-	This code is commented out as the MAM does not work on the original revision
-	LPC2368 chips.  If using Rev B chips then you can increase the speed though
-	the use of the MAM.
-	
-	Setup and turn on the MAM.  Three cycle access is used due to the fast
-	PLL used.  It is possible faster overall performance could be obtained by
-	tuning the MAM and PLL settings.
-	MAMCR = 0;
-	MAMTIM = mainMAM_TIM_3;
-	MAMCR = mainMAM_MODE_FULL;
-	*/
-	
+	 This code is commented out as the MAM does not work on the original revision
+	 LPC2368 chips.  If using Rev B chips then you can increase the speed though
+	 the use of the MAM.
+
+	 Setup and turn on the MAM.  Three cycle access is used due to the fast
+	 PLL used.  It is possible faster overall performance could be obtained by
+	 tuning the MAM and PLL settings.
+	 MAMCR = 0;
+	 MAMTIM = mainMAM_TIM_3;
+	 MAMCR = mainMAM_MODE_FULL;
+	 */
+
 	/* Setup the led's on the MCB2300 board */
 	vParTestInitialise();
 }
 
-
-void enableSerial0( void ) {
-	PCLKSEL0 = (PCLKSEL0 & ~(3<<6)) | (1<<6);//set uart to run at CCLK speed, UART0
+void enableSerial0(void)
+{
+	PCLKSEL0 = (PCLKSEL0 & ~(3 << 6)) | (1 << 6);//set uart to run at CCLK speed, UART0
 	PINSEL0 |= mainTX_ENABLE;
 	PINSEL0 |= mainRX_ENABLE;
 }
 
-
-
-
-
-
 /*-----------------------------------------------------------*/
 
-
 //#define PCLK    48000000
-int main( void )
+int main(void)
 {
 	prvSetupHardware();
-	
-	enableSerial0();
-	
-	FIO0DIR |= (1<<6);
-	FIO0DIR |= (1<<13);//Set USBLINK led to output gpio on 2378 dev board
-	FIO1DIR |= (1<<19);
 
+	enableSerial0();
+
+	FIO0DIR |= (1 << 6);
+	FIO0DIR |= (1 << 13);//Set USBLINK led to output gpio on 2378 dev board
+	FIO1DIR |= (1 << 19);
+	FIO1DIR |= (1 << 29);//Debug IO line for o-scope verification, EXT2-11 on the olimex 2378 dev board
 
 	/* We are using the semaphore for synchronisation so we create a binary
-	semaphore rather than a mutex.  We must make sure that the interrupt
-	does not attempt to use the semaphore before it is created! */
+	 semaphore rather than a mutex.  We must make sure that the interrupt
+	 does not attempt to use the semaphore before it is created! */
 	vSemaphoreCreateBinary( xSemaphore );
 
-	PWMinit (0, milisecondsToCPUTicks(30));//30ms period, given 48mhz CPU clock
-	setupPWMChannel(PWM1_1, microsecondsToCPUTicks(1500)); //1ms duty cycle, given 48mhz CPU clock
-	
-	xSerialPortInitMinimal(0, 115200, 250 );
+	PWMinit(0, microsecondsToCPUTicks(3300));//3.3ms period, 300hz, given 48mhz CPU clock
+	setupPWMChannel(PWM1_1, microsecondsToCPUTicks(150)); //150us duty cycle, given 48mhz CPU clock
+
+
+	// Initialize SPI ADC communication
+	// Set to 4 MHz baud rate
+	//SSPx_Open( MODULE_SSP0, EIGHT_BITS, SSP_SPI_FORMAT, 0, 0, NINE_CLCKS_BIT,
+	//                          SSP_MASTER, 0, ROLL_SENSOR_BAUD_RATE_PRESCALER );
+
+	const uint32_t ssp0_serial_clock_rate = 4000000;
+	const uint8_t ssp0ClocksPerBit = ((PCLK / ssp0_serial_clock_rate)
+			/ ROLL_SENSOR_BAUD_RATE_PRESCALER) - 1;
+
+	initSSP0(SSP_EIGHT_BITS, SSP_SPI_FORMAT, false, false, false,
+			ssp0ClocksPerBit, ROLL_SENSOR_BAUD_RATE_PRESCALER, SSP_MASTER,
+			false);
+
+	testSSP0();
+
+	xSerialPortInitMinimal(0, 115200, 250);
 	vSerialPutString(0, "Starting up LPC23xx with FreeRTOS\n", 50);
-	
+
 	SCS |= 1; //Configure FIO
-	
+
 	//configure10khzTimer1();
-	
-	xTaskCreate( rollControlTask, ( signed portCHAR * ) "rollControlTask", ROLL_CONTROL_STACK_SIZE, NULL, mainCHECK_TASK_PRIORITY - 1, NULL );
-  
+
+
+	PathPlanning0_initialize();
+
+	xTaskCreate(rollControlTask, (signed portCHAR *) "rollControlTask",
+			ROLL_CONTROL_STACK_SIZE, NULL, mainCHECK_TASK_PRIORITY - 1, NULL );
+
 	/* Start the scheduler. */
 	vTaskStartScheduler();
 
-    /* Will only get here if there was insufficient memory to create the idle
-    task. */
-	return 0; 
+	/* Will only get here if there was insufficient memory to create the idle
+	 task. */
+	return 0;
 }
 /*-----------------------------------------------------------*/
 
-
 extern void vRC(void);
 
-void vApplicationTickHook( void )
+void vApplicationTickHook(void)
 {
 	vRC();
 
 	/*
-	unsigned portBASE_TYPE uxColumn = 0;
-	static xLCDMessage xMessage = { 0, "PASS" };
-	static unsigned portLONG ulTicksSinceLastDisplay = 0;
-	static portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
+	 unsigned portBASE_TYPE uxColumn = 0;
+	 static xLCDMessage xMessage = { 0, "PASS" };
+	 static unsigned portLONG ulTicksSinceLastDisplay = 0;
+	 static portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
 
-	// Called from every tick interrupt.  Have enough ticks passed to make it
-	// time to perform our health status check again?
-	ulTicksSinceLastDisplay++;
-	if( ulTicksSinceLastDisplay >= mainCHECK_DELAY )
-	{
-		ulTicksSinceLastDisplay = 0;
-		
-		// Has an error been found in any task?
+	 // Called from every tick interrupt.  Have enough ticks passed to make it
+	 // time to perform our health status check again?
+	 ulTicksSinceLastDisplay++;
+	 if( ulTicksSinceLastDisplay >= mainCHECK_DELAY )
+	 {
+	 ulTicksSinceLastDisplay = 0;
 
-        if( xAreBlockingQueuesStillRunning() != pdTRUE )
-		{
-			xMessage.pcMessage = "ERROR - BLOCKQ";
-		}
+	 // Has an error been found in any task?
 
-		if( xAreBlockTimeTestTasksStillRunning() != pdTRUE )
-		{
-			xMessage.pcMessage = "ERROR - BLOCKTIM";
-		}
+	 if( xAreBlockingQueuesStillRunning() != pdTRUE )
+	 {
+	 xMessage.pcMessage = "ERROR - BLOCKQ";
+	 }
 
-		if( xAreGenericQueueTasksStillRunning() != pdTRUE )
-		{
-			xMessage.pcMessage = "ERROR - GENQ";
-		}
-		
-		if( xAreQueuePeekTasksStillRunning() != pdTRUE )
-		{
-			xMessage.pcMessage = "ERROR - PEEKQ";
-		}       
-		
-		if( xAreDynamicPriorityTasksStillRunning() != pdTRUE )
-		{
-			xMessage.pcMessage = "ERROR - DYNAMIC";
-		}
-        
-        xMessage.xColumn++;
+	 if( xAreBlockTimeTestTasksStillRunning() != pdTRUE )
+	 {
+	 xMessage.pcMessage = "ERROR - BLOCKTIM";
+	 }
 
-		// Send the message to the LCD gatekeeper for display.
-		xHigherPriorityTaskWoken = pdFALSE;
-	}
-	*/
+	 if( xAreGenericQueueTasksStillRunning() != pdTRUE )
+	 {
+	 xMessage.pcMessage = "ERROR - GENQ";
+	 }
+
+	 if( xAreQueuePeekTasksStillRunning() != pdTRUE )
+	 {
+	 xMessage.pcMessage = "ERROR - PEEKQ";
+	 }
+
+	 if( xAreDynamicPriorityTasksStillRunning() != pdTRUE )
+	 {
+	 xMessage.pcMessage = "ERROR - DYNAMIC";
+	 }
+
+	 xMessage.xColumn++;
+
+	 // Send the message to the LCD gatekeeper for display.
+	 xHigherPriorityTaskWoken = pdFALSE;
+	 }
+	 */
 }
-
-
-
-
-
 

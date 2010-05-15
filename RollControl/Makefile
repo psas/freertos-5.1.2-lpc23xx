@@ -46,6 +46,8 @@ LINKER_FLAGS= -marm -nostartfiles -Xlinker -o$(PROJECT_NAME).elf -Xlinker -M -Xl
 DEBUG=-g
 OPTIM=-O1
 
+CONTROL_MODEL_DIRECTORIES = $(wildcard ./control_model_dir_symlink/*_ert_rtw)
+CONTROL_MODEL_INCLUDE_DIRECTORIES = $(CONTROL_MODEL_DIRECTORIES:%=-I%)
 
 CFLAGS= $(DEBUG) \
 		$(OPTIM) \
@@ -55,6 +57,7 @@ CFLAGS= $(DEBUG) \
 		-I $(RTOS_SOURCE_DIR)/portable/GCC/ARM7_LPC23xx \
 		-I $(DEMO_INCLUDE_DIR) \
 		-I $(LPCUSB_COMMON_DIR) -D LPC23xx -DLPC2378_PORTB \
+		$(CONTROL_MODEL_INCLUDE_DIRECTORIES) \
 		-I ../Common/drivers/LPC/ \
 		-D ROWLEY_LPC23xx \
 		-D THUMB_INTERWORK \
@@ -94,9 +97,17 @@ ARM_SOURCE= \
 		$(LPCUSB_COMMON_DIR)/usbhw_lpc.c \
 		$(LPCUSB_COMMON_DIR)/usbinit.c \
 		$(LPCUSB_COMMON_DIR)/usbstdreq.c
+		
+ARM_SOURCE_C99= \
+		../Common/drivers/LPC/peripherals/ssp.c \
+		$(wildcard ./control_model_dir_symlink/*/*.c)
+
+
+		
 
 THUMB_OBJS = $(THUMB_SOURCE:.c=.o)
 ARM_OBJS = $(ARM_SOURCE:.c=.o)
+ARM_OBJS_C99 = $(ARM_SOURCE_C99:.c=.o)
 
 
 all: $(PROJECT_NAME).bin
@@ -107,14 +118,17 @@ $(PROJECT_NAME).bin : $(PROJECT_NAME).hex
 $(PROJECT_NAME).hex : $(PROJECT_NAME).elf
 	$(OBJCOPY) $(PROJECT_NAME).elf -O ihex $(PROJECT_NAME).hex
 
-$(PROJECT_NAME).elf : $(THUMB_OBJS) $(ARM_OBJS) boot.s Makefile
-	$(CC) $(CFLAGS) $(ARM_OBJS) $(THUMB_OBJS) $(LIBS) boot.s $(LINKER_FLAGS) 
+$(PROJECT_NAME).elf : $(THUMB_OBJS) $(ARM_OBJS) $(ARM_OBJS_C99) boot.s Makefile
+	$(CC) $(CFLAGS) $(ARM_OBJS) $(ARM_OBJS_C99) $(THUMB_OBJS) $(LIBS) boot.s $(LINKER_FLAGS) 
 
 $(THUMB_OBJS) : %.o : %.c Makefile FreeRTOSConfig.h
 	$(CC) -c $(CFLAGS) -mthumb $< -o $@
 
 $(ARM_OBJS) : %.o : %.c Makefile FreeRTOSConfig.h
 	$(CC) -c $(CFLAGS) $< -o $@
+
+$(ARM_OBJS_C99) : %.o : %.c Makefile FreeRTOSConfig.h
+	$(CC) -c -std=c99 $(CFLAGS) $< -o $@
 
 clean :
 	rm -f $(THUMB_OBJS)

@@ -110,7 +110,7 @@ uint32_t microsecondsToCPUTicks(const uint32_t microseconds) {
     return(ret);
 }
 
-uint32_t milisecondsToCPUTicks(const uint32_t miliseconds) {
+uint32_t millisecondsToCPUTicks(const uint32_t miliseconds) {
     uint32_t ret = (configCPU_CLOCK_HZ / 1000) * miliseconds;
     return(ret);
 }
@@ -250,7 +250,7 @@ int main( void )
 
     enableSerial0();
 
-    PWMinit (0, milisecondsToCPUTicks(30));                // 30ms period, given 48mhz CPU clock
+    PWMinit (0, millisecondsToCPUTicks(30));                // 30ms period, given 48mhz CPU clock
 
     setupPWMChannel(PWM1_1, microsecondsToCPUTicks(1500)); // 1ms duty cycle, given 48mhz CPU clock
 
