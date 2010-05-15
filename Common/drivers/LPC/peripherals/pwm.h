@@ -13,7 +13,8 @@ void setPWMMatchReg(const enum PWM_Channel chan, const bool interupt, const bool
 void setPWMDutyCycle(const enum PWM_Channel chan, const uint32_t dutyCycleTicks);
 void setupPWMChannel(const enum PWM_Channel chan, const uint32_t dutyCycle);
 void PWMinit (const uint32_t prescalar, const uint32_t periodTicks);
-
+void setupPWMPinSetup2378(const enum PWM_Channel chan);
+void setupPWMChannelPerepheral(const enum PWM_Channel chan, const uint32_t dutyCycle);
 
 
 #endif /*PWM_H_*/
