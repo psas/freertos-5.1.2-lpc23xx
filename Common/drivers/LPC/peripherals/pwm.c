@@ -3,10 +3,8 @@
 
 #include "pwm.h"
 
-void setupPWMChannel(const enum PWM_Channel chan, const uint32_t dutyCycle) {
-	
-	setPWMDutyCycle(chan, dutyCycle);
-	
+void setupPWMPinSetup2378(const enum PWM_Channel chan)
+{
 	switch(chan) {
 		case(PWM1_0):
 			//this is not an actual output
@@ -14,34 +12,66 @@ void setupPWMChannel(const enum PWM_Channel chan, const uint32_t dutyCycle) {
 		case(PWM1_1):
 			PINSEL3 |= (1<<5);//P1.18 to be PWM1.1
 			PINSEL3 &= ~(1<<4);
-			PWM1PCR |= (1<<9); //Enable PWM Output
-			break;	
+			break;
 		case(PWM1_2):
 			PINSEL3 |= (1<<9);//P1.20 to be PWM1.2
 			PINSEL3 &= ~(1<<8);
-			PWM1PCR |= (1<<10); //Enable PWM Output
 			break;
-		case(PWM1_3): 
+		case(PWM1_3):
 			PINSEL3 |= (1<<11);//P1.21 to be PWM1.3
 			PINSEL3 &= ~(1<<10);
-			PWM1PCR |= (1<<11); //Enable PWM Output
 			break;
 		case(PWM1_4):
 			PINSEL3 |= (1<<15);//P1.23 to be PWM1.4
 			PINSEL3 &= ~(1<<14);
-			PWM1PCR |= (1<<12); //Enable PWM Output
 			break;
 		case(PWM1_5):
 			PINSEL3 |= (1<<17);//P1.24 to be PWM1.5
 			PINSEL3 &= ~(1<<16);
-			PWM1PCR |= (1<<13); //Enable PWM Output
 			break;
 		case(PWM1_6):
 			PINSEL3 |= (1<<21);//P1.26 to be PWM1.6
 			PINSEL3 &= ~(1<<20);
+			break;
+	}
+}
+
+void setupPWMChannelPerepheral(const enum PWM_Channel chan, const uint32_t dutyCycle)
+{
+	setPWMDutyCycle(chan, dutyCycle);
+	
+	switch(chan) {
+		case(PWM1_0):
+			//this is not an actual output
+			break;
+		case(PWM1_1):
+			PWM1PCR |= (1<<9); //Enable PWM Output
+			break;	
+		case(PWM1_2):
+			PWM1PCR |= (1<<10); //Enable PWM Output
+			break;
+		case(PWM1_3): 
+			PWM1PCR |= (1<<11); //Enable PWM Output
+			break;
+		case(PWM1_4):
+			PWM1PCR |= (1<<12); //Enable PWM Output
+			break;
+		case(PWM1_5):
+			PWM1PCR |= (1<<13); //Enable PWM Output
+			break;
+		case(PWM1_6):
 			PWM1PCR |= (1<<14); //Enable PWM Output
 			break;
 	}
+}
+
+/**
+ * This is specitfic to the 2378, and assumes which PX.Y pins are to be output on
+ */
+void setupPWMChannel(const enum PWM_Channel chan, const uint32_t dutyCycle)
+{
+	setupPWMChannelPerepheral(chan, dutyCycle);
+	setupPWMPinSetup2378(chan);
 }
 
 

@@ -391,8 +391,8 @@ int main(void)
 	vSemaphoreCreateBinary( xSemaphore );
 
 	PWMinit(0, microsecondsToCPUTicks(3300));//3.3ms period, 300hz, given 48mhz CPU clock
-	setupPWMChannel(PWM1_1, microsecondsToCPUTicks(150)); //150us duty cycle, given 48mhz CPU clock
-
+	setupPWMChannelPerepheral(PWM1_1, microsecondsToCPUTicks(150));
+	setupPWMPinSetup2378(PWM1_1);
 
 	// Initialize SPI ADC communication
 	// Set to 4 MHz baud rate
