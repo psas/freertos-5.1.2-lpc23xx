@@ -75,6 +75,8 @@
 #include "printf/printf2.h"
 #include "peripherals/pwm.h"
 #include "rollcontrol.h"
+#include "fir_decimation.h"
+
 
 #include "PathPlanning0.h"
 #include "RollEstimator.h"
@@ -609,6 +611,8 @@ int main(void)
 	GPIOResetPins(); // Set pins to a safe state
 
 	prvSetupHardware(); // Set PLL and timing for this application
+
+	initialize_fir_filter();
 
 	setPinsForApplication(); // Set pins for board layout
 
