@@ -44,7 +44,7 @@ LINKER_FLAGS= -marm -nostartfiles -Xlinker -o$(PROJECT_NAME).elf -Xlinker -M -Xl
 
 
 DEBUG=-g
-OPTIM=-O1
+OPTIM=-O0
 
 CONTROL_MODEL_DIRECTORIES = $(wildcard ./control_model_dir_symlink/*_ert_rtw)
 CONTROL_MODEL_INCLUDE_DIRECTORIES = $(CONTROL_MODEL_DIRECTORIES:%=-I%)
@@ -68,7 +68,7 @@ CFLAGS= $(DEBUG) \
 		-mthumb-interwork
 										
 THUMB_SOURCE= \
-		main.c \
+		main_rollcontrol.c \
 		./ParTest/ParTest.c \
 		$(DEMO_COMMON_DIR)/BlockQ.c \
 		$(DEMO_COMMON_DIR)/blocktim.c \

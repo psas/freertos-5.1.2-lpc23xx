@@ -13,10 +13,27 @@ extern xSemaphoreHandle xSemaphore;
 
 #define FIQ_INTERVAL_DIVISOR   10
 
-uint32_t adc_fir_coefficients[FIQ_INTERVAL_DIVISOR];
+uint32_t accel_fir_coefficients[FIQ_INTERVAL_DIVISOR];
 uint32_t gyro_fir_coefficients[FIQ_INTERVAL_DIVISOR];
 
-extern volatile uint32_t go_flag;
+
+#define ADC_CNV_HIGH		FIO0SET = (1 << 16)		// P0.16 UExt pin10, ADC pin8
+#define ADC_CNV_LOW			FIO0CLR = (1 << 16)		// P0.16 UExt pin10, ADC pin8
+#define ADC_DATA_READY		(FIO2PIN & (1 << 9))	// P2.9  ?Ext pin??, sensor SDO pin, input
+
+void Read_SSP0(unsigned char * readPtr)
+{
+	// Read data from buffer
+	*readPtr = (unsigned char) SSP0DR;
+}
+
+unsigned char isSSP0ReadFIFOEmpty(void)
+{
+	return (unsigned char) ((SSP0SR & (1<<2)) >> 2); // Check 2nd bit (read FIFO RNE)
+}
+
+uint16_t u16RawAccelADC = 0;
+uint16_t u16RawGyroADC = 0;
 
 void vRC(void) {
 	FIO0SET = (1<<6);
@@ -24,29 +41,92 @@ void vRC(void) {
 	static struct data_sample the_decimated_sample = DATA_SAMPLE_INITIALIZER;
 	static uint32_t irqCounter = 0;
 	static signed portBASE_TYPE xHigherPriorityTaskWoken;
+	volatile uint32_t vu32counter = 0;
+//	static uint16_t u16RawAccelADC = 0;
+//	static uint16_t u16RawGyroADC = 0;
+	uint8_t readValue1;
+	uint8_t readValue2;
+	uint8_t readValue3;
+	uint8_t readValue4;
 
-	//Do somthing at 10khz
+	// Run at 10khz
 
-	//Triger conversion
+	// End previous conversion
+	// P0.16 pin SSP0: SSEL Wired to CNV on ADC
+	ADC_CNV_LOW;
 
-	//Pull last data from the SPI FIFO
-	uint32_t adc_spi_sample = 111;
-	uint32_t gyro_spi_sample = 111;
+	// Pull last cycle's data from the SPI FIFO
+	if( isSSP0ReadFIFOEmpty() )
+	{
+		Read_SSP0(&readValue1); // Read MSB
+		Read_SSP0(&readValue2); // Read LSB
+		Read_SSP0(&readValue3); // Read MSB
+		Read_SSP0(&readValue4); // Read LSB
 
-	//Multiply and accumilate FIR accumulator
-	the_decimated_sample.adc_reading += (adc_spi_sample * adc_fir_coefficients[irqCounter]);
-	the_decimated_sample.gyro_reading += (gyro_spi_sample * gyro_fir_coefficients[irqCounter]);
+		u16RawGyroADC = (readValue1<<8); // Save highest 8 bits
+		u16RawGyroADC |= readValue2; // Save lowest 8 bits
+		u16RawAccelADC = (readValue3<<8); // Save highest 8 bits
+		u16RawAccelADC |= (readValue4); // Save lowest 8 bits
+	}
 
-	//Wait for conversion result, poll GPIO pin
+	//********************* Test **************************
+//	static unsigned int debugMSGCounter = 0;
+//	if (debugMSGCounter == 10000)
+//	{
+//		printf2("Gyro %d\r\n", u16RawGyroADC);
+//	}
+//	else if (debugMSGCounter >= (10000 * 2))
+//	{
+//		printf2("Accel %d\r\n\n", u16RawAccelADC);
+//		debugMSGCounter = 0;
+//	}
+//	debugMSGCounter++;
 
-	//Write 4 dummy bytes, triggering the data transfer from the sensor, leaving it in the FIFO for the next ISR fireing
+	//*****************************************************
 
+	clearFIFO_SSP0(); // TODO This function has no escape!!! (dangerous 'while' if PCLK is not running)
 
+	// Trigger conversion. CNV must be high during SPI transfer
+	// P0.16 pin SSP0: SSEL Wired to CNV on ADC
+	ADC_CNV_HIGH;
+
+	// Multiply and accumulate FIR accumulator
+	the_decimated_sample.adc_reading += (u16RawAccelADC * accel_fir_coefficients[irqCounter]);
+	the_decimated_sample.gyro_reading += (u16RawGyroADC * gyro_fir_coefficients[irqCounter]);
+
+	// Wait for conversion result, poll GPIO pin
+	vu32counter = 200;
+	while (vu32counter>0)
+	{
+		vu32counter--;
+		if( ADC_DATA_READY ) // If data ready pin P2.9
+		{// When reading is done, get out
+			vu32counter = 0;
+		}
+	}
+
+	// Write 4 dummy bytes, triggering the data transfer from the sensor,
+	// leaving it in the FIFO for the next ISR firing
+	if ( isSSP0TransmitFIFOEmpty() )
+	{
+		transmitSSP0_SPI_1byte(0x00); // Dummy write
+		transmitSSP0_SPI_1byte(0x00); // Dummy write
+		transmitSSP0_SPI_1byte(0x00); // Dummy write
+		transmitSSP0_SPI_1byte(0x00); // Dummy write
+	}
+	else
+	{
+		// TODO Somehow reset / recover. Clear buffer?
+	}
+
+	// Update interrupt counter
 	irqCounter++;
 
+	// Transfer data and wake task (release semaphore)
 	xHigherPriorityTaskWoken = pdFALSE;
-	if( irqCounter >= FIQ_INTERVAL_DIVISOR ) {
-		//Do somthing at 1000hz
+	if( irqCounter >= FIQ_INTERVAL_DIVISOR )
+	{
+		//Do something at 1000hz
 		irqCounter = 0;
 
 		if ( g_task_reading_flag ) {
@@ -70,8 +150,7 @@ void vRC(void) {
 
 		/* Unblock the task by releasing the semaphore. */
 		xSemaphoreGiveFromISR( xSemaphore, &xHigherPriorityTaskWoken );
-		//go_flag = 1;
-	}
+	} // End if( irqCounter >= FIQ_INTERVAL_DIVISOR )
 
 
 	//------------------------------------------
