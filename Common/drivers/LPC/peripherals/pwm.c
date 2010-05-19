@@ -36,7 +36,7 @@ void setupPWMPinSetup2378(const enum PWM_Channel chan)
 	}
 }
 
-void setupPWMChannelPerepheral(const enum PWM_Channel chan, const uint32_t dutyCycle)
+void setupPWMChannelPeripheral(const enum PWM_Channel chan, const uint32_t dutyCycle)
 {
 	setPWMDutyCycle(chan, dutyCycle);
 	
@@ -70,7 +70,7 @@ void setupPWMChannelPerepheral(const enum PWM_Channel chan, const uint32_t dutyC
  */
 void setupPWMChannel(const enum PWM_Channel chan, const uint32_t dutyCycle)
 {
-	setupPWMChannelPerepheral(chan, dutyCycle);
+	setupPWMChannelPeripheral(chan, dutyCycle);
 	setupPWMPinSetup2378(chan);
 }
 
