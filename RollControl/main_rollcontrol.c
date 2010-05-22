@@ -81,6 +81,7 @@
 #include "VelocityEstimator.h"
 #include "SensorCalibration0.h"
 #include "ServoDrive0.h"
+#include "ControlModel.h"
 
 #define ROLL_CONTROL_STACK_SIZE 1024
 
@@ -201,6 +202,7 @@ static void rollControlTask(void *pvParameters)
 	RollEstimator_initialize();
 	VelocityEstimator_initialize();
 	ServoDrive0_initialize();
+	ControlModel_initialize();
 
 	for (;;) {
 		/* We want this task to run every 10 ticks of a timer.  The semaphore
@@ -312,9 +314,30 @@ static void rollControlTask(void *pvParameters)
 			overridePositionBin11 = PathPlanning0_Y.s16FinOverridePositionBin11;
 
 
+			//******************** Control ********************
+			//************* Set Inputs for Model **************
+//			ControlModel_U.s16TargetPositionBin7
+//			ControlModel_U.s16PositionMetersBin2
+//			ControlModel_U.s16VelocityMPSBin6
+//			ControlModel_U.s16AccelerationMPSSBin7
+//			ControlModel_U.s16RollPositionRadsBin13 = RollEstimator_Y.s16RollPositionRadsBin13;
+			ControlModel_U.s16RollRateRadsPerSecBin11 = RollEstimator_Y.s16RollRateRadsPerSecBin11;
+			ControlModel_U.s16RollAcclRadsPerSecond2Bin5 = RollEstimator_Y.s16RollAcclRadsPerSecond2Bin5;
+			ControlModel_U.u8IsLaunchDetected = u8IsLaunchDetected;
+			ControlModel_U.s16TargetTestRateRPSBin11 = 0;//178;
+
+
+			//***************** Execute Model *****************
+			ControlModel_step();
+
+			//************ Get Outputs from Model *************
+			//ControlModel_Y.s16TotalFinTorqueCmdNMBin10;
+
+
 			//****************** Servo Drive ******************
 			//************* Set Inputs for Model **************
-			ServoDrive0_U.s16TotalFinTorqueCmdNMBin10 = 0; // TODO Tie to control output!!!
+//			ServoDrive0_U.s16TotalFinTorqueCmdNMBin10 = 0; // TODO Tie to control output!!!
+			ServoDrive0_U.s16TotalFinTorqueCmdNMBin10 = ControlModel_Y.s16TotalFinTorqueCmdNMBin10;
 			ServoDrive0_U.s16FinAngleCmdBin11 = PathPlanning0_Y.s16FinOverridePositionBin11;
 			ServoDrive0_U.u8FinAngleOverride = PathPlanning0_Y.u8ServoOverrideFlag;
 			ServoDrive0_U.u16MachBin15 = 0; // TODO Tie to Velocity Estimator!!!
@@ -336,12 +359,13 @@ static void rollControlTask(void *pvParameters)
 //				printf2("\f\rGyro Bin11 %d\r\n", SensorCalibration0_Y.s16GyroRPSSBin11);
 //				printf2("Accel Bin7 %d\r\n", SensorCalibration0_Y.s16AccelerometerMPSSBin7);
 
-//				printf2("\f\rGyro Posn Bin13 %d\r\n", RollEstimator_Y.s16RollPositionRadsBin13);
-//				printf2("Gyro Rate Bin11 %d\r\n", RollEstimator_Y.s16RollRateRadsPerSecBin11);
+				printf2("\f\rGyro Posn Bin13 %d\r\n", RollEstimator_Y.s16RollPositionRadsBin13); //u16RawGyroADC
+				printf2("Gyro Rate Bin11 %d\r\n", RollEstimator_Y.s16RollRateRadsPerSecBin11);
+				printf2("Cntrl Torque Bin10 %d\r\n", ControlModel_Y.s16TotalFinTorqueCmdNMBin10);
 
-				printf2("\f\rVert Posn Bin2 %d\r\n", VelocityEstimator_Y.s16PositionMetersBin2);
-				printf2("Vert Rate Bin6 %d\r\n", VelocityEstimator_Y.s16VelocityMPSBin6);
-				printf2("Vert Accel Bin7 %d\r\n", VelocityEstimator_Y.s16AccelerationMPSSBin7);
+//				printf2("\f\rVert Posn Bin2 %d\r\n", VelocityEstimator_Y.s16PositionMetersBin2);
+//				printf2("Vert Rate Bin6 %d\r\n", VelocityEstimator_Y.s16VelocityMPSBin6);
+//				printf2("Vert Accel Bin7 %d\r\n", VelocityEstimator_Y.s16AccelerationMPSSBin7);
 				if(u8IsLaunchDetected){
 					printf2("Launched");
 				} else{
