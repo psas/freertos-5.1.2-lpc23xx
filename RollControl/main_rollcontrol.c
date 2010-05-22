@@ -352,6 +352,10 @@ static void rollControlTask(void *pvParameters)
 
 
 
+
+
+			// ***************** Display test code *******************
+
 			static unsigned int debugMSGCounter = 0;
 			if (debugMSGCounter == 500)
 			{
@@ -378,8 +382,6 @@ static void rollControlTask(void *pvParameters)
 			debugMSGCounter++;
 
 
-
-			// ***************** Display test code *******************
 			/*static int16_t lastTargetPosition = INT16_MAX;
 			if (targetPositionBin7 != lastTargetPosition) {
 				printf2("Setting target position to %d\r\n",

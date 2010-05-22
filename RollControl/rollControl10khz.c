@@ -27,7 +27,7 @@ void Read_SSP0(unsigned char * readPtr)
 	*readPtr = (unsigned char) SSP0DR;
 }
 
-unsigned char isSSP0ReadFIFOEmpty(void)
+unsigned char isSSP0ReadFIFODataPresent(void)
 {
 	return (unsigned char) ((SSP0SR & (1<<2)) >> 2); // Check 2nd bit (read FIFO RNE)
 }
@@ -56,7 +56,7 @@ void vRC(void) {
 	ADC_CNV_LOW;
 
 	// Pull last cycle's data from the SPI FIFO
-	if( isSSP0ReadFIFOEmpty() )
+	if( isSSP0ReadFIFODataPresent() )
 	{
 		Read_SSP0(&readValue1); // Read MSB
 		Read_SSP0(&readValue2); // Read LSB
