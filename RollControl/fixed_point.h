@@ -8,7 +8,7 @@
 
 typedef int32_t fp_base_type_t;
 
-
+fp_base_type_t double_to_fp_base_type_t(const double v);
 fp_base_type_t fp_mult(const fp_base_type_t lhs, const fp_base_type_t rhs);
 
 struct fp_matrix_1x1_t {

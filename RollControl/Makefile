@@ -99,6 +99,8 @@ ARM_SOURCE= \
 		$(LPCUSB_COMMON_DIR)/usbstdreq.c
 		
 ARM_SOURCE_C99= \
+        fir_decimation.c \
+        fixed_point.c \
 		../Common/drivers/LPC/peripherals/ssp.c \
 		$(wildcard ./control_model_dir_symlink/*/*.c)
 
