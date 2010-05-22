@@ -19,6 +19,10 @@ struct fp_matrix_1x2_t {
 	fp_base_type_t  m[1][2];
 };
 
+struct fp_matrix_2x1_t {
+	fp_base_type_t  m[2][1];
+};
+
 struct fp_matrix_1x3_t {
 	fp_base_type_t  m[1][3];
 };
