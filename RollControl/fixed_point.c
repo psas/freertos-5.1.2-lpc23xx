@@ -166,58 +166,58 @@ struct fp_matrix_3x3_t  fp_matrix_mult_3x3_3x3(const struct fp_matrix_3x3_t lhs,
 
 
 
-int main(int argc, char *argv[]) {
-
-	fp_base_type_t t1 = double_to_fp_base_type_t(1.2);
-	printf("t1 = %d\n", t1);
-
-
-	struct fp_matrix_2x2_t lhs;
-	struct fp_matrix_2x2_t rhs;
-
-	int cnt = 1;
-	for(int i = 0; i < 2; i++ ) {
-			for(int j = 0; j < 2; j++ ) {
-				lhs.m[i][j] = double_to_fp_base_type_t(cnt);
-				rhs.m[i][j] = double_to_fp_base_type_t(cnt);
-				printf("lhs.m[%d][%d] = %d\n", i,j,lhs.m[i][j]);
-				printf("rhs.m[%d][%d] = %d\n", i,j,rhs.m[i][j]);
-				cnt++;
-			}
-	}
-
-	struct fp_matrix_2x2_t r = fp_matrix_mult_2x2_2x2(lhs, rhs);
-
-	for(int i = 0; i < 2; i++ ) {
-		for(int j = 0; j < 2; j++ ) {
-			printf("out.m[%d][%d] = %f, %d\n", i, j, fp_base_type_t_to_double(r.m[i][j]), r.m[i][j]);
-		}
-	}
-
-
-	printf("3x3 mult 3x3 test\n");
-	struct fp_matrix_3x3_t lhs3;
-	struct fp_matrix_3x3_t rhs3;
-
-	cnt = 1;
-	for(int i = 0; i < 3; i++ ) {
-			for(int j = 0; j < 3; j++ ) {
-				lhs3.m[i][j] = double_to_fp_base_type_t(cnt);
-				rhs3.m[i][j] = double_to_fp_base_type_t(cnt);
-				cnt++;
-			}
-	}
-
-	struct fp_matrix_3x3_t r3 = fp_matrix_mult_3x3_3x3(lhs3, rhs3);
-
-	for(int i = 0; i < 3; i++ ) {
-		for(int j = 0; j < 3; j++ ) {
-			printf("out.m[%d][%d] = %f, %d\n", i, j, fp_base_type_t_to_double(r3.m[i][j]), r3.m[i][j]);
-		}
-	}
-
-	return(0);
-}
+//int main(int argc, char *argv[]) {
+//
+//	fp_base_type_t t1 = double_to_fp_base_type_t(1.2);
+//	printf("t1 = %d\n", t1);
+//
+//
+//	struct fp_matrix_2x2_t lhs;
+//	struct fp_matrix_2x2_t rhs;
+//
+//	int cnt = 1;
+//	for(int i = 0; i < 2; i++ ) {
+//			for(int j = 0; j < 2; j++ ) {
+//				lhs.m[i][j] = double_to_fp_base_type_t(cnt);
+//				rhs.m[i][j] = double_to_fp_base_type_t(cnt);
+//				printf("lhs.m[%d][%d] = %d\n", i,j,lhs.m[i][j]);
+//				printf("rhs.m[%d][%d] = %d\n", i,j,rhs.m[i][j]);
+//				cnt++;
+//			}
+//	}
+//
+//	struct fp_matrix_2x2_t r = fp_matrix_mult_2x2_2x2(lhs, rhs);
+//
+//	for(int i = 0; i < 2; i++ ) {
+//		for(int j = 0; j < 2; j++ ) {
+//			printf("out.m[%d][%d] = %f, %d\n", i, j, fp_base_type_t_to_double(r.m[i][j]), r.m[i][j]);
+//		}
+//	}
+//
+//
+//	printf("3x3 mult 3x3 test\n");
+//	struct fp_matrix_3x3_t lhs3;
+//	struct fp_matrix_3x3_t rhs3;
+//
+//	cnt = 1;
+//	for(int i = 0; i < 3; i++ ) {
+//			for(int j = 0; j < 3; j++ ) {
+//				lhs3.m[i][j] = double_to_fp_base_type_t(cnt);
+//				rhs3.m[i][j] = double_to_fp_base_type_t(cnt);
+//				cnt++;
+//			}
+//	}
+//
+//	struct fp_matrix_3x3_t r3 = fp_matrix_mult_3x3_3x3(lhs3, rhs3);
+//
+//	for(int i = 0; i < 3; i++ ) {
+//		for(int j = 0; j < 3; j++ ) {
+//			printf("out.m[%d][%d] = %f, %d\n", i, j, fp_base_type_t_to_double(r3.m[i][j]), r3.m[i][j]);
+//		}
+//	}
+//
+//	return(0);
+//}
 
 
 

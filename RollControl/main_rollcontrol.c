@@ -77,7 +77,6 @@
 #include "rollcontrol.h"
 #include "fir_decimation.h"
 
-
 #include "PathPlanning0.h"
 #include "RollEstimator.h"
 #include "VelocityEstimator.h"
@@ -138,6 +137,21 @@
 
 #define PCLK    configCPU_CLOCK_HZ
 
+#define ROLL_SENSOR_BAUD_RATE_PRESCALER 2 // BRP set for sensors. Must be an EVEN number
+
+#define LONG_TIME 0xFFFF
+#define TICKS_TO_WAIT    10
+
+#define BIN14_SCALER_VALUE   16384
+
+volatile uint32_t g_most_recent_buffer = 0;
+volatile uint32_t g_task_reading_flag = 0;
+
+volatile struct data_sample g_sample_data_A = DATA_SAMPLE_INITIALIZER;
+volatile struct data_sample g_sample_data_B = DATA_SAMPLE_INITIALIZER;
+
+xSemaphoreHandle xSemaphore = NULL;
+
 uint32_t microsecondsToCPUTicks(const uint32_t microseconds)
 {
 	uint32_t ret = (configCPU_CLOCK_HZ / 1000000) * microseconds;
@@ -150,22 +164,6 @@ uint32_t millisecondsToCPUTicks(const uint32_t miliseconds)
 	return (ret);
 }
 
-#define ROLL_SENSOR_BAUD_RATE_PRESCALER 2 // BRP set for sensors. Must be an EVEN number
-
-volatile uint32_t g_most_recent_buffer = 0;
-volatile uint32_t g_task_reading_flag = 0;
-
-volatile struct data_sample g_sample_data_A = DATA_SAMPLE_INITIALIZER;
-volatile struct data_sample g_sample_data_B = DATA_SAMPLE_INITIALIZER;
-
-#define LONG_TIME 0xFFFF
-#define TICKS_TO_WAIT    10
-
-xSemaphoreHandle xSemaphore = NULL;
-
-#define BIN14_SCALER_VALUE   16384
-
-
 void setServoDutyCycle(const uint16_t u16ServoTimeMillisecondsBin14)
 {
 	//The passed in value is 2^14 times larger then need be
@@ -176,20 +174,12 @@ void setServoDutyCycle(const uint16_t u16ServoTimeMillisecondsBin14)
 	setPWMDutyCycle(PWM1_1, duty_cycle_in_ticks);
 }
 
-//static void testSSP0(void)
-//{
-//	uint16_t data = 0x5A;
-//
-//	transmitSSP0_SPI_1byte(data);
-//}
 
 extern uint16_t u16RawAccelADC;
 extern uint16_t u16RawGyroADC;
 
 static void rollControlTask(void *pvParameters)
 {
-	const int debugLedCounterThreshold = 1000;
-
 	int x = 0;
 	signed portCHAR theChar;
 	signed portBASE_TYPE status;
@@ -197,6 +187,8 @@ static void rollControlTask(void *pvParameters)
 	const uint16_t taskTimeMs = 1; // Task runs every millisecond
 	int32_t targetPositionBin7 = 0;
 	int32_t overridePositionBin11 = 0;
+	static uint32_t debugLEDCounter1 = 0;
+	struct data_sample most_recent_sample;
 
 	// Initialize all control models
 	PathPlanning0_initialize();
@@ -212,36 +204,21 @@ static void rollControlTask(void *pvParameters)
 
 		 Block waiting for the semaphore to become available. */
 
-		if (xSemaphoreTake( xSemaphore, LONG_TIME ) == pdTRUE) {
+		if (xSemaphoreTake( xSemaphore, LONG_TIME ) == pdTRUE)
+		{
 			FIO1SET = (1 << 29);//turn on debug GPIO line
 
-/*
-			FIO0SET = (1<<13);//turn on led on olimex 2378 dev board
-			FIO0CLR = (1<<13);//turn on led on olimex 2378 dev board
-*/
-
-			static uint32_t debugLEDCounter = 0;
-
-
-			//if (debugLEDCounter % 100 == 0) {
-				//testSSP0();
-			//}
-
-			//------------------------------------------
-
 			//Debug LED
-			debugLEDCounter++;
+			debugLEDCounter1++;
 
-			if (debugLEDCounter == debugLedCounterThreshold) {
+			if (debugLEDCounter1 == 500) {
 				FIO0SET = (1 << 13); // Turn on led on olimex 2378 dev board
-			} else if (debugLEDCounter >= (debugLedCounterThreshold * 2)) {
+			} else if (debugLEDCounter1 >= (500 * 2)) {
 				FIO0CLR = (1 << 13); // Turn off led on olimex 2378 Sdev board
-				debugLEDCounter = 0;
+				debugLEDCounter1 = 0;
 			}
 
-			//------------------------------------------
-			struct data_sample most_recent_sample;
-
+			// Transfer data from the high speed FIQ
 			g_task_reading_flag = 1;
 			if (g_most_recent_buffer == A_BUFFER) {
 				most_recent_sample = g_sample_data_A;
@@ -262,7 +239,9 @@ static void rollControlTask(void *pvParameters)
 			//************** Sensor Calibration ***************
 			//************* Set Inputs for Model **************
 			SensorCalibration0_U.u16RawAccelerometerADC = u16RawAccelADC;
-			SensorCalibration0_U.u16RawRateGyroADC = u16RawGyroADC;
+//			SensorCalibration0_U.u16RawAccelerometerADC = (uint16_t) most_recent_sample.adc_reading;
+//			SensorCalibration0_U.u16RawRateGyroADC = u16RawGyroADC;
+			SensorCalibration0_U.u16RawRateGyroADC = (uint16_t) most_recent_sample.gyro_reading;
 			SensorCalibration0_U.u8IsLaunchDetected = u8IsLaunchDetected;
 
 			//***************** Execute Model *****************
@@ -318,11 +297,11 @@ static void rollControlTask(void *pvParameters)
 
 			//******************** Control ********************
 			//************* Set Inputs for Model **************
-//			ControlModel_U.s16TargetPositionBin7
+			ControlModel_U.s16TargetPositionDegBin7 = PathPlanning0_Y.s16TargetPositionBin7;
 //			ControlModel_U.s16PositionMetersBin2
 //			ControlModel_U.s16VelocityMPSBin6
 //			ControlModel_U.s16AccelerationMPSSBin7
-//			ControlModel_U.s16RollPositionRadsBin13 = RollEstimator_Y.s16RollPositionRadsBin13;
+			ControlModel_U.s16RollPositionRadsBin13 = RollEstimator_Y.s16RollPositionRadsBin13;
 			ControlModel_U.s16RollRateRadsPerSecBin11 = RollEstimator_Y.s16RollRateRadsPerSecBin11;
 			ControlModel_U.s16RollAcclRadsPerSecond2Bin5 = RollEstimator_Y.s16RollAcclRadsPerSecond2Bin5;
 			ControlModel_U.u8IsLaunchDetected = u8IsLaunchDetected;
@@ -356,7 +335,7 @@ static void rollControlTask(void *pvParameters)
 
 			// ***************** Display test code *******************
 
-			static unsigned int debugMSGCounter = 0;
+/*			static unsigned int debugMSGCounter = 0;
 			if (debugMSGCounter == 500)
 			{
 //				printf2("\f\rGyro %d\r\n", u16RawGyroADC);
@@ -365,9 +344,11 @@ static void rollControlTask(void *pvParameters)
 //				printf2("\f\rGyro Bin11 %d\r\n", SensorCalibration0_Y.s16GyroRPSSBin11);
 //				printf2("Accel Bin7 %d\r\n", SensorCalibration0_Y.s16AccelerometerMPSSBin7);
 
-				printf2("\f\rGyro Posn Bin13 %d\r\n", RollEstimator_Y.s16RollPositionRadsBin13); //u16RawGyroADC
+				printf2("\f\rGyro Posn Bin13 %d\r\n", RollEstimator_Y.s16RollPositionRadsBin13);
+				printf2("Posn Trgt Bin7 %d\r\n", (PathPlanning0_Y.s16TargetPositionBin7<<6)/57);
 				printf2("Gyro Rate Bin11 %d\r\n", RollEstimator_Y.s16RollRateRadsPerSecBin11);
 				printf2("Cntrl Torque Bin10 %d\r\n", ControlModel_Y.s16TotalFinTorqueCmdNMBin10);
+//				printf2("\f\rDecimated Gyro %d\r\n", most_recent_sample.gyro_reading);
 
 //				printf2("\f\rVert Posn Bin2 %d\r\n", VelocityEstimator_Y.s16PositionMetersBin2);
 //				printf2("Vert Rate Bin6 %d\r\n", VelocityEstimator_Y.s16VelocityMPSBin6);
@@ -379,7 +360,7 @@ static void rollControlTask(void *pvParameters)
 				}
 				debugMSGCounter = 0;
 			}
-			debugMSGCounter++;
+			debugMSGCounter++;*/
 
 
 			/*static int16_t lastTargetPosition = INT16_MAX;
@@ -417,7 +398,7 @@ static void rollControlTask(void *pvParameters)
 
 			FIO1CLR = (1 << 29);//turn off debug GPIO line
 
-		}
+		} // End if (xSemaphoreTake( xSemaphore, LONG_TIME ) == pdTRUE)
 
 		/*
 		 //vSerialPutString(0, "Testing...\r\n", 50);
@@ -665,8 +646,6 @@ int main(void)
 	initSSP0(SSP_EIGHT_BITS, SSP_SPI_FORMAT, false, false, false,
 			ssp0ClocksPerBit, ROLL_SENSOR_BAUD_RATE_PRESCALER, SSP_MASTER,
 			false);
-
-	//testSSP0();
 
 	xSerialPortInitMinimal(0, 115200, 250);
 	vSerialPutString(0, "Starting up LPC23xx with FreeRTOS\n", 50);

@@ -1,6 +1,14 @@
+
+
+
 #include "rollControl10khz.h"
 
+#define FIQ_INTERVAL_DIVISOR   10
+#define FIRTAPS   17
 
+#define ADC_CNV_HIGH		FIO0SET = (1 << 16)		// P0.16 UExt pin10, ADC pin8
+#define ADC_CNV_LOW			FIO0CLR = (1 << 16)		// P0.16 UExt pin10, ADC pin8
+#define ADC_DATA_READY		(FIO2PIN & (1 << 9))	// P2.9  ?Ext pin??, sensor SDO pin, input
 
 extern volatile uint32_t g_most_recent_buffer;
 extern volatile uint32_t g_task_reading_flag;
@@ -8,18 +16,37 @@ extern volatile uint32_t g_task_reading_flag;
 extern volatile struct data_sample g_sample_data_A;
 extern volatile struct data_sample g_sample_data_B;
 
-
 extern xSemaphoreHandle xSemaphore;
 
-#define FIQ_INTERVAL_DIVISOR   10
+//const uint32_t au32b[FIRTAPS] = { 0.0074662*(65535), 0.0109120*(65535), 0.0206629*(65535), 0.0354434*(65535), 0.0530993*(65535),
+//		0.0709415*(65535), 0.0861884*(65535), 0.0964305*(65535), 0.1000366*(65535), 0.0964305*(65535), 0.0861884*(65535),
+//		0.0709415*(65535), 0.0530993*(65535), 0.0354434*(65535), 0.0206629*(65535), 0.0109120*(65535), 0.0074662*(65535)
+//};
 
-uint32_t accel_fir_coefficients[FIQ_INTERVAL_DIVISOR];
-uint32_t gyro_fir_coefficients[FIQ_INTERVAL_DIVISOR];
+const uint32_t au32b[FIRTAPS] = {
+0.00865822050850897 * 65535,
+0.012654161713971 * 65535,
+0.0239618473313426 * 65535,
+0.0411021366654104 * 65535,
+0.0615768996608007 * 65535,
+0.0822677064911721 * 65535,
+0.0999488591888209 * 65535,
+0.111826167628214 * 65535,
+0.116008001623518 * 65535,
+0.111826167628214 * 65535,
+0.0999488591888209 * 65535,
+0.0822677064911721 * 65535,
+0.0615768996608007 * 65535,
+0.0411021366654104 * 65535,
+0.0239618473313426 * 65535,
+0.012654161713971 * 65535,
+0.00865822050850897 * 65535};
 
 
-#define ADC_CNV_HIGH		FIO0SET = (1 << 16)		// P0.16 UExt pin10, ADC pin8
-#define ADC_CNV_LOW			FIO0CLR = (1 << 16)		// P0.16 UExt pin10, ADC pin8
-#define ADC_DATA_READY		(FIO2PIN & (1 << 9))	// P2.9  ?Ext pin??, sensor SDO pin, input
+uint32_t au32Regs[FIRTAPS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+uint16_t u16RawAccelADC = 0;
+uint16_t u16RawGyroADC = 0;
 
 void Read_SSP0(unsigned char * readPtr)
 {
@@ -32,24 +59,26 @@ unsigned char isSSP0ReadFIFODataPresent(void)
 	return (unsigned char) ((SSP0SR & (1<<2)) >> 2); // Check 2nd bit (read FIFO RNE)
 }
 
-uint16_t u16RawAccelADC = 0;
-uint16_t u16RawGyroADC = 0;
 
+/******************************************************************************
+* Function name:		vRC
+*
+* Descriptions:		Handle ADC and decimation from interrupt.
+******************************************************************************/
 void vRC(void) {
 	FIO0SET = (1<<6);
 
-	static struct data_sample the_decimated_sample = DATA_SAMPLE_INITIALIZER;
 	static uint32_t irqCounter = 0;
 	static signed portBASE_TYPE xHigherPriorityTaskWoken;
 	volatile uint32_t vu32counter = 0;
+	uint16_t i = 0;
 //	static uint16_t u16RawAccelADC = 0;
 //	static uint16_t u16RawGyroADC = 0;
+	uint64_t u64MacResult = 0;
 	uint8_t readValue1;
 	uint8_t readValue2;
 	uint8_t readValue3;
 	uint8_t readValue4;
-
-	// Run at 10khz
 
 	// End previous conversion
 	// P0.16 pin SSP0: SSEL Wired to CNV on ADC
@@ -63,10 +92,10 @@ void vRC(void) {
 		Read_SSP0(&readValue3); // Read MSB
 		Read_SSP0(&readValue4); // Read LSB
 
-		u16RawGyroADC = (readValue1<<8); // Save highest 8 bits
-		u16RawGyroADC |= readValue2; // Save lowest 8 bits
-		u16RawAccelADC = (readValue3<<8); // Save highest 8 bits
-		u16RawAccelADC |= (readValue4); // Save lowest 8 bits
+		u16RawGyroADC = (readValue1<<8); // Save highest 8 Gyro bits
+		u16RawGyroADC |= readValue2; // Save lowest 8 Gyro bits
+		u16RawAccelADC = (readValue3<<8); // Save highest 8 Accel bits
+		u16RawAccelADC |= (readValue4); // Save lowest 8 Accel bits
 	}
 
 	//********************* Test **************************
@@ -90,10 +119,6 @@ void vRC(void) {
 	// P0.16 pin SSP0: SSEL Wired to CNV on ADC
 	ADC_CNV_HIGH;
 
-	// Multiply and accumulate FIR accumulator
-	the_decimated_sample.adc_reading += (u16RawAccelADC * accel_fir_coefficients[irqCounter]);
-	the_decimated_sample.gyro_reading += (u16RawGyroADC * gyro_fir_coefficients[irqCounter]);
-
 	// Wait for conversion result, poll GPIO pin
 	vu32counter = 200;
 	while (vu32counter>0)
@@ -105,8 +130,8 @@ void vRC(void) {
 		}
 	}
 
-	// Write 4 dummy bytes, triggering the data transfer from the sensor,
-	// leaving it in the FIFO for the next ISR firing
+	// Write 4 dummy bytes, triggering the data transfer from the sensors,
+	// leaving the data in the FIFO for the next ISR firing
 	if ( isSSP0TransmitFIFOEmpty() )
 	{
 		transmitSSP0_SPI_1byte(0x00); // Dummy write
@@ -119,39 +144,52 @@ void vRC(void) {
 		// TODO Somehow reset / recover. Clear buffer?
 	}
 
+	// Insert the new sample into the register array
+	au32Regs[irqCounter] = u16RawGyroADC;
+
 	// Update interrupt counter
 	irqCounter++;
 
-	// Transfer data and wake task (release semaphore)
+	// Run FIR, transfer data and wake task (release semaphore)
 	xHigherPriorityTaskWoken = pdFALSE;
+
 	if( irqCounter >= FIQ_INTERVAL_DIVISOR )
 	{
-		//Do something at 1000hz
+		u64MacResult = 0;
+
+		// Calculate the output sample at 1000hz
+		// Multiply and accumulate FIR accumulator
+		for ( i = 0; i < FIRTAPS; ++i ) {
+			u64MacResult += au32b[i] * au32Regs[i];
+		}
+
+		// Move the old samples up for the next MAC cycle
+		for ( i = FIQ_INTERVAL_DIVISOR; i < FIRTAPS; ++i ) {
+			au32Regs[i] = au32Regs[i - FIQ_INTERVAL_DIVISOR];
+		}
+
 		irqCounter = 0;
 
+		// Store the result to a protected ping-pong buffer
 		if ( g_task_reading_flag ) {
 			if( g_most_recent_buffer == B_BUFFER ) {
-				g_sample_data_A = the_decimated_sample;
+				g_sample_data_A.gyro_reading = u64MacResult >> 16;
 			} else {
-				g_sample_data_B = the_decimated_sample;
+				g_sample_data_B.gyro_reading = u64MacResult >> 16;
 			}
 
 			g_most_recent_buffer = !g_most_recent_buffer;
 		} else {
 			if( g_most_recent_buffer == A_BUFFER ) {
-				g_sample_data_A = the_decimated_sample;
+				g_sample_data_A.gyro_reading = u64MacResult >> 16;
 			} else {
-				g_sample_data_B = the_decimated_sample;
+				g_sample_data_B.gyro_reading = u64MacResult >> 16;
 			}
 		}
-
-		//Reset the accumulators
-		the_decimated_sample = DATA_SAMPLE_INITIALIZER;
 
 		/* Unblock the task by releasing the semaphore. */
 		xSemaphoreGiveFromISR( xSemaphore, &xHigherPriorityTaskWoken );
 	} // End if( irqCounter >= FIQ_INTERVAL_DIVISOR )
-
 
 	//------------------------------------------
 	//Debug LED
@@ -166,9 +204,6 @@ void vRC(void) {
 	}
 	//------------------------------------------
 
-
-
-
 	/* If xHigherPriorityTaskWoken was set to true you
 	we should yield.  The actual macro used here is
 	port specific. */
@@ -180,11 +215,6 @@ void vRC(void) {
 	FIO0CLR = (1<<6);
 	// Ready for the next interrupt.
 }
-
-
-
-
-
 
 
 
