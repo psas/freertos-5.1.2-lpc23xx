@@ -114,10 +114,16 @@
 //#define mainPLL_DIV			( ( unsigned portLONG ) 0x0000 )
 //#define mainCPU_CLK_DIV		( ( unsigned portLONG ) 0x0003 )
 
-//Get 48mhz for 
+//Set PLL to 288 MHz, CPU to 48 MHz
+//#define mainPLL_MUL			( ( unsigned portLONG ) ( 11 ) )
+//#define mainPLL_DIV			( ( unsigned portLONG ) 0x0000 )
+//#define mainCPU_CLK_DIV		( ( unsigned portLONG ) 0x0005 )
+
+//Set PLL to 288 MHz, CPU to 72 MHz, USB to 48 MHz
 #define mainPLL_MUL			( ( unsigned portLONG ) ( 11 ) )
 #define mainPLL_DIV			( ( unsigned portLONG ) 0x0000 )
-#define mainCPU_CLK_DIV		( ( unsigned portLONG ) 0x0005 )
+#define mainCPU_CLK_DIV		( ( unsigned portLONG ) 0x0003 )
+#define mainUSB_CLK_DIV		( ( unsigned portLONG ) 0x0005 )	// usbclk = 288 MHz/(5+1) = 48 MHz
 
 //#define PCLK ((12 * (mainPLL_MUL+1) * 2) / (mainPLL_DIV + 1)) / mainCPU_CLK_DIV
 
@@ -133,7 +139,7 @@
 
 /* Constants to setup the MAM. */
 #define mainMAM_TIM_3		( ( unsigned portCHAR ) 0x03 )
-#define mainMAM_MODE_FULL	( ( unsigned portCHAR ) 0x02 )
+#define mainMAM_MODE_FULL	( ( unsigned portCHAR ) 0x02 ) // Warning! Early silicon can't handle high speed
 
 #define PCLK    configCPU_CLOCK_HZ
 
@@ -206,7 +212,7 @@ static void rollControlTask(void *pvParameters)
 
 		if (xSemaphoreTake( xSemaphore, LONG_TIME ) == pdTRUE)
 		{
-			FIO1SET = (1 << 29);//turn on debug GPIO line
+			FIO4SET = (1 << 30); // turn on debug GPIO line
 
 			//Debug LED
 			debugLEDCounter1++;
@@ -250,7 +256,6 @@ static void rollControlTask(void *pvParameters)
 			//************ Get Outputs from Model *************
 //			SensorCalibration0_Y.s16AccelerometerMPSSBin7;
 //			SensorCalibration0_Y.s16GyroRPSBin11;
-
 
 			//************* Roll State Estimator **************
 			//************* Set Inputs for Model **************
@@ -331,11 +336,9 @@ static void rollControlTask(void *pvParameters)
 
 
 
-
-
 			// ***************** Display test code *******************
 
-/*			static unsigned int debugMSGCounter = 0;
+			static unsigned int debugMSGCounter = 0;
 			if (debugMSGCounter == 500)
 			{
 //				printf2("\f\rGyro %d\r\n", u16RawGyroADC);
@@ -344,7 +347,8 @@ static void rollControlTask(void *pvParameters)
 //				printf2("\f\rGyro Bin11 %d\r\n", SensorCalibration0_Y.s16GyroRPSSBin11);
 //				printf2("Accel Bin7 %d\r\n", SensorCalibration0_Y.s16AccelerometerMPSSBin7);
 
-				printf2("\f\rGyro Posn Bin13 %d\r\n", RollEstimator_Y.s16RollPositionRadsBin13);
+				printf2("\f\rMission time %d\r\n\n", PathPlanning0_Y.s32MissionTimeMSec);
+				printf2("Gyro Posn Bin13 %d\r\n", RollEstimator_Y.s16RollPositionRadsBin13);
 				printf2("Posn Trgt Bin7 %d\r\n", (PathPlanning0_Y.s16TargetPositionBin7<<6)/57);
 				printf2("Gyro Rate Bin11 %d\r\n", RollEstimator_Y.s16RollRateRadsPerSecBin11);
 				printf2("Cntrl Torque Bin10 %d\r\n", ControlModel_Y.s16TotalFinTorqueCmdNMBin10);
@@ -360,7 +364,7 @@ static void rollControlTask(void *pvParameters)
 				}
 				debugMSGCounter = 0;
 			}
-			debugMSGCounter++;*/
+			debugMSGCounter++;
 
 
 			/*static int16_t lastTargetPosition = INT16_MAX;
@@ -395,8 +399,7 @@ static void rollControlTask(void *pvParameters)
 			 again.  Note when using the semaphore for synchronisation with an
 			 ISR in this manner there is no need to 'give' the semaphore back. */
 
-
-			FIO1CLR = (1 << 29);//turn off debug GPIO line
+			FIO4CLR = (1 << 30);//turn off debug GPIO line
 
 		} // End if (xSemaphoreTake( xSemaphore, LONG_TIME ) == pdTRUE)
 
@@ -465,8 +468,10 @@ static void prvSetupHardware(void)
 	PLLFEED = mainPLL_FEED_BYTE1;
 	PLLFEED = mainPLL_FEED_BYTE2;
 	CCLKCFG = mainCPU_CLK_DIV;
-	while (!(PLLSTAT & mainPLL_LOCK))
-		;
+	while (!(PLLSTAT & mainPLL_LOCK));
+
+	/* Set USB clock */
+	USBCLKCFG = mainUSB_CLK_DIV;
 
 	/* Connecting the clock. */
 	PLLCON = mainPLL_CONNECT;
@@ -482,11 +487,11 @@ static void prvSetupHardware(void)
 
 	 Setup and turn on the MAM.  Three cycle access is used due to the fast
 	 PLL used.  It is possible faster overall performance could be obtained by
-	 tuning the MAM and PLL settings.
+	 tuning the MAM and PLL settings.*/
 	 MAMCR = 0;
 	 MAMTIM = mainMAM_TIM_3;
 	 MAMCR = mainMAM_MODE_FULL;
-	 */
+
 } // End static void prvSetupHardware(void)
 
 void enableSerial0(void)
@@ -510,6 +515,9 @@ void setPinsForApplication(void)
 //	FIO0DIR |= (1 << 13);//Set USBLINK led to output gpio on 2378 dev board
 //	FIO1DIR |= (1 << 19);
 //	FIO1DIR |= (1 << 29);//Debug IO line for o-scope verification, EXT2-11 on the olimex 2378 dev board
+
+	FIO4DIR |= (1 << 30);//Debug IO line for o-scope verification, EXT1-4 on the olimex 2378 dev board
+	FIO4DIR |= (1 << 31);//Debug IO line for o-scope verification, EXT1-3 on the olimex 2378 dev board
 
 	FIO1SET = (1 << 19);		// Turn off STAT LED
     FIO1DIR |= (1 << 19);		// Set STAT LED pin as an output
