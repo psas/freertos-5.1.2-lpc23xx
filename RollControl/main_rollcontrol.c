@@ -233,13 +233,12 @@ static void rollControlTask(void *pvParameters)
 			}
 			g_task_reading_flag = 0;
 
-			// TODO Move and change logic??
 			// Read Button1, pin P0.30
 			uint8_t u8IsLaunchDetected = 0;
 			if((FIO0PIN & (1 << 30)) > 0){
-				u8IsLaunchDetected = 0; // P0.30 HIGH, so not pressed / 'Is Launched'
+				u8IsLaunchDetected = 1; // P0.30 HIGH, so not pressed / 'Is Launched'
 			} else{
-				u8IsLaunchDetected = 1; // P0.30 LOW, so pressed / 'NOT Is Launched'
+				u8IsLaunchDetected = 0; // P0.30 LOW, so pressed / 'NOT Is Launched'
 			}
 
 			//************** Sensor Calibration ***************
