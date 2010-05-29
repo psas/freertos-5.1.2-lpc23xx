@@ -35,6 +35,7 @@ DEMO_INCLUDE_DIR=../Common/include
 LPCUSB_COMMON_DIR=../Common/drivers/LPC/usb
 
 CC=arm-elf-gcc
+CD=arm-elf-objdump
 OBJCOPY=arm-elf-objcopy
 LDSCRIPT=lpc2368.ld
 
@@ -121,7 +122,9 @@ $(PROJECT_NAME).hex : $(PROJECT_NAME).elf
 	$(OBJCOPY) $(PROJECT_NAME).elf -O ihex $(PROJECT_NAME).hex
 
 $(PROJECT_NAME).elf : $(THUMB_OBJS) $(ARM_OBJS) $(ARM_OBJS_C99) boot.s Makefile
-	$(CC) $(CFLAGS) $(ARM_OBJS) $(ARM_OBJS_C99) $(THUMB_OBJS) $(LIBS) boot.s $(LINKER_FLAGS) 
+	$(CC) $(CFLAGS) $(ARM_OBJS) $(ARM_OBJS_C99) $(THUMB_OBJS) $(LIBS) boot.s $(LINKER_FLAGS)
+	$(CD) -l -S $(PROJECT_NAME).elf > $(PROJECT_NAME).elf.asm
+	
 
 $(THUMB_OBJS) : %.o : %.c Makefile FreeRTOSConfig.h
 	$(CC) -c $(CFLAGS) -mthumb $< -o $@

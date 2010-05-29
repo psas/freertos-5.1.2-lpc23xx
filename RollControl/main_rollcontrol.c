@@ -77,12 +77,12 @@
 #include "rollcontrol.h"
 #include "fir_decimation.h"
 
-#include "PathPlanning0.h"
-#include "RollEstimator.h"
-#include "VelocityEstimator.h"
-#include "SensorCalibration0.h"
-#include "ServoDrive0.h"
-#include "ControlModel.h"
+#include "PathPlanning.h"
+#include "RollStateEstimator.h"
+#include "VelocityStateEstimator.h"
+#include "SensorCalibration.h"
+#include "ServoDrive.h"
+#include "Control.h"
 
 #define ROLL_CONTROL_STACK_SIZE 1024
 
@@ -197,12 +197,12 @@ static void rollControlTask(void *pvParameters)
 	struct data_sample most_recent_sample;
 
 	// Initialize all control models
-	PathPlanning0_initialize();
-	SensorCalibration0_initialize();
-	RollEstimator_initialize();
-	VelocityEstimator_initialize();
-	ServoDrive0_initialize();
-	ControlModel_initialize();
+	PathPlanning_initialize();
+	SensorCalibration_initialize();
+	RollStateEstimator_initialize();
+	VelocityStateEstimator_initialize();
+	ServoDrive_initialize();
+	Control_initialize();
 
 	for (;;) {
 		/* We want this task to run every 10 ticks of a timer.  The semaphore
@@ -243,95 +243,95 @@ static void rollControlTask(void *pvParameters)
 
 			//************** Sensor Calibration ***************
 			//************* Set Inputs for Model **************
-			SensorCalibration0_U.u16RawAccelerometerADC = u16RawAccelADC;
-//			SensorCalibration0_U.u16RawAccelerometerADC = (uint16_t) most_recent_sample.adc_reading;
-//			SensorCalibration0_U.u16RawRateGyroADC = u16RawGyroADC;
-			SensorCalibration0_U.u16RawRateGyroADC = (uint16_t) most_recent_sample.gyro_reading;
-			SensorCalibration0_U.u8IsLaunchDetected = u8IsLaunchDetected;
+			SensorCalibration_U.u16RawAccelerometerADC = u16RawAccelADC;
+//			SensorCalibration_U.u16RawAccelerometerADC = (uint16_t) most_recent_sample.adc_reading;
+//			SensorCalibration_U.u16RawRateGyroADC = u16RawGyroADC;
+			SensorCalibration_U.u16RawRateGyroADC = (uint16_t) most_recent_sample.gyro_reading;
+			SensorCalibration_U.u8IsLaunchDetected = u8IsLaunchDetected;
 
 			//***************** Execute Model *****************
-			SensorCalibration0_step();
+			SensorCalibration_step(0);
 
 			//************ Get Outputs from Model *************
-//			SensorCalibration0_Y.s16AccelerometerMPSSBin7;
-//			SensorCalibration0_Y.s16GyroRPSBin11;
+//			SensorCalibration_Y.s16AccelerometerMPSSBin7;
+//			SensorCalibration_Y.s16GyroRPSBin11;
 
 			//************* Roll State Estimator **************
 			//************* Set Inputs for Model **************
-			RollEstimator_U.s16RollRateRadPerSecondBin11 = SensorCalibration0_Y.s16GyroRPSBin11;
-			RollEstimator_U.u8IsLaunchDetected = u8IsLaunchDetected;
+			RollStateEstimator_U.s16RollRateRadPerSecondBin11 = SensorCalibration_Y.s16GyroRPSBin11;
+			RollStateEstimator_U.u8IsLaunchDetected = u8IsLaunchDetected;
 
 			//***************** Execute Model *****************
-			RollEstimator_step();
+			RollStateEstimator_step();
 
 			//************ Get Outputs from Model *************
-//			RollEstimator_Y.s16RollPositionRadsBin13;
-//			RollEstimator_Y.s16RollRateRadsPerSecBin11;
-//			RollEstimator_Y.s16RollAcclRadsPerSecond2Bin5;
+//			RollStateEstimator_Y.s16RollPositionRadsBin13;
+//			RollStateEstimator_Y.s16RollRateRadsPerSecBin11;
+//			RollStateEstimator_Y.s16RollAcclRadsPerSecond2Bin5;
 
 
 			//*********** Velocity State Estimator ************
 			//************* Set Inputs for Model **************
-			VelocityEstimator_U.s16AccelerometerMPSSBin7 = SensorCalibration0_Y.s16AccelerometerMPSSBin7;
-			VelocityEstimator_U.u8IsLaunchDetected = u8IsLaunchDetected;
+			VelocityStateEstimator_U.s16AccelerometerMPSSBin7 = SensorCalibration_Y.s16AccelerometerMPSSBin7;
+			VelocityStateEstimator_U.u8IsLaunchDetected = u8IsLaunchDetected;
 
 			//***************** Execute Model *****************
-			VelocityEstimator_step();
+			VelocityStateEstimator_step();
 
 			//************ Get Outputs from Model *************
-//			VelocityEstimator_Y.s16PositionMetersBin2;
-//			VelocityEstimator_Y.s16VelocityMPSBin6;
-//			VelocityEstimator_Y.s16AccelerationMPSSBin7;
+//			VelocityStateEstimator_Y.s16PositionMetersBin2;
+//			VelocityStateEstimator_Y.s16VelocityMPSBin6;
+//			VelocityStateEstimator_Y.s16AccelerationMPSSBin7;
 
 
 			//***************** Path Planning *****************
 			//************* Set Inputs for Model **************
-			PathPlanning0_U.u8IsLaunchDetected = u8IsLaunchDetected;
-			PathPlanning0_U.u16LoopTimeMs = taskTimeMs;
+			PathPlanning_U.u8IsLaunchDetected = u8IsLaunchDetected;
+			PathPlanning_U.u16LoopTimeMs = taskTimeMs;
 
 			//***************** Execute Model *****************
-			PathPlanning0_step();
+			PathPlanning_step();
 
 			//************ Get Outputs from Model *************
-			targetPositionBin7 = PathPlanning0_Y.s16TargetPositionBin7;
-//			PathPlanning0_Y.s32MissionTimeMSec;
-//			PathPlanning0_Y.u8ServoOverrideFlag;
-			overridePositionBin11 = PathPlanning0_Y.s16FinOverridePositionBin11;
+			targetPositionBin7 = PathPlanning_Y.s16TargetPositionBin7;
+//			PathPlanning_Y.s32MissionTimeMSec;
+//			PathPlanning_Y.u8ServoOverrideFlag;
+			overridePositionBin11 = PathPlanning_Y.s16FinOverridePositionBin11;
 
 
 			//******************** Control ********************
 			//************* Set Inputs for Model **************
-			ControlModel_U.s16TargetPositionDegBin7 = PathPlanning0_Y.s16TargetPositionBin7;
-//			ControlModel_U.s16PositionMetersBin2
-//			ControlModel_U.s16VelocityMPSBin6
-//			ControlModel_U.s16AccelerationMPSSBin7
-			ControlModel_U.s16RollPositionRadsBin13 = RollEstimator_Y.s16RollPositionRadsBin13;
-			ControlModel_U.s16RollRateRadsPerSecBin11 = RollEstimator_Y.s16RollRateRadsPerSecBin11;
-			ControlModel_U.s16RollAcclRadsPerSecond2Bin5 = RollEstimator_Y.s16RollAcclRadsPerSecond2Bin5;
-			ControlModel_U.u8IsLaunchDetected = u8IsLaunchDetected;
-			ControlModel_U.s16TargetTestRateRPSBin11 = 0;//178;
+			Control_U.s16TargetPositionDegBin7 = PathPlanning_Y.s16TargetPositionBin7;
+//			Control_U.s16PositionMetersBin2
+//			Control_U.s16VelocityMPSBin6
+//			Control_U.s16AccelerationMPSSBin7
+			Control_U.s16RollPositionRadsBin13 = RollStateEstimator_Y.s16RollPositionRadsBin13;
+			Control_U.s16RollRateRadsPerSecBin11 = RollStateEstimator_Y.s16RollRateRadsPerSecBin11;
+			Control_U.s16RollAcclRadsPerSecond2Bin5 = RollStateEstimator_Y.s16RollAcclRadsPerSecond2Bin5;
+			Control_U.u8IsLaunchDetected = u8IsLaunchDetected;
+			Control_U.s16TargetTestRateRPSBin11 = 0;//178;
 
 
 			//***************** Execute Model *****************
-			ControlModel_step();
+			Control_step();
 
 			//************ Get Outputs from Model *************
-			//ControlModel_Y.s16TotalFinTorqueCmdNMBin10;
+			//Control_Y.s16TotalFinTorqueCmdNMBin10;
 
 
 			//****************** Servo Drive ******************
 			//************* Set Inputs for Model **************
-//			ServoDrive0_U.s16TotalFinTorqueCmdNMBin10 = 0; // TODO Tie to control output!!!
-			ServoDrive0_U.s16TotalFinTorqueCmdNMBin10 = ControlModel_Y.s16TotalFinTorqueCmdNMBin10;
-			ServoDrive0_U.s16FinAngleCmdBin11 = PathPlanning0_Y.s16FinOverridePositionBin11;
-			ServoDrive0_U.u8FinAngleOverride = PathPlanning0_Y.u8ServoOverrideFlag;
-			ServoDrive0_U.u16MachBin15 = 0; // TODO Tie to Velocity Estimator!!!
+//			ServoDrive_U.s16TotalFinTorqueCmdNMBin10 = 0; // TODO Tie to control output!!!
+			ServoDrive_U.s16TotalFinTorqueCmdNMBin10 = Control_Y.s16TotalFinTorqueCmdNMBin10;
+			ServoDrive_U.s16FinAngleCmdBin11 = PathPlanning_Y.s16FinOverridePositionBin11;
+			ServoDrive_U.u8FinAngleOverride = PathPlanning_Y.u8ServoOverrideFlag;
+			ServoDrive_U.u16MachBin15 = 0; // TODO Tie to Velocity Estimator!!!
 
 			//***************** Execute Model *****************
-			ServoDrive0_step();
+			ServoDrive_step();
 
 			//************ Get Outputs from Model *************
-			setServoDutyCycle( ServoDrive0_Y.u16ServoPulseWidthBin14 );
+			setServoDutyCycle( ServoDrive_Y.u16ServoPulseWidthBin14 );
 
 
 
@@ -343,19 +343,20 @@ static void rollControlTask(void *pvParameters)
 //				printf2("\f\rGyro %d\r\n", u16RawGyroADC);
 //				printf2("Accel %d\r\n", u16RawAccelADC);
 
-//				printf2("\f\rGyro Bin11 %d\r\n", SensorCalibration0_Y.s16GyroRPSSBin11);
-//				printf2("Accel Bin7 %d\r\n", SensorCalibration0_Y.s16AccelerometerMPSSBin7);
+//				printf2("\f\rGyro Bin11 %d\r\n", SensorCalibration_Y.s16GyroRPSSBin11);
+//				printf2("Accel Bin7 %d\r\n", SensorCalibration_Y.s16AccelerometerMPSSBin7);
 
-				printf2("\f\rMission time %d\r\n\n", PathPlanning0_Y.s32MissionTimeMSec);
-				printf2("Gyro Posn Bin13 %d\r\n", RollEstimator_Y.s16RollPositionRadsBin13);
-				printf2("Posn Trgt Bin7 %d\r\n", (PathPlanning0_Y.s16TargetPositionBin7<<6)/57);
-				printf2("Gyro Rate Bin11 %d\r\n", RollEstimator_Y.s16RollRateRadsPerSecBin11);
-				printf2("Cntrl Torque Bin10 %d\r\n", ControlModel_Y.s16TotalFinTorqueCmdNMBin10);
+				printf2("\f\rMission time %d\r\n\n", PathPlanning_Y.s32MissionTimeMSec);
+				printf2("Gyro Posn Bin13 %d\r\n", RollStateEstimator_Y.s16RollPositionRadsBin13);
+				printf2("Posn Trgt Bin7 %d\r\n", (PathPlanning_Y.s16TargetPositionBin7<<6)/57);
+//				printf2("Gyro Rate Bin11 %d\r\n", RollStateEstimator_Y.s16RollRateRadsPerSecBin11);
+				printf2("Gyro Rate CMD Bin11 %d\r\n", Control_Y.s16RateCmdRPSBin11);
+				printf2("Cntrl Torque Bin10 %d\r\n", Control_Y.s16TotalFinTorqueCmdNMBin10);
 //				printf2("\f\rDecimated Gyro %d\r\n", most_recent_sample.gyro_reading);
 
-//				printf2("\f\rVert Posn Bin2 %d\r\n", VelocityEstimator_Y.s16PositionMetersBin2);
-//				printf2("Vert Rate Bin6 %d\r\n", VelocityEstimator_Y.s16VelocityMPSBin6);
-//				printf2("Vert Accel Bin7 %d\r\n", VelocityEstimator_Y.s16AccelerationMPSSBin7);
+//				printf2("\f\rVert Posn Bin2 %d\r\n", VelocityStateEstimator_Y.s16PositionMetersBin2);
+//				printf2("Vert Rate Bin6 %d\r\n", VelocityStateEstimator_Y.s16VelocityMPSBin6);
+//				printf2("Vert Accel Bin7 %d\r\n", VelocityStateEstimator_Y.s16AccelerationMPSSBin7);
 				if(u8IsLaunchDetected){
 					printf2("Launched");
 				} else{
@@ -370,7 +371,7 @@ static void rollControlTask(void *pvParameters)
 			if (targetPositionBin7 != lastTargetPosition) {
 				printf2("Setting target position to %d\r\n",
 						targetPositionBin7);
-				printf2("Position update time %d\r\n\n", PathPlanning0_Y.s32MissionTimeMSec);
+				printf2("Position update time %d\r\n\n", PathPlanning_Y.s32MissionTimeMSec);
 				lastTargetPosition = targetPositionBin7;
 			}
 
@@ -378,14 +379,14 @@ static void rollControlTask(void *pvParameters)
 			if (overridePositionBin11 != lastOverridePosition) {
 				printf2("Setting override position to %d\r\n",
 						overridePositionBin11);
-				printf2("Position update time %d\r\n\n", PathPlanning0_Y.s32MissionTimeMSec);
+				printf2("Position update time %d\r\n\n", PathPlanning_Y.s32MissionTimeMSec);
 				lastOverridePosition = overridePositionBin11;
 			}
 
 			static uint16_t u16TempCounter;
 			if (u16TempCounter == 0)
 			{
-				printf2("Current mission time %d\r\n\n", PathPlanning0_Y.s32MissionTimeMSec);
+				printf2("Current mission time %d\r\n\n", PathPlanning_Y.s32MissionTimeMSec);
 				u16TempCounter = 10000;
 			}
 			else
