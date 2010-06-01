@@ -325,7 +325,7 @@ static void rollControlTask(void *pvParameters)
 			ServoDrive_U.s16TotalFinTorqueCmdNMBin10 = Control_Y.s16TotalFinTorqueCmdNMBin10;
 			ServoDrive_U.s16FinAngleCmdBin11 = PathPlanning_Y.s16FinOverridePositionBin11;
 			ServoDrive_U.u8FinAngleOverride = PathPlanning_Y.u8ServoOverrideFlag;
-			ServoDrive_U.u16MachBin15 = 0; // TODO Tie to Velocity Estimator!!!
+			ServoDrive_U.s16VelocityMPSBin6 = (19200); // TODO Tie to Velocity Estimator!!!
 
 			//***************** Execute Model *****************
 			ServoDrive_step();
