@@ -66,7 +66,7 @@ unsigned char isSSP0ReadFIFODataPresent(void)
 * Descriptions:		Handle ADC and decimation from interrupt.
 ******************************************************************************/
 void vRC(void) {
-	FIO0SET = (1<<6);
+	FIO4SET = (1<<31);
 
 	static uint32_t irqCounter = 0;
 	static signed portBASE_TYPE xHigherPriorityTaskWoken;
@@ -203,6 +203,7 @@ void vRC(void) {
 		debugLEDCounter = 0;
 	}
 	//------------------------------------------
+	FIO4CLR = (1<<31);
 
 	/* If xHigherPriorityTaskWoken was set to true you
 	we should yield.  The actual macro used here is
@@ -212,7 +213,6 @@ void vRC(void) {
 		portYIELD_FROM_ISR();
 	}
 
-	FIO0CLR = (1<<6);
 	// Ready for the next interrupt.
 }
 
