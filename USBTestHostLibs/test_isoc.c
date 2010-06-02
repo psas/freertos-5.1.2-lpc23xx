@@ -3,6 +3,11 @@
 #include <string.h>
 #include "./libusb-1.0.8/libusb/libusb.h"
 
+#define VID_TO_CLAIM    0xFFFF
+#define PID_TO_CLAIM    0x0005
+
+
+
 #define ISOC_OUT_EP     0x06
 #define ISOC_IN_EP      0x83
 #define MAX_ISOC_PACKET_SIZE	128
@@ -68,9 +73,9 @@ int main(int argc, char **argv)
 		return (-1);
 	}
 
-	libusb_device_handle *devh = libusb_open_device_with_vid_pid(NULL, 0xFFFF,0x0005);
+	libusb_device_handle *devh = libusb_open_device_with_vid_pid(NULL, VID_TO_CLAIM, PID_TO_CLAIM);
 
-	r = libusb_claim_interface(devh, 0);
+	r = libusb_claim_interface(devh, 2);
 	if (r < 0) {
 		printf("unable to claim interface 2 on usb device %d\n", r);
 		libusb_close(devh);

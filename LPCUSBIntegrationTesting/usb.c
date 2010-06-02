@@ -72,7 +72,18 @@
 
 #include "FreeRTOS.h"
 
+int delay = 0;
+#define ISOC_OUTPUT_DATA_BUFFER_SIZE 1024
+volatile U8 outputIsocDataBuffer[ISOC_OUTPUT_DATA_BUFFER_SIZE];
+
+#define BYTES_PER_ISOC_FRAME 4
+
+__attribute__ ((aligned(4))) U32 inputIsocDataBuffer[(BYTES_PER_ISOC_FRAME/4)];
+
+int isConnectedFlag = 0;
 int ledStatus = 0;
+
+#define DESC_IAD 0x0B
 
 #define BAUD_RATE	115200
 
@@ -80,7 +91,12 @@ int ledStatus = 0;
 #define BULK_OUT_EP		0x05
 #define BULK_IN_EP		0x82
 
+#define ISOC_OUT_EP     0x06
+#define ISOC_IN_EP      0x83
+
+
 #define MAX_PACKET_SIZE	64
+#define MAX_ISOC_PACKET_SIZE	128
 
 #define LE_WORD(x)		((x)&0xFF),((x)>>8)
 
@@ -143,12 +159,23 @@ static const U8 abDescriptors[] = {
 // configuration descriptor
 	0x09,
 	DESC_CONFIGURATION,
-	LE_WORD(67),				// wTotalLength
-	0x02,						// bNumInterfaces
+	LE_WORD(106),				// wTotalLength
+	0x03,						// bNumInterfaces
 	0x01,						// bConfigurationValue
 	0x00,						// iConfiguration
 	0xC0,						// bmAttributes
 	0x32,						// bMaxPower
+
+	// Interface Association descriptor (IAD)
+	0x08,
+	DESC_IAD,
+	0x00, // bFirstInterface
+	0x02, // bInterfaceCount
+	0x02, // bFunctionClass (Communication Class)
+	0x02, // bFunctionSubClass (Abstract Control Model)
+	0x01, // bFunctionProcotol (V.25ter, Common AT commands)
+	0x00, // iInterface
+
 // control class interface
 	0x09,
 	DESC_INTERFACE,
@@ -212,6 +239,69 @@ static const U8 abDescriptors[] = {
 	0x02,						// bmAttributes = bulk
 	LE_WORD(MAX_PACKET_SIZE),	// wMaxPacketSize
 	0x00,						// bInterval
+
+
+
+
+
+	// Interface Association descriptor (IAD)
+	0x08,
+	DESC_IAD,
+	0x02, // bFirstInterface
+	0x01, // bInterfaceCount
+	0xFF, // bFunctionClass
+	0x00, // bFunctionSubClass
+	0x00, // bFunctionProcotol
+	0x00, // iInterface
+
+	// data class interface descriptor
+	0x09,
+	DESC_INTERFACE,
+	0x02,						// bInterfaceNumber
+	0x00,						// bAlternateSetting
+	0x02,//DC				    // bNumEndPoints
+	0xFF,// 0x0A,				// bInterfaceClass = data
+	0x00,						// bInterfaceSubClass
+	0x00,						// bInterfaceProtocol
+	0x00,						// iInterface
+
+	// data EP OUT
+	0x07,
+	DESC_ENDPOINT,
+	ISOC_OUT_EP,				// bEndpointAddress
+	0x0D,					    // bmAttributes = isoc, syncronous, data endpoint
+	LE_WORD(MAX_ISOC_PACKET_SIZE),	// wMaxPacketSize
+	0x01,						// bInterval
+
+	// data EP OUT
+	0x07,
+	DESC_ENDPOINT,
+	ISOC_IN_EP,				    // bEndpointAddress
+	0x0D,					    // bmAttributes = isoc, syncronous, data endpoint
+	LE_WORD(MAX_ISOC_PACKET_SIZE),	// wMaxPacketSize
+	0x01,						// bInterval
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	// string descriptors
 	0x04,
@@ -447,8 +537,49 @@ static void USBFrameHandler(U16 wFrame)
 {
 	if (!fBulkInBusy && (fifo_avail(&txfifo) != 0)) {
 		// send first packet
-		SendNextBulkIn(BULK_IN_EP, TRUE);
+		//SendNextBulkIn(BULK_IN_EP, TRUE);
 	}
+
+
+	 // send over USB
+	if( isConnectedFlag ) {
+		if( delay < 4000 ) {
+			//FIXME need to delay a few seconds before doing isoc writes, impliment more elegant solution, status or event driven....
+			delay++;
+		} else {
+
+			//Always write whatever is in our most recent isoc output data buffer, you may want to pust somthing interesting in there....
+			inputIsocDataBuffer[0]++;
+			USBHwEPWrite(ISOC_IN_EP, (U8*) inputIsocDataBuffer, BYTES_PER_ISOC_FRAME);
+
+			int iLen = USBHwISOCEPRead(ISOC_OUT_EP, (U8*) outputIsocDataBuffer, sizeof(outputIsocDataBuffer));
+			if (iLen > 0) {
+				//Insert your code to do somthing interesting here....
+				//DBG("z%d", b1);
+
+				//The host sample code will send a byte indicating if the sample LED on olimex 2148 dev board should be on of off.
+				if( outputIsocDataBuffer[0] ) {
+#ifdef LPC214x
+					IOSET0 = (1<<10);//turn on led on olimex dev board
+#else
+					FIO1SET = (1<<19);//turn off led on olimex 2378 Sdev board
+#endif
+
+				} else {
+#ifdef LPC214x
+					IOCLR0 = (1<<10);//turn off led on olimex dev board
+#else
+					FIO1CLR = (1<<19);//turn off led on olimex 2378 Sdev board
+#endif
+
+				}
+
+			}
+		}
+	}
+
+
+
 }
 
 
@@ -461,6 +592,18 @@ static void USBDevIntHandler(U8 bDevStatus)
 {
 	if ((bDevStatus & DEV_STATUS_RESET) != 0) {
 		fBulkInBusy = FALSE;
+	}
+
+	//FIXME not sure if this is the right way to detect being connected???
+	switch(bDevStatus ) {
+		case DEV_STATUS_CONNECT:
+			delay = 0;
+			isConnectedFlag= 1;
+			break;
+		case DEV_STATUS_RESET:
+		case DEV_STATUS_SUSPEND:
+			isConnectedFlag= 0;
+			break;
 	}
 }
 

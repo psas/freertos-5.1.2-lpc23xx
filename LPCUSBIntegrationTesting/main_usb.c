@@ -132,6 +132,11 @@ static void blinkyLightTask(void *pvParameters) {
 				DBG(".");
 			}
 			VCOM_putchar(c);
+
+
+			if( c == '?' ) {
+
+			}
 		}
 
 
