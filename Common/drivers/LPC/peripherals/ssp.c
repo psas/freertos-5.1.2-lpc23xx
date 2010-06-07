@@ -1,3 +1,5 @@
+
+
 #include "ssp.h"
 #include "gpdmaExterns.h"
 
@@ -5,6 +7,13 @@
 # define NULL 0
 #endif
 
+
+/******************************************************************************
+* Function name:	isSSP0_TX_FIFO_Empty
+*
+* Descriptions:		Returns 1 if SSP0 transmit FIFO is empty
+*
+******************************************************************************/
 bool isSSP0_TX_FIFO_Empty(void) {
 	if( SSP0SR & (1<<0) ) {
 		return(true);
@@ -13,7 +22,30 @@ bool isSSP0_TX_FIFO_Empty(void) {
 	}
 }
 
-/**
+
+/******************************************************************************
+* Function name:	isSSP0TransmitFIFOEmpty
+*
+* Descriptions:		Returns 1 if SSP0 transmit FIFO is empty
+*
+******************************************************************************/
+bool isSSP0TransmitFIFOEmpty(void) {
+	return( (SSP0SR & 0x1) == 1 );
+}
+
+
+/******************************************************************************
+* Function name:	isSSP0TransmitFIFONotFull
+*
+* Descriptions:		Returns 1 if SSP0 transmit FIFO is not full
+*
+******************************************************************************/
+bool isSSP0TransmitFIFONotFull(void) {
+	return( (SSP0SR & (1<<1)) != 0 );
+}
+
+
+/******************************************************************************
  * Description: This is used to take the SSEL output line low, there by selecting the SPI perepherial in question. 
  *      Note: it's implimented as gpio to allow for multi-byte transfers to devices that don't allow an edge transition between bytes.
  * 
@@ -22,7 +54,7 @@ bool isSSP0_TX_FIFO_Empty(void) {
  * 
  * Return Value(s): none
  * 
- */
+ *****************************************************************************/
 static void setSSP0ChipSelect(const bool status) {
 	if( status ) {
 		//FIO0SET |= (1<<15);
@@ -33,7 +65,8 @@ static void setSSP0ChipSelect(const bool status) {
 	}
 }
 
-/**
+
+/******************************************************************************
  * Description: This is used to take the SSEL output line low, there by selecting the SPI perepherial in question. 
  *      Note: it's implimented as gpio to allow for multi-byte transfers to devices that don't allow an edge transition between bytes.
  * 
@@ -42,7 +75,7 @@ static void setSSP0ChipSelect(const bool status) {
  * 
  * Return Value(s): none
  * 
- */
+ *****************************************************************************/
 static void setSSP1ChipSelect(const bool status) {
 	if( status ) {
 		FIO0SET |= (1<<6);
@@ -61,18 +94,19 @@ static void waitForSSP1TransmitFifoEmpty(void) {
 }
 */
 
-/**
+
+/******************************************************************************
  * Description: Initialized the SSP0 control into SPI mode. 
  * 
  * Parameters:
  *    -ssp0SerialClockRate: Further divider of output of pre-scalar 
- *    -ssp0ClockPrescalar: Prescalar going into the SSP perepherial, must be between 2 and 255
+ *    -ssp0ClockPrescalar: Prescaler going into the SSP peripheral, must be between 2 and 255
  * 
  * Return Value(s): none 
  * 
- */
+ *****************************************************************************/
 void initSSP0(
-		const uint8_t dataSize, /*default 7, equivlant to 8 bits per transfer*/
+		const uint8_t dataSize, /*default 7, equivalent to 8 bits per transfer*/
 		const uint8_t frameFormat, /*Default to 0 for SPI frame format*/
 		const bool clockOutPolarity,/*Default to false*/
 		const bool clockPhase,/*Default to false*/
@@ -86,7 +120,7 @@ void initSSP0(
 	PCONP |= (1 << 21);//Power up SSP0
 	PCLKSEL1 |= (1 << 10);//Configure SSP0 to run at CCLK speed
 
-	if (!masterMode) {
+	/*if (!masterMode) {
 		PINMODE3 |= (1 << 9);//P1.20, Disable pullup and pull down resistors, make floating
 	}
 	PINMODE3 |= (1 << 11);//P1.21, Disable pullup and pull down resistors, make floating
@@ -100,7 +134,7 @@ void initSSP0(
 	}
 	PINSEL3 |= (1 << 9) | (1 << 8); //Configure P1.20 in SCK0 mode
 	PINSEL3 |= (1 << 14) | (1 << 15); //Configure P1.23 in MISO0 mode
-	PINSEL3 |= (1 << 16) | (1 << 17); //Configure P1.24 in MOSI0 mode
+	PINSEL3 |= (1 << 16) | (1 << 17); //Configure P1.24 in MOSI0 mode*/
 
 	setSSP0ChipSelect(true);
 
@@ -147,24 +181,28 @@ void initSSP0(
 	}
 }
 
-bool isSSP0TransmitFIFOEmpty(void) {
-	return( (SSP0SR & 0x1) == 1 );
-}
 
+/******************************************************************************
+* Function name:	appendToSSP0TransmitFIFO
+*
+* Descriptions:		Adds data to transmit FIFO
+*
+ *****************************************************************************/
 void appendToSSP0TransmitFIFO(const uint16_t data) {
 	SSP0DR = data;
 }
 
-/**
+
+/******************************************************************************
  * Description: Initialized the SSP1 control into SPI mode. 
  * 
  * Parameters:
  *    -ssp1SerialClockRate: Further divider of output of pre-scalar 
- *    -ssp1ClockPrescalar: Prescalar going into the SSP perepherial, must be between 2 and 255
+ *    -ssp1ClockPrescalar: Prescaler going into the SSP peripheral, must be between 2 and 255
  * 
  * Return Value(s): none 
  * 
- */
+ *****************************************************************************/
 void initSSP1(const uint8_t ssp1SerialClockRate, const uint8_t ssp1ClockPrescalar, const bool masterMode, const bool cphaFlag) {
 	PCONP |= (1<<10);//Power up SSP1
 	PCLKSEL0 |= (1<<20);//Configure SSP1 to run at CCLK speed
@@ -214,14 +252,15 @@ void initSSP1(const uint8_t ssp1SerialClockRate, const uint8_t ssp1ClockPrescala
 	}
 }
 
-/**
+
+/******************************************************************************
  * Description: FIXME document this
  * 
  * Parameters:
  * 
  * Return Value(s): 
  * 
- */
+ *****************************************************************************/
 /*
 bool transmitSSP1_SPI_BufferViaDMA(const uint8_t *data, const uint16_t numBytes) {
 	//configure dma controller
@@ -236,7 +275,7 @@ bool transmitSSP1_SPI_BufferViaDMA(const uint8_t *data, const uint16_t numBytes)
 
 	
 	GPDMA_CH0_DEST = (unsigned long)&SSP1DR;
-	GPDMA_CH0_CFG |= (0x01 << 11);	//Configure DMA Channel 0 to be memory to peripherial flow control
+	GPDMA_CH0_CFG |= (0x01 << 11);	//Configure DMA Channel 0 to be memory to peripheral flow control
 	GPDMA_CH0_CFG |= (1<<2);//Configure Dest Peripheral to be SSP1/TX
 	GPDMA_CH0_CFG |= (1<<7);//Configure Dest Peripheral to be SSP1/TX
 	
@@ -281,7 +320,7 @@ bool transmitSSP0_SPI_BufferViaDMA0(const uint8_t *data, const uint16_t numBytes
 	GPDMA_CH1_CFG &= ~(GPDMA_CHx_CFG_GPDMA_ENABLE_MASK);//Disable DMA channel 1
 
 	
-	GPDMA_CH0_CFG |= (0x01 << 11);	//Configure DMA Channel 0 to be memory to peripherial flow control
+	GPDMA_CH0_CFG |= (0x01 << 11);	//Configure DMA Channel 0 to be memory to peripheral flow control
 	GPDMA_CH0_CFG = GPDMA_CH0_CFG & ~(0x0F << 1);//Configure Dest Peripheral to be SSP0/TX
 	GPDMA_CH0_CFG = GPDMA_CH0_CFG & ~(0x0F << 6);//Configure Dest Peripheral to be SSP0/TX
 	
@@ -331,7 +370,7 @@ bool transmitSSP0_SPI_BufferViaDMA1(const uint8_t *data, const uint16_t numBytes
 	GPDMA_CH1_CFG &= ~(GPDMA_CHx_CFG_GPDMA_ENABLE_MASK);//Disable DMA channel 1
 
 	
-	GPDMA_CH1_CFG |= (0x01 << 11);	//Configure DMA Channel 1 to be memory to peripherial flow control
+	GPDMA_CH1_CFG |= (0x01 << 11);	//Configure DMA Channel 1 to be memory to peripheral flow control
 	GPDMA_CH1_CFG = GPDMA_CH1_CFG & ~(0x0F << 1);//Configure Dest Peripheral to be SSP0/TX
 	GPDMA_CH1_CFG = GPDMA_CH1_CFG & ~(0x0F << 6);//Configure Dest Peripheral to be SSP0/TX
 	
@@ -382,8 +421,9 @@ static void clearSSP1_ReceiveFifo(void) {
 }
 */
 
-/**
- * Description: Trys to read data (4 to 16 bits, depending on configuration of perepherial) from the SPI data register, 
+
+/******************************************************************************
+ * Description: Trys to read data (4 to 16 bits, depending on configuration of peripheral) from the SPI data register,
  *              trys timeout number of times, return false if no data is read, or true if data is read. 
  * 
  * Parameters:
@@ -394,7 +434,7 @@ static void clearSSP1_ReceiveFifo(void) {
  * 
  * Return Value(s): True if read successful, false otherwise. 
  * 
- */
+ *****************************************************************************/
 static bool readSSPx_SPI(const uint32_t timeout, uint16_t  *dest, volatile unsigned long *dr, volatile unsigned long *sr )
 {
 	int cntr = 0;
@@ -411,14 +451,14 @@ static bool readSSPx_SPI(const uint32_t timeout, uint16_t  *dest, volatile unsig
 }
 
 
-/**
- * Description: This function is used to transfer a series of bytes, and subsiquently read back zero-or-more bytes. 
+/******************************************************************************
+ * Description: This function is used to transfer a series of bytes, and subsequently read back zero-or-more bytes.
  *        The first numOutBytes
  * 
  * Parameters:
  *    *outData: Pointer to the start address of data to be transfered out.
- *    numOutBytes: The number of bytes, starting at *outData, to be transmited
- *    *inData: Location in ram to place data read in, including data read while transmiting out data.
+ *    numOutBytes: The number of bytes, starting at *outData, to be transmitted
+ *    *inData: Location in ram to place data read in, including data read while transmitting out data.
  *    inDataSize: the size of the inData array
  *    extraInBytesToRead: The number of bytes to read after sending the outData buffer out.
  *    *dr: Pointer to the SSP# data register to read from
@@ -428,7 +468,7 @@ static bool readSSPx_SPI(const uint32_t timeout, uint16_t  *dest, volatile unsig
  *                  The first numOutBytes bytes of *inData will be the data that was clocked in while writing the outData buffer.
  *                  The following extraInBytesToRead of *inData will be the data clocked in while only reading data.
  * 
- */
+ *****************************************************************************/
 static bool SSPx_SPI_transfer(
 		const uint8_t *outData, const uint8_t numOutBytes, 
 		uint8_t *inData, const uint8_t inDataSize, 
@@ -464,9 +504,13 @@ static bool SSPx_SPI_transfer(
 	return(ret);
 }
 
-/**
+
+/******************************************************************************
+ * Function name:	ssp0_SPI_transfer
+ *
  * Description: See docs for SSPx_SPI_transfer()
- */
+ *
+ *****************************************************************************/
 bool ssp0_SPI_transfer(
 		const uint8_t *outData, const uint8_t numOutBytes, 
 		uint8_t *inData, const uint8_t inDataSize, 
@@ -478,9 +522,13 @@ bool ssp0_SPI_transfer(
 	return(ret);
 }
 
-/**
+
+/******************************************************************************
+ * Function name:	ssp1_SPI_transfer
+ *
  * Description: See docs for SSPx_SPI_transfer
- */
+ *
+ *****************************************************************************/
 bool ssp1_SPI_transfer(
 		const uint8_t *outData, const uint8_t numOutBytes, 
 		uint8_t *inData, const uint8_t inDataSize, 
@@ -493,42 +541,63 @@ bool ssp1_SPI_transfer(
 }
 
 
-
-
-/**
+/******************************************************************************
+ * Function name:	readSSP0_SPI
+ *
  * Description: See docs for readSSPx_SPI()
- */
+ *
+ *****************************************************************************/
 bool readSSP0_SPI(const uint32_t timeout, uint16_t  *dest ) {
 	return(readSSPx_SPI(timeout, dest, &SSP0DR, &SSP0SR));
 }
 
-/**
+
+/******************************************************************************
+ * Function name:	readSSP1_SPI
+ *
  * Description: See docs for readSSPx_SPI()
- */
+ *
+ *****************************************************************************/
 bool readSSP1_SPI(const uint32_t timeout, uint16_t  *dest ) {
 	return(readSSPx_SPI(timeout, dest, &SSP1DR, &SSP1SR));
 }
 
 
+/******************************************************************************
+* Function name:	clearFIFO_SSP0
+*
+* Descriptions:		Empties FIFO buffer, a maximum of 8 entries
+*
+******************************************************************************/
 void clearFIFO_SSP0(void)
 {
-	uint16_t trash;
-	while( readSSP0_SPI(0, &trash)) {
-
+	volatile uint16_t trash;
+	uint8_t index;
+	for( index=0 ; (index<8 && ((SSP0SR & (1<<2)) == 0)) ; index++ )
+	{
+		trash = SSP0DR;
 	}
 }
 
+
+/******************************************************************************
+* Function name:	clearFIFO_SSP1
+*
+* Descriptions:		Empties FIFO buffer, a maximum of 8 entries
+*
+******************************************************************************/
 void clearFIFO_SSP1(void)
 {
-	uint16_t trash;
-	while( readSSP1_SPI(0, &trash)) {
-
+	volatile uint16_t trash;
+	uint8_t index;
+	for( index=0 ; (index<8 && ((SSP1SR & (1<<2)) == 0)) ; index++ )
+	{
+		trash = SSP1DR;
 	}
 }
 
 
-
-/**
+/******************************************************************************
  * Description: Triggers a transmission of data out the SSP0 spi port
  * 
  * Parameters: 
@@ -536,32 +605,38 @@ void clearFIFO_SSP1(void)
  * 
  * Return Value(s): True, or never returns... 
  * 
- */
+ *****************************************************************************/
 bool transmitSSP0_SPI_1byte(const uint16_t byte1) {
-	while( (SSP0SR & (1<<1)) == 0 ) {}//wait for transmit fifo to empty
+	while( (SSP0SR & (1<<1)) == 0 ); // Wait until transmit fifo is not full TNF
 	SSP0DR = byte1;//Transmit the data on the SSP1 port
 	return(true);
 }
 
+
+/******************************************************************************
+* Function name:	enqueueSSP0_SPI
+*
+* Descriptions:		Adds one byte to SPI transmit buffer
+*
+******************************************************************************/
 bool enqueueSSP0_SPI(const uint16_t byte1) {
-	//while( (SSP0SR & (1<<1)) == 0 ) {}//wait for transmit fifo to empty
-	SSP0DR = byte1;//Transmit the data on the SSP1 port
+	SSP0DR = byte1; // Transmit the data on the SSP1 port
 	return(true);
 }
 
 
-/**
-* Description: Triggers a transmission of data out the SSP1 spi port
-* 
-* Parameters: 
-*     byte1: data to be transfered
-* 
-* Return Value(s): True, or never returns... 
-* 
-*/
+/******************************************************************************
+ * Description: Triggers a transmission of data out the SSP1 spi port
+ *
+ * Parameters:
+ *     byte1: data to be transfered
+ *
+ * Return Value(s): True, or never returns...
+ *
+ *****************************************************************************/
 bool transmitSSP1_SPI_1byte(const uint16_t byte1) {
-	while( (SSP1SR & (1<<1)) == 0 ) {}//wait for transmit fifo to empty
-	SSP1DR = byte1;//Transmit the data on the SSP1 port
+	while( (SSP1SR & (1<<1)) == 0 ); // Wait until transmit fifo is not full TNF
+	SSP1DR = byte1; // Transmit the data on the SSP1 port
 	return(true);
 }
 

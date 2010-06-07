@@ -14,6 +14,8 @@
 
 bool isSSP0_TX_FIFO_Empty(void);
 
+bool isSSP0TransmitFIFONotFull(void);
+
 void initSSP0(
 		const uint8_t dataSize, /*default 7, equivlant to 8 bits per transfer*/
 		const uint8_t frameFormat, /*Default to 0 for SPI frame format*/

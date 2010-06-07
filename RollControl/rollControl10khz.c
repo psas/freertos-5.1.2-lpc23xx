@@ -18,11 +18,6 @@ extern volatile struct data_sample g_sample_data_B;
 
 extern xSemaphoreHandle xSemaphore;
 
-//const uint32_t au32b[FIRTAPS] = { 0.0074662*(65535), 0.0109120*(65535), 0.0206629*(65535), 0.0354434*(65535), 0.0530993*(65535),
-//		0.0709415*(65535), 0.0861884*(65535), 0.0964305*(65535), 0.1000366*(65535), 0.0964305*(65535), 0.0861884*(65535),
-//		0.0709415*(65535), 0.0530993*(65535), 0.0354434*(65535), 0.0206629*(65535), 0.0109120*(65535), 0.0074662*(65535)
-//};
-
 const uint32_t au32b[FIRTAPS] = {
 0.00865822050850897 * 65535,
 0.012654161713971 * 65535,
@@ -72,6 +67,7 @@ void vRC(void) {
 	static signed portBASE_TYPE xHigherPriorityTaskWoken;
 	volatile uint32_t vu32counter = 0;
 	uint16_t i = 0;
+	uint8_t index = 0;
 //	static uint16_t u16RawAccelADC = 0;
 //	static uint16_t u16RawGyroADC = 0;
 	uint64_t u64MacResult = 0;
@@ -113,7 +109,7 @@ void vRC(void) {
 
 	//*****************************************************
 
-	clearFIFO_SSP0(); // TODO This function has no escape!!! (dangerous 'while' if PCLK is not running)
+	clearFIFO_SSP0();
 
 	// Trigger conversion. CNV must be high during SPI transfer
 	// P0.16 pin SSP0: SSEL Wired to CNV on ADC
@@ -124,24 +120,25 @@ void vRC(void) {
 	while (vu32counter>0)
 	{
 		vu32counter--;
-		if( ADC_DATA_READY ) // If data ready pin P2.9
+		if( ADC_DATA_READY > 0 ) // If data ready pin P2.9
 		{// When reading is done, get out
-			vu32counter = 0;
+			break;
+			//vu32counter = 0;
 		}
 	}
 
 	// Write 4 dummy bytes, triggering the data transfer from the sensors,
 	// leaving the data in the FIFO for the next ISR firing
-	if ( isSSP0TransmitFIFOEmpty() )
+	for( index = 0 ; index < 4 ; index++ )
 	{
-		transmitSSP0_SPI_1byte(0x00); // Dummy write
-		transmitSSP0_SPI_1byte(0x00); // Dummy write
-		transmitSSP0_SPI_1byte(0x00); // Dummy write
-		transmitSSP0_SPI_1byte(0x00); // Dummy write
-	}
-	else
-	{
-		// TODO Somehow reset / recover. Clear buffer?
+		if ( isSSP0TransmitFIFONotFull() )
+		{
+			enqueueSSP0_SPI(0x00); // Dummy write
+		}
+		else
+		{
+			index = 4;
+		}
 	}
 
 	// Insert the new sample into the register array
@@ -191,7 +188,7 @@ void vRC(void) {
 		xSemaphoreGiveFromISR( xSemaphore, &xHigherPriorityTaskWoken );
 	} // End if( irqCounter >= FIQ_INTERVAL_DIVISOR )
 
-	//------------------------------------------
+	//********************* Test **************************
 	//Debug LED
 	static uint32_t debugLEDCounter = 0;
 	debugLEDCounter++;
@@ -202,7 +199,7 @@ void vRC(void) {
 		FIO1CLR = (1<<19);//turn off led on olimex 2378 Sdev board
 		debugLEDCounter = 0;
 	}
-	//------------------------------------------
+	//*****************************************************
 	FIO4CLR = (1<<31);
 
 	/* If xHigherPriorityTaskWoken was set to true you

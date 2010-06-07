@@ -51,6 +51,7 @@
  */
 
 /* Scheduler includes. */
+//#include "FreeRTOS.h"
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
@@ -75,7 +76,6 @@
 #include "printf/printf2.h"
 #include "peripherals/pwm.h"
 #include "rollcontrol.h"
-#include "fir_decimation.h"
 
 #include "PathPlanning.h"
 #include "RollStateEstimator.h"
@@ -182,7 +182,7 @@ void setServoDutyCycle(const uint16_t u16ServoTimeMillisecondsBin14)
 
 
 extern uint16_t u16RawAccelADC;
-extern uint16_t u16RawGyroADC;
+
 
 static void rollControlTask(void *pvParameters)
 {
@@ -245,7 +245,6 @@ static void rollControlTask(void *pvParameters)
 			//************* Set Inputs for Model **************
 			SensorCalibration_U.u16RawAccelerometerADC = u16RawAccelADC;
 //			SensorCalibration_U.u16RawAccelerometerADC = (uint16_t) most_recent_sample.adc_reading;
-//			SensorCalibration_U.u16RawRateGyroADC = u16RawGyroADC;
 			SensorCalibration_U.u16RawRateGyroADC = (uint16_t) most_recent_sample.gyro_reading;
 			SensorCalibration_U.u8IsLaunchDetected = u8IsLaunchDetected;
 
@@ -321,11 +320,10 @@ static void rollControlTask(void *pvParameters)
 
 			//****************** Servo Drive ******************
 			//************* Set Inputs for Model **************
-//			ServoDrive_U.s16TotalFinTorqueCmdNMBin10 = 0; // TODO Tie to control output!!!
 			ServoDrive_U.s16TotalFinTorqueCmdNMBin10 = Control_Y.s16TotalFinTorqueCmdNMBin10;
 			ServoDrive_U.s16FinAngleCmdBin11 = PathPlanning_Y.s16FinOverridePositionBin11;
 			ServoDrive_U.u8FinAngleOverride = PathPlanning_Y.u8ServoOverrideFlag;
-			ServoDrive_U.s16VelocityMPSBin6 = (19200); // TODO Tie to Velocity Estimator!!!
+			ServoDrive_U.s16VelocityMPSBin6 = VelocityStateEstimator_Y.s16VelocityMPSBin6;
 
 			//***************** Execute Model *****************
 			ServoDrive_step();
@@ -340,23 +338,22 @@ static void rollControlTask(void *pvParameters)
 			static unsigned int debugMSGCounter = 0;
 			if (debugMSGCounter == 500)
 			{
-//				printf2("\f\rGyro %d\r\n", u16RawGyroADC);
-//				printf2("Accel %d\r\n", u16RawAccelADC);
-
 //				printf2("\f\rGyro Bin11 %d\r\n", SensorCalibration_Y.s16GyroRPSSBin11);
 //				printf2("Accel Bin7 %d\r\n", SensorCalibration_Y.s16AccelerometerMPSSBin7);
 
-				printf2("\f\rMission time %d\r\n\n", PathPlanning_Y.s32MissionTimeMSec);
-				printf2("Gyro Posn Bin13 %d\r\n", RollStateEstimator_Y.s16RollPositionRadsBin13);
-				printf2("Posn Trgt Bin7 %d\r\n", (PathPlanning_Y.s16TargetPositionBin7<<6)/57);
+//				printf2("\f\rMission time %d\r\n\n", PathPlanning_Y.s32MissionTimeMSec);
+//				printf2("Gyro Posn Bin13 %d\r\n", RollStateEstimator_Y.s16RollPositionRadsBin13);
+//				printf2("Posn Trgt Bin7 %d\r\n", (PathPlanning_Y.s16TargetPositionBin7<<6)/57);
 //				printf2("Gyro Rate Bin11 %d\r\n", RollStateEstimator_Y.s16RollRateRadsPerSecBin11);
-				printf2("Gyro Rate CMD Bin11 %d\r\n", Control_Y.s16RateCmdRPSBin11);
-				printf2("Cntrl Torque Bin10 %d\r\n", Control_Y.s16TotalFinTorqueCmdNMBin10);
+//				printf2("Gyro Rate CMD Bin11 %d\r\n", Control_Y.s16RateCmdRPSBin11);
+//				printf2("Cntrl Torque Bin10 %d\r\n", Control_Y.s16TotalFinTorqueCmdNMBin10);
 //				printf2("\f\rDecimated Gyro %d\r\n", most_recent_sample.gyro_reading);
 
-//				printf2("\f\rVert Posn Bin2 %d\r\n", VelocityStateEstimator_Y.s16PositionMetersBin2);
-//				printf2("Vert Rate Bin6 %d\r\n", VelocityStateEstimator_Y.s16VelocityMPSBin6);
+				printf2("\f\rVert Posn Bin2 %d\r\n", VelocityStateEstimator_Y.s16PositionMetersBin2);
+				printf2("Vert Rate Bin6 %d\r\n", VelocityStateEstimator_Y.s16VelocityMPSBin6);
 //				printf2("Vert Accel Bin7 %d\r\n", VelocityStateEstimator_Y.s16AccelerationMPSSBin7);
+//				printf2("Vert Accel Bin7 %d\r\n", SensorCalibration_Y.s16AccelerometerMPSSBin7);
+				printf2("Vert Accel Bin7 %d\r\n", u16RawAccelADC);
 				if(u8IsLaunchDetected){
 					printf2("Launched");
 				} else{
@@ -402,35 +399,8 @@ static void rollControlTask(void *pvParameters)
 			FIO4CLR = (1 << 30);//turn off debug GPIO line
 
 		} // End if (xSemaphoreTake( xSemaphore, LONG_TIME ) == pdTRUE)
-
-		/*
-		 //vSerialPutString(0, "Testing...\r\n", 50);
-		 x++;
-
-		 if (x == interval) {
-		 //FIO1SET = (1<<19);//turn on led on olimex 2378 dev board
-
-		 pwmDutyCycle += 100;
-		 if(pwmDutyCycle > 2000 ) {
-		 pwmDutyCycle = 1000;
-		 }
-		 setPWMDutyCycle(PWM1_1, microsecondsToCPUTicks(pwmDutyCycle));
-
-		 } else if (x >= (interval*2)) {
-		 //FIO1CLR = (1<<19);//turn off led on olimex 2378 Sdev board
-
-		 x = 0;
-		 printf2("Blinky Light Task...\r\n");
-
-		 status = xSerialGetChar(0, &theChar, 1);
-		 if( status == pdTRUE ) {
-		 printf2("You typed the character: '%c'\r\n", theChar);
-		 }
-		 }
-
-		 */
-	}
-}
+	} // End for (;;)
+} // End static void rollControlTask(void *pvParameters)
 
 /*-----------------------------------------------------------*/
 
@@ -454,8 +424,7 @@ static void prvSetupHardware(void)
 
 	/* Configure clock source. */
 	SCS |= mainOSC_ENABLE;
-	while (!(SCS & mainOSC_STAT))
-		;
+	while (!(SCS & mainOSC_STAT));
 	CLKSRCSEL = mainOSC_SELECT;
 
 	/* Setup the PLL to multiply the XTAL input by 4. */
@@ -477,8 +446,7 @@ static void prvSetupHardware(void)
 	PLLCON = mainPLL_CONNECT;
 	PLLFEED = mainPLL_FEED_BYTE1;
 	PLLFEED = mainPLL_FEED_BYTE2;
-	while (!(PLLSTAT & mainPLL_CONNECTED))
-		;
+	while (!(PLLSTAT & mainPLL_CONNECTED));
 
 	/* 
 	 This code is commented out as the MAM does not work on the original revision
@@ -548,7 +516,7 @@ void setPinsForApplication(void)
     FIO0DIR |= (1 << 8);		// Set P0.8 pin as an output
 
     FIO2CLR = (1 << 0);			// Turn off P2.0
-    FIO2DIR |= (1 << 0);		// Set P2.0 pin as an output for PWM1.1
+    FIO2DIR |= (1 << 0);		// Set P2.0 pin as an output for PWM1.1 to drive SERVO
 
     FIO0DIR &= ~(1 << 9);		// Leave P0.9 as an input: SDO from ADC, also tied to IRQ
     FIO2DIR &= ~(1 << 9);		// Leave P2.9 pin as an input to poll ADC data ready (IRQ)
@@ -559,10 +527,11 @@ void setPinsForApplication(void)
 	//PINSEL1 = (0x00000000 | (2 << 2) | (2 << 4)); // MISO0/MOSI0 = '10b (function 2)
 	PINSEL1 = (0x00000000 | (2 << 2)); // MISO0 = '10b (function 2) MOSI0 is not used on roll control
 
-	PINSEL4 = (0x00000000 | (1 << 0)); // PWM1.1 bits 1:0
+	PINSEL4 = (0x00000000 | (1 << 0)); // PWM1.1 bits 1:0 First alt function, which is PWM1.1 for SERVO
 
     return;
 } // End void setPinsForApplication(void)
+
 
 /******************************************************************************
 * Function name:		GPIOResetPins
@@ -618,16 +587,18 @@ void GPIOResetPins( void )
     return;
 } // End void GPIOResetPins( void )
 
-/*-----------------------------------------------------------*/
 
-//#define PCLK    48000000
+/******************************************************************************
+* Function name:	main
+*
+* Descriptions:		Do main stuff.
+*
+******************************************************************************/
 int main(void)
 {
 	GPIOResetPins(); // Set pins to a safe state
 
 	prvSetupHardware(); // Set PLL and timing for this application
-
-	initialize_fir_filter();
 
 	setPinsForApplication(); // Set pins for board layout
 
@@ -640,17 +611,17 @@ int main(void)
 
 	PWMinit(0, microsecondsToCPUTicks(3300));//3.3ms period, 300hz, given 48mhz CPU clock
 	setupPWMChannelPeripheral(PWM1_1, microsecondsToCPUTicks(150));
-	//setupPWMPinSetup2378(PWM1_1);
 
-	// Initialize SPI ADC communication
-	// Set to 4 MHz baud rate
-	//SSPx_Open( MODULE_SSP0, EIGHT_BITS, SSP_SPI_FORMAT, 0, 0, NINE_CLCKS_BIT,
-	//                          SSP_MASTER, 0, ROLL_SENSOR_BAUD_RATE_PRESCALER );
 
 	const uint32_t ssp0_serial_clock_rate = 4000000;
 	const uint8_t ssp0ClocksPerBit = ((PCLK / ssp0_serial_clock_rate)
 			/ ROLL_SENSOR_BAUD_RATE_PRESCALER) - 1;
 
+//	SSPx_Open( MODULE_SSP0, EIGHT_BITS, SSP_SPI_FORMAT, 0, 0, NINE_CLCKS_BIT,
+//	                          SSP_MASTER, 0, ROLL_SENSOR_BAUD_RATE_PRESCALER );
+
+	// Initialize SPI ADC communication
+	// Set to 4 MHz baud rate
 	initSSP0(SSP_EIGHT_BITS, SSP_SPI_FORMAT, false, false, false,
 			ssp0ClocksPerBit, ROLL_SENSOR_BAUD_RATE_PRESCALER, SSP_MASTER,
 			false);
@@ -658,20 +629,17 @@ int main(void)
 	xSerialPortInitMinimal(0, 115200, 250);
 	vSerialPutString(0, "Starting up LPC23xx with FreeRTOS\n", 50);
 
-	//configure10khzTimer1();
-
-
-
+	// Initialize roll control task
 	xTaskCreate(rollControlTask, (signed portCHAR *) "rollControlTask",
 			ROLL_CONTROL_STACK_SIZE, NULL, mainCHECK_TASK_PRIORITY - 1, NULL );
 
-	/* Start the scheduler. */
+	// Start the scheduler.
 	vTaskStartScheduler();
 
 	/* Will only get here if there was insufficient memory to create the idle
 	 task. */
 	return 0;
-}
+} // End int main(void)
 /*-----------------------------------------------------------*/
 
 extern void vRC(void);
