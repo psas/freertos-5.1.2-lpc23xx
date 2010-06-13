@@ -38,7 +38,8 @@ const uint32_t au32b[FIRTAPS] = {
 0.00865822050850897 * 65535};
 
 
-uint32_t au32Regs[FIRTAPS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+uint32_t au32GyroRegs[FIRTAPS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+uint32_t au32AccelRegs[FIRTAPS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 uint16_t u16RawAccelADC = 0;
 uint16_t u16RawGyroADC = 0;
@@ -70,7 +71,8 @@ void vRC(void) {
 	uint8_t index = 0;
 //	static uint16_t u16RawAccelADC = 0;
 //	static uint16_t u16RawGyroADC = 0;
-	uint64_t u64MacResult = 0;
+	uint64_t u64GyroMacResult = 0;
+	uint64_t u64AccelMacResult = 0;
 	uint8_t readValue1;
 	uint8_t readValue2;
 	uint8_t readValue3;
@@ -142,7 +144,8 @@ void vRC(void) {
 	}
 
 	// Insert the new sample into the register array
-	au32Regs[irqCounter] = u16RawGyroADC;
+	au32GyroRegs[irqCounter] = u16RawGyroADC;
+	au32AccelRegs[irqCounter] = u16RawAccelADC;
 
 	// Update interrupt counter
 	irqCounter++;
@@ -152,17 +155,20 @@ void vRC(void) {
 
 	if( irqCounter >= FIQ_INTERVAL_DIVISOR )
 	{
-		u64MacResult = 0;
+		u64GyroMacResult = 0;
+		u64AccelMacResult = 0;
 
 		// Calculate the output sample at 1000hz
 		// Multiply and accumulate FIR accumulator
 		for ( i = 0; i < FIRTAPS; ++i ) {
-			u64MacResult += au32b[i] * au32Regs[i];
+			u64GyroMacResult += au32b[i] * au32GyroRegs[i];
+			u64AccelMacResult += au32b[i] * au32AccelRegs[i];
 		}
 
 		// Move the old samples up for the next MAC cycle
 		for ( i = FIQ_INTERVAL_DIVISOR; i < FIRTAPS; ++i ) {
-			au32Regs[i] = au32Regs[i - FIQ_INTERVAL_DIVISOR];
+			au32GyroRegs[i] = au32GyroRegs[i - FIQ_INTERVAL_DIVISOR];
+			au32AccelRegs[i] = au32AccelRegs[i - FIQ_INTERVAL_DIVISOR];
 		}
 
 		irqCounter = 0;
@@ -170,17 +176,21 @@ void vRC(void) {
 		// Store the result to a protected ping-pong buffer
 		if ( g_task_reading_flag ) {
 			if( g_most_recent_buffer == B_BUFFER ) {
-				g_sample_data_A.gyro_reading = u64MacResult >> 16;
+				g_sample_data_A.gyro_reading = u64GyroMacResult >> 16;
+				g_sample_data_A.adc_reading = u64AccelMacResult >> 16;
 			} else {
-				g_sample_data_B.gyro_reading = u64MacResult >> 16;
+				g_sample_data_B.gyro_reading = u64GyroMacResult >> 16;
+				g_sample_data_B.adc_reading = u64AccelMacResult >> 16;
 			}
 
 			g_most_recent_buffer = !g_most_recent_buffer;
 		} else {
 			if( g_most_recent_buffer == A_BUFFER ) {
-				g_sample_data_A.gyro_reading = u64MacResult >> 16;
+				g_sample_data_A.gyro_reading = u64GyroMacResult >> 16;
+				g_sample_data_A.adc_reading = u64AccelMacResult >> 16;
 			} else {
-				g_sample_data_B.gyro_reading = u64MacResult >> 16;
+				g_sample_data_B.gyro_reading = u64GyroMacResult >> 16;
+				g_sample_data_B.adc_reading = u64AccelMacResult >> 16;
 			}
 		}
 

@@ -181,8 +181,6 @@ void setServoDutyCycle(const uint16_t u16ServoTimeMillisecondsBin14)
 }
 
 
-extern uint16_t u16RawAccelADC;
-
 
 static void rollControlTask(void *pvParameters)
 {
@@ -195,6 +193,7 @@ static void rollControlTask(void *pvParameters)
 	int32_t overridePositionBin11 = 0;
 	static uint32_t debugLEDCounter1 = 0;
 	struct data_sample most_recent_sample;
+	static uint8_t u8ServoON = 0;
 
 	// Initialize all control models
 	PathPlanning_initialize();
@@ -243,8 +242,8 @@ static void rollControlTask(void *pvParameters)
 
 			//************** Sensor Calibration ***************
 			//************* Set Inputs for Model **************
-			SensorCalibration_U.u16RawAccelerometerADC = u16RawAccelADC;
-//			SensorCalibration_U.u16RawAccelerometerADC = (uint16_t) most_recent_sample.adc_reading;
+//			SensorCalibration_U.u16RawAccelerometerADC = u16RawAccelADC;
+			SensorCalibration_U.u16RawAccelerometerADC = (uint16_t) most_recent_sample.adc_reading;
 			SensorCalibration_U.u16RawRateGyroADC = (uint16_t) most_recent_sample.gyro_reading;
 			SensorCalibration_U.u8IsLaunchDetected = u8IsLaunchDetected;
 
@@ -329,6 +328,16 @@ static void rollControlTask(void *pvParameters)
 			ServoDrive_step();
 
 			//************ Get Outputs from Model *************
+			if(PathPlanning_Y.u8ServoDisableFlag && u8ServoON)
+			{
+				PWMDisable();
+				u8ServoON = 0;
+			}
+			else if(!PathPlanning_Y.u8ServoDisableFlag && !u8ServoON)
+			{
+				PWMReEnable();
+				u8ServoON = 1;
+			}
 			setServoDutyCycle( ServoDrive_Y.u16ServoPulseWidthBin14 );
 
 
@@ -342,18 +351,18 @@ static void rollControlTask(void *pvParameters)
 //				printf2("Accel Bin7 %d\r\n", SensorCalibration_Y.s16AccelerometerMPSSBin7);
 
 //				printf2("\f\rMission time %d\r\n\n", PathPlanning_Y.s32MissionTimeMSec);
-//				printf2("Gyro Posn Bin13 %d\r\n", RollStateEstimator_Y.s16RollPositionRadsBin13);
+				printf2("\f\rGyro Posn Bin13 %d\r\n", RollStateEstimator_Y.s16RollPositionRadsBin13);
 //				printf2("Posn Trgt Bin7 %d\r\n", (PathPlanning_Y.s16TargetPositionBin7<<6)/57);
 //				printf2("Gyro Rate Bin11 %d\r\n", RollStateEstimator_Y.s16RollRateRadsPerSecBin11);
 //				printf2("Gyro Rate CMD Bin11 %d\r\n", Control_Y.s16RateCmdRPSBin11);
 //				printf2("Cntrl Torque Bin10 %d\r\n", Control_Y.s16TotalFinTorqueCmdNMBin10);
-//				printf2("\f\rDecimated Gyro %d\r\n", most_recent_sample.gyro_reading);
+//				printf2("Decimated Gyro %d\r\n", most_recent_sample.gyro_reading);
 
-				printf2("\f\rVert Posn Bin2 %d\r\n", VelocityStateEstimator_Y.s16PositionMetersBin2);
+//				printf2("Vert Posn Bin2 %d\r\n", VelocityStateEstimator_Y.s16PositionMetersBin2);
 				printf2("Vert Rate Bin6 %d\r\n", VelocityStateEstimator_Y.s16VelocityMPSBin6);
 //				printf2("Vert Accel Bin7 %d\r\n", VelocityStateEstimator_Y.s16AccelerationMPSSBin7);
 //				printf2("Vert Accel Bin7 %d\r\n", SensorCalibration_Y.s16AccelerometerMPSSBin7);
-				printf2("Vert Accel Bin7 %d\r\n", u16RawAccelADC);
+//				printf2("Decimated Accel Bin7 %d\r\n", most_recent_sample.adc_reading);
 				if(u8IsLaunchDetected){
 					printf2("Launched");
 				} else{
@@ -363,33 +372,6 @@ static void rollControlTask(void *pvParameters)
 			}
 			debugMSGCounter++;
 
-
-			/*static int16_t lastTargetPosition = INT16_MAX;
-			if (targetPositionBin7 != lastTargetPosition) {
-				printf2("Setting target position to %d\r\n",
-						targetPositionBin7);
-				printf2("Position update time %d\r\n\n", PathPlanning_Y.s32MissionTimeMSec);
-				lastTargetPosition = targetPositionBin7;
-			}
-
-			static int16_t lastOverridePosition = INT16_MAX;
-			if (overridePositionBin11 != lastOverridePosition) {
-				printf2("Setting override position to %d\r\n",
-						overridePositionBin11);
-				printf2("Position update time %d\r\n\n", PathPlanning_Y.s32MissionTimeMSec);
-				lastOverridePosition = overridePositionBin11;
-			}
-
-			static uint16_t u16TempCounter;
-			if (u16TempCounter == 0)
-			{
-				printf2("Current mission time %d\r\n\n", PathPlanning_Y.s32MissionTimeMSec);
-				u16TempCounter = 10000;
-			}
-			else
-			{
-				u16TempCounter--;
-			}//*/
 
 			/* We have finished our task.  Return to the top of the loop where
 			 we will block on the semaphore until it is time to execute

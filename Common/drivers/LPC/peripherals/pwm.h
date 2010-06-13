@@ -15,6 +15,7 @@ void setupPWMChannel(const enum PWM_Channel chan, const uint32_t dutyCycle);
 void PWMinit (const uint32_t prescalar, const uint32_t periodTicks);
 void setupPWMPinSetup2378(const enum PWM_Channel chan);
 void setupPWMChannelPeripheral(const enum PWM_Channel chan, const uint32_t dutyCycle);
-
+void PWMDisable(void);
+void PWMReEnable(void);
 
 #endif /*PWM_H_*/

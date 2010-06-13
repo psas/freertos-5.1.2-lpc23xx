@@ -3,6 +3,8 @@
 
 #include "pwm.h"
 
+static unsigned int u32Pwm1PcrState;
+
 void setupPWMPinSetup2378(const enum PWM_Channel chan)
 {
 	switch(chan) {
@@ -63,6 +65,7 @@ void setupPWMChannelPeripheral(const enum PWM_Channel chan, const uint32_t dutyC
 			PWM1PCR |= (1<<14); //Enable PWM Output
 			break;
 	}
+	u32Pwm1PcrState = PWM1PCR;
 }
 
 /**
@@ -172,6 +175,9 @@ void PWMinit(const uint32_t prescalar, const uint32_t periodTicks)
 		PWM1PCR &= ~(1<<i);//Disable pwm output
 	}
 
+	//Store state of PWM1PCR for re-enabling later
+	u32Pwm1PcrState = PWM1PCR;
+
 	//PWMMCR = PWMMR0R_BIT;
 	PWM1MCR = 0x0; //clear everything
 
@@ -182,4 +188,25 @@ void PWMinit(const uint32_t prescalar, const uint32_t periodTicks)
 	PWM1TCR = 0x00000009;/* enable counter and PWM, release counter from reset */
 }
 
+
+/******************************************************************************
+ * Turns off the PWM outputs.
+ *
+ *
+ *****************************************************************************/
+void PWMDisable( void )
+{
+	PWM1PCR = 0x00000000;
+}
+
+
+/******************************************************************************
+ * Turns PWM outputs back ON.
+ *
+ * PWM must have been previously initialized
+ *****************************************************************************/
+void PWMReEnable( void )
+{
+	PWM1PCR = u32Pwm1PcrState;
+}
 #endif /*PWM_C_*/
