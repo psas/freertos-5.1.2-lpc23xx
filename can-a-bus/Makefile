@@ -73,6 +73,7 @@ ARM_SOURCE= \
 		$(RTOS_SOURCE_DIR)/portable/MemMang/heap_2.c \
         ../Common/drivers/LPC/serial/serial.c \
         ../Common/drivers/LPC/printf/printf2.c \
+        ../Common/drivers/LPC/peripherals/can.c \
 		$(RTOS_SOURCE_DIR)/list.c \
 		$(RTOS_SOURCE_DIR)/queue.c \
 		$(RTOS_SOURCE_DIR)/tasks.c \

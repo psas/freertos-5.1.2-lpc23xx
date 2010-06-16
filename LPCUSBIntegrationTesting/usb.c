@@ -537,7 +537,7 @@ static void USBFrameHandler(U16 wFrame)
 {
 	if (!fBulkInBusy && (fifo_avail(&txfifo) != 0)) {
 		// send first packet
-		//SendNextBulkIn(BULK_IN_EP, TRUE);
+		SendNextBulkIn(BULK_IN_EP, TRUE);
 	}
 
 

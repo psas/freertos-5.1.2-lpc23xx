@@ -3,6 +3,6 @@
 
 #include "FreeRTOS.h"
 
-void putchar2(const portCHAR ch);
+void uart0_putchar2(const portCHAR ch);
 
 #endif /*UART0PUTCHAR2_H_*/
