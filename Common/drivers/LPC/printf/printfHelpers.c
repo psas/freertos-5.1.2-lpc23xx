@@ -8,25 +8,6 @@
 
 portCHAR buffer[PRINTF_STRING_BUFFER_SIZE];
 
-/* Description: Converts a number to it's hex character
- *   
- * Parameters:
- *   -x: The number for which you want the hex value for, must be less then 16.
- *  
- * Return Value(s): The hex character for the number passed in
- * 
- */
-char hexch(const uint8_t x) {
-	if( x < 10 ) {
-		return('0' + x);
-	} else if( x < 16 ) {
-		return('A' + (x-10));
-	} else {
-		return('?');
-	}
-}
-
-
 
 
 inline long max(long l, long r) {

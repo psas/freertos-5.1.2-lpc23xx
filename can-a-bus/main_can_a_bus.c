@@ -95,11 +95,32 @@
 #include "usbapi.h"
 #include "usbhw_lpc.h"
 #include "lpc23xx.h"
+#include "printf/printf2.h"
+#include "peripherals/can.h"
+
+void readCanBus(void) {
+	can_message_t msg;
+	int r = readCAN(CAN_BUS_2, &msg);
+	if (r == CAN_OK) {
+		if (msg.isPopulated) {
+			printf2("-----------------------\r\n");
+			printf2("dataA=0x%X\r\n", msg.dataA);
+			printf2("dataB=0x%X\r\n", msg.dataB);
+		}
+	} else {
+		//printf2("CAN read error %d\r\n", r);
+	}
+}
+
+void putchar2(const int fd, const int ch)
+{
+	VCOM_putchar(ch);
+}
 
 static void blinkyLightTask(void *pvParameters) {
 	int x = 0;
 		
-	const int interval = 20000;
+	const int interval = 2000;
 	
 	int status = 0;
 	for(;;) {
@@ -112,11 +133,15 @@ static void blinkyLightTask(void *pvParameters) {
 			FIO1CLR = (1 << 19);//turn off led on olimex 2378 Sdev board
 			status = 0;
 			x = 0;
+			//printf2("CAN-a-Bus!!!!\r\n");
+			transmitCAN(CAN_BUS_2, 0x102, 0x12345678, 0x12345678, 4, false);
 		}
+		readCanBus();
 
 
 		int c = VCOM_getchar();
 		if (c != EOF) {
+			/*
 			if (status) {
 				FIO1CLR = (1 << 19);//turn off led on olimex 2378 Sdev board
 				status = 0;
@@ -132,14 +157,26 @@ static void blinkyLightTask(void *pvParameters) {
 				DBG(".");
 			}
 			VCOM_putchar(c);
-
+			*/
 
 			if( c == '?' ) {
-
+				printf2("CAN-a-Bus!\r\n");
+				const uint32_t gsr = CAN2GSR;
+				printf2("CAN2GSR = 0x%X\r\n", gsr);
+				printf2("CAN2GSR_RS = %d\r\n", ((gsr >> 4) & 0x1));
+				printf2("CAN2GSR_RXERR = %d\r\n", ((gsr >> 16) & 0xFF));
+				printf2("CAN2GSR_TXERR = %d\r\n", ((gsr >> 24) & 0xFF));
+			} else if( c == 'r' ) {
+				printf2("reseting can2 bus\r\n");
+				// Set CAN into reset mode, allows modification of CAN configuration registers
+				disableCAN(CAN_BUS_2);
+				CAN2GSR = 0;
+				reEnableCAN(CAN_BUS_2);
 			}
 		}
 
 
+		//vTaskDelay(1);
 
 	}
 
@@ -228,36 +265,25 @@ int main( void )
 	xSerialPortInitMinimal(0, 115200, 250 );
 	vSerialPutString(0, "Starting up LPC23xx with FreeRTOS\n", 50);
 	
+	/*
+	                      CANPCLK
+	cAnBPS =      -------------------------
+	          ((1 + (TSEG1 + 1) + (TSEG2 + 1)) * (brp+1))
 
 
-/*
-	for(;;) {
-		FIO1SET = (1<<19);
-		for(i = 0; i < 500000; i++ ) {
-			asm volatile("nop\n");
-
-		}
-		FIO1CLR = (1<<19);
-		for(i = 0; i < 500000; i++ ) {
-			asm volatile("nop\n");
-
-		}
-	}
+	          16
+	          5
 	*/
-	
 
-	/* Start the standard demo tasks. */
-	//vStartBlockingQueueTasks( mainBLOCK_Q_PRIORITY );
-    //vCreateBlockTimeTasks();
-    //vStartLEDFlashTasks( mainFLASH_PRIORITY );
-    
-	//vStartGenericQueueTasks( mainGEN_QUEUE_TASK_PRIORITY );
-    //vStartQueuePeekTasks();   
-    //vStartDynamicPriorityTasks();
-	
+	const uint8_t brp = 1;
+	const uint8_t sjw = 1;
+	const uint8_t tseg1 = 15;
+	const uint8_t tseg2 = 5;
+	const bool sam = false;
+	initializeCAN(CAN_BUS_2, brp, sjw, tseg1, tseg2, sam);
+
 	xTaskCreate( blinkyLightTask, ( signed portCHAR * ) "usbCounter", configMINIMAL_STACK_SIZE, NULL, mainCHECK_TASK_PRIORITY - 1, NULL );
 
-    
 	/* Start the scheduler. */
 	vTaskStartScheduler();
 
