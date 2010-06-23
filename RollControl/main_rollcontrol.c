@@ -242,7 +242,6 @@ static void rollControlTask(void *pvParameters)
 
 			//************** Sensor Calibration ***************
 			//************* Set Inputs for Model **************
-//			SensorCalibration_U.u16RawAccelerometerADC = u16RawAccelADC;
 			SensorCalibration_U.u16RawAccelerometerADC = (uint16_t) most_recent_sample.adc_reading;
 			SensorCalibration_U.u16RawRateGyroADC = (uint16_t) most_recent_sample.gyro_reading;
 			SensorCalibration_U.u8IsLaunchDetected = u8IsLaunchDetected;

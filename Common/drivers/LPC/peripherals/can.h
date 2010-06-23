@@ -16,8 +16,8 @@
 
 #define CANxCMR_CLEAR_DATA_OVERRUN_MASK (1<<3)
 
-#define   CANxMOD_RM  (1<<0)
-#define   CANxMOD_STM  (1<<2)
+#define CANxMOD_RM  (1<<0)
+#define CANxMOD_STM  (1<<2)
 
 
 enum CAN_Bus {
@@ -46,23 +46,15 @@ typedef struct  {
 
 
 void initializeCAN(const enum CAN_Bus bus, const uint32_t baudRatePrescalar,
-		const uint32_t synchronizationJumpWidth, const uint32_t tseg1, const uint32_t tseg2, const bool sam );
+		const uint32_t synchronizationJumpWidth, const uint32_t tseg1,
+		const uint32_t tseg2, const bool sam );
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+int readCAN(const enum CAN_Bus bus, can_message_t *dest_can_message);
+void transmitCAN( const enum CAN_Bus bus, const uint32_t id,
+		          const uint32_t payload1, const uint32_t payload2,
+                  const uint8_t dlc, const bool rtr );
+void disableCAN(const enum CAN_Bus bus);
+void reEnableCAN(const enum CAN_Bus bus);
 
 
 #endif /*CAN_H_*/
