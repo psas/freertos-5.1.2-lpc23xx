@@ -13,9 +13,57 @@
 static int readCAN1(can_message_t *dest_can_message);
 static int readCAN2(can_message_t *dest_can_message);
 
+static void can_fifo_init(can_queue_t *fifo);
+static int can_fifo_put(can_queue_t *fifo, can_message_t *msg);
+static int can_fifo_get(can_queue_t *fifo, can_message_t *msg);
+static int enqueueRxCAN(const enum CAN_Bus bus, can_message_t *msg);
+static int dequeueTxCAN(const enum CAN_Bus bus, can_message_t *msg);
+
+//Static global variables
+static can_queue_t can_bus1_tx_fifo;
+static can_queue_t can_bus1_rx_fifo;
+
+static can_queue_t can_bus2_tx_fifo;
+static can_queue_t can_bus2_rx_fifo;
+
+#define CAN_FIFO_NEXT_IDX(idx)        ((idx + 1) >= CAN_FIFO_SIZE ? 0 : (idx + 1))
+
+
+
 /*===========================================================================*/
 //                            External Functions
 /*===========================================================================*/
+
+void initCANQueues(void)
+{
+	can_fifo_init(&can_bus1_tx_fifo);
+	can_fifo_init(&can_bus1_rx_fifo);
+	can_fifo_init(&can_bus2_tx_fifo);
+	can_fifo_init(&can_bus2_rx_fifo);
+}
+
+int enqueueTxCAN(const enum CAN_Bus bus, can_message_t *msg)
+{
+
+	if (bus == CAN_BUS_1) {
+		return (can_fifo_put(&can_bus1_tx_fifo, msg));
+	} else {
+		return (can_fifo_put(&can_bus2_tx_fifo, msg));
+	}
+}
+
+int dequeueRxCAN(const enum CAN_Bus bus, can_message_t *msg)
+{
+	if (bus == CAN_BUS_1) {
+		return(can_fifo_get(&can_bus1_rx_fifo, msg));
+	} else {
+		return(can_fifo_get(&can_bus2_rx_fifo, msg));
+	}
+}
+
+
+
+
 
 /******************************************************************************
  * Description: This function is used to initialize the CAN peripheral.
@@ -274,6 +322,67 @@ static int readCAN2(can_message_t *dest_can_message)
 	return (CAN_OK);
 }
 
+
+
+
+
+
+
+static void can_fifo_init(can_queue_t *fifo)
+{
+	fifo->head = 0;
+	fifo->tail = 0;
+}
+
+static int can_fifo_put(can_queue_t *fifo, can_message_t *msg)
+{
+	// check if FIFO has room
+	//const int next = (fifo->head + 1) % CAN_FIFO_SIZE;
+	const int next = CAN_FIFO_NEXT_IDX(fifo->head);
+	if (next == fifo->tail) {
+		//fifo->tail = (fifo->tail + 1) % CAN_FIFO_SIZE;//FIXME this needs to be made atomic such that the put/get functions can clobber each others values
+		fifo->tail = CAN_FIFO_NEXT_IDX(fifo->tail);//FIXME this needs to be made atomic such that the put/get functions can clobber each others values
+	}
+
+	fifo->buff[fifo->head] = *msg;
+	fifo->head = next;
+
+	return 1;
+}
+
+static int can_fifo_get(can_queue_t *fifo, can_message_t *msg)
+{
+	// check if FIFO has data
+	if (fifo->head == fifo->tail) {
+		return 0;
+	}
+
+	//const int next = (fifo->tail + 1) % CAN_FIFO_SIZE;
+	const int next = CAN_FIFO_NEXT_IDX(fifo->tail);
+
+	*msg = fifo->buff[fifo->tail];
+	fifo->tail = next;
+
+	return 1;
+}
+
+static int enqueueRxCAN(const enum CAN_Bus bus, can_message_t *msg)
+{
+	if (bus == CAN_BUS_1) {
+		return (can_fifo_put(&can_bus1_rx_fifo, msg));
+	} else {
+		return (can_fifo_put(&can_bus2_rx_fifo, msg));
+	}
+}
+
+static int dequeueTxCAN(const enum CAN_Bus bus, can_message_t *msg)
+{
+	if (bus == CAN_BUS_1) {
+		return(can_fifo_get(&can_bus1_tx_fifo, msg));
+	} else {
+		return(can_fifo_get(&can_bus2_tx_fifo, msg));
+	}
+}
 
 
 

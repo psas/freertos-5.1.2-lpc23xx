@@ -45,6 +45,19 @@ typedef struct  {
 } can_message_t;
 
 
+#define CAN_FIFO_SIZE	16
+typedef struct {
+	volatile int	head;
+	volatile int 	tail;
+	volatile can_message_t buff[CAN_FIFO_SIZE];
+} can_queue_t;
+
+void initCANQueues(void);
+int enqueueTxCAN(const enum CAN_Bus bus, can_message_t *msg);
+int dequeueRxCAN(const enum CAN_Bus bus, can_message_t *msg);
+//clear queue functions
+
+
 void initializeCAN(const enum CAN_Bus bus, const uint32_t baudRatePrescalar,
 		const uint32_t synchronizationJumpWidth, const uint32_t tseg1,
 		const uint32_t tseg2, const bool sam );
