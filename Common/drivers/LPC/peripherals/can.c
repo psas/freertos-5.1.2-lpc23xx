@@ -9,9 +9,14 @@
 // Includes
 #include "can.h"
 
+
 // Local prototypes
 static int readCAN1(can_message_t *dest_can_message);
 static int readCAN2(can_message_t *dest_can_message);
+
+
+static void resetCANController(const enum CAN_Bus bus);
+static void transmitCANMsg(const enum CAN_Bus bus, can_message_t *msg);
 
 static void can_fifo_init(can_queue_t *fifo);
 static int can_fifo_put(can_queue_t *fifo, can_message_t *msg);
@@ -61,8 +66,67 @@ int dequeueRxCAN(const enum CAN_Bus bus, can_message_t *msg)
 	}
 }
 
+volatile uint32_t g_can_isr_count = 0;
 
 
+void canISR(void)
+{
+
+	/* This ISR can cause a context switch, so the first statement must be a
+	call to the portENTER_SWITCHING_ISR() macro.  This must be BEFORE any
+	variable declarations. */
+	//portENTER_SWITCHING_ISR();
+	portSAVE_CONTEXT();
+
+	g_can_isr_count++;
+
+	static can_message_t msg;
+
+	enum CAN_Status r;
+
+	if( CAN1GSR & CANxGSR_RECEIVE_BUFFER_STATUS_MASK ) {
+		msg.isPopulated = 0;
+		r = readCAN1(&msg);
+		if( r == CAN_OK && msg.isPopulated ) {
+			enqueueRxCAN(CAN_BUS_1, &msg);
+		}
+
+		if( CAN1GSR & CANxGSR_DATA_OVERRUN_STATUS_MASK ) {
+			resetCANController(CAN_BUS_1);
+		}
+	}
+
+	if( CAN2GSR & CANxGSR_RECEIVE_BUFFER_STATUS_MASK ) {
+		msg.isPopulated = 0;
+		r = readCAN2(&msg);
+		if( r == CAN_OK && msg.isPopulated ) {
+			enqueueRxCAN(CAN_BUS_2, &msg);
+		}
+
+		if( CAN2GSR & CANxGSR_DATA_OVERRUN_STATUS_MASK ) {
+			resetCANController(CAN_BUS_2);
+		}
+	}
+
+	int dequeueStatus = dequeueTxCAN(CAN_BUS_1, &msg);
+	if( dequeueStatus ) {
+		transmitCANMsg(CAN_BUS_1, &msg);
+	}
+
+	dequeueStatus = dequeueTxCAN(CAN_BUS_2, &msg);
+	if( dequeueStatus ) {
+		transmitCANMsg(CAN_BUS_2, &msg);
+	}
+
+
+	/* Clear the ISR in the VIC. */
+	VICVectAddr = 0;
+
+	/* Exit the ISR.  If a task was woken by either a character being received
+	or transmitted then a context switch will occur. */
+	//portEXIT_SWITCHING_ISR( ( xTaskWokenByTx || xTaskWokenByRx ) );
+	portRESTORE_CONTEXT();
+}
 
 
 /******************************************************************************
@@ -104,7 +168,7 @@ void initializeCAN ( const enum CAN_Bus bus,
 
 	// Set CAN into reset mode, allows modification of CAN configuration registers
 	if( bus == CAN_BUS_1 ) {
-		CAN1MOD = 1; //Disable the CANx receiver
+		CAN1MOD = CANxMOD_RM; //Disable the CANx receiver
 
 		// Disable CAN Receive Interrupt
 		CAN1IER = 0;
@@ -115,7 +179,7 @@ void initializeCAN ( const enum CAN_Bus bus,
 		CAN1BTR = canxBtrVal; // Set the bitrate value
 
 	} else {
-		CAN2MOD = 1; //Disable the CANx receiver
+		CAN2MOD = CANxMOD_RM; //Disable the CANx receiver
 		// Disable CAN Receive Interrupt
 		CAN2IER = 0;
 
@@ -127,6 +191,7 @@ void initializeCAN ( const enum CAN_Bus bus,
 
 	CAN_AFMR = 0x02; //Disable address filtering, Receive all messages
 	
+
 	//Set CAN into operational mode, lock some CAN configuration regs
 	if( bus == CAN_BUS_1 ) {
 		CAN1MOD |= CANxMOD_STM;
@@ -134,6 +199,44 @@ void initializeCAN ( const enum CAN_Bus bus,
 	} else {
 		CAN2MOD |= CANxMOD_STM;
 		CAN2MOD &= ~(CANxMOD_RM);
+	}
+}
+
+static void resetCANController(const enum CAN_Bus bus)
+{
+	if( bus == CAN_BUS_1 ) {
+		CAN1MOD |= CANxMOD_CDO;
+		CAN1MOD |= CANxMOD_RM;
+
+		// Disable CAN Receive Interrupt
+		const uint32_t old_ier = CAN1IER;
+		if( old_ier & CANxIER_RIE ) {
+			CAN1IER &= ~(CANxIER_RIE);
+		}
+
+		CAN1MOD &= ~(CANxMOD_RM);
+
+		if( old_ier & CANxIER_RIE ) {
+			CAN1IER |= CANxIER_RIE;
+		}
+
+	} else {
+		CAN2MOD |= CANxMOD_CDO;
+		CAN2MOD |= CANxMOD_RM;
+
+		// Disable CAN Receive Interrupt
+		const uint32_t old_ier = CAN1IER;
+		if( old_ier & CANxIER_RIE ) {
+			CAN2IER &= ~(CANxIER_RIE);
+		}
+
+		if( old_ier & CANxIER_RIE ) {
+			CAN2IER |= CANxIER_RIE;
+		}
+
+		CAN2MOD &= ~(CANxMOD_RM);
+
+
 	}
 }
 
@@ -156,6 +259,10 @@ int readCAN(const enum CAN_Bus bus, can_message_t *dest_can_message)
 	}
 }
 
+static void transmitCANMsg( const enum CAN_Bus bus, can_message_t *msg)
+{
+	return(transmitCAN(bus, msg->id, msg->dataA, msg->dataB, msg->dataLengthCode, msg->rtr));
+}
 
 /******************************************************************************
  * Description: This function sends a CAN message.

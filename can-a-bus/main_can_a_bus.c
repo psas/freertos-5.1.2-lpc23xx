@@ -100,8 +100,8 @@
 
 void readCanBus(void) {
 	can_message_t msg;
-	int r = readCAN(CAN_BUS_2, &msg);
-	if (r == CAN_OK) {
+	const int r = dequeueRxCAN(CAN_BUS_2, &msg);
+	if (r == 1 ) {
 		if (msg.isPopulated) {
 			printf2("-----------------------\r\n");
 			printf2("dataA=0x%X\r\n", msg.dataA);
@@ -116,6 +116,8 @@ void putchar2(const int fd, const int ch)
 {
 	VCOM_putchar(ch);
 }
+
+extern volatile uint32_t g_can_isr_count;
 
 static void blinkyLightTask(void *pvParameters) {
 	int x = 0;
@@ -134,7 +136,7 @@ static void blinkyLightTask(void *pvParameters) {
 			status = 0;
 			x = 0;
 			//printf2("CAN-a-Bus!!!!\r\n");
-			transmitCAN(CAN_BUS_2, 0x102, 0x12345678, 0x12345678, 4, false);
+			//transmitCAN(CAN_BUS_2, 0x102, 0x12345678, 0x12345678, 4, false);
 		}
 		readCanBus();
 
@@ -166,6 +168,8 @@ static void blinkyLightTask(void *pvParameters) {
 				printf2("CAN2GSR_RS = %d\r\n", ((gsr >> 4) & 0x1));
 				printf2("CAN2GSR_RXERR = %d\r\n", ((gsr >> 16) & 0xFF));
 				printf2("CAN2GSR_TXERR = %d\r\n", ((gsr >> 24) & 0xFF));
+				printf2("g_can_isr_count = %u\r\n", g_can_isr_count);
+				printf2("CAN2IER = 0x%X\r\n", CAN2IER);
 			} else if( c == 'r' ) {
 				printf2("reseting can2 bus\r\n");
 				// Set CAN into reset mode, allows modification of CAN configuration registers
@@ -275,12 +279,36 @@ int main( void )
 	          5
 	*/
 
+
+#if 1
+	//1mbit CAN settings, tested
 	const uint8_t brp = 1;
 	const uint8_t sjw = 1;
 	const uint8_t tseg1 = 15;
 	const uint8_t tseg2 = 5;
 	const bool sam = false;
+#else
+	//250kbit CAN settings
+	const uint8_t brp = 0;
+	const uint8_t sjw = 0;
+	const uint8_t tseg1 = 7;
+	const uint8_t tseg2 = 2;
+	const bool sam = false;
+#endif
+	initCANQueues();
 	initializeCAN(CAN_BUS_2, brp, sjw, tseg1, tseg2, sam);
+
+
+	VICIntSelect &= ~CAN_VIC_INTERUPT_BITMASK;//Set to IRQ mode
+	VICVectAddr23 = (uint32_t) canISR;
+	//VICVectCntl23 = 8;
+	VICIntEnable |= CAN_VIC_INTERUPT_BITMASK;
+
+	CAN2MOD |= CANxMOD_RM;
+	CAN2IER |=  CANxIER_RIE;
+	CAN2MOD &= ~CANxMOD_RM;
+
+
 
 	xTaskCreate( blinkyLightTask, ( signed portCHAR * ) "usbCounter", configMINIMAL_STACK_SIZE, NULL, mainCHECK_TASK_PRIORITY - 1, NULL );
 

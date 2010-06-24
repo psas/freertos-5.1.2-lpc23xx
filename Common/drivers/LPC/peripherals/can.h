@@ -7,9 +7,9 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define CANxGSR_RECEIVE_BUFFER_STATUS_MASK (1<<0)
-#define CANxGSR_DATA_OVERRUN_STATUS_MASK (1<<1)
-#define CANxGSR_TRANSMIT_BUFFER_STATUS_MASK (1<<2)
+#define CANxGSR_RECEIVE_BUFFER_STATUS_MASK   (1<<0)
+#define CANxGSR_DATA_OVERRUN_STATUS_MASK     (1<<1)
+#define CANxGSR_TRANSMIT_BUFFER_STATUS_MASK   (1<<2)
 #define CANxGSR_TRANSMIT_COMPLETE_STATUS_MASK (1<<3)
 #define CANxGSR_ERROR_STATUS_MASK (1<<6)
 #define CANxGSR_BUS_STATUS_MASK (1<<7)
@@ -18,6 +18,16 @@
 
 #define CANxMOD_RM  (1<<0)
 #define CANxMOD_STM  (1<<2)
+#define CANxMOD_CDO  (1<<3)
+
+#define CAN_VIC_INTERUPT_BITMASK   (1<<23)
+
+#define CANxIER_RIE     (1<<0)
+#define CANxIER_TEI1    (1<<1)
+
+#define CANxICR_RI      (1<<0)
+#define CANxICR_TI1      (1<<1)
+
 
 
 enum CAN_Bus {
@@ -42,6 +52,7 @@ typedef struct  {
 
 	uint32_t canErrorCount;
 	uint32_t canDataOverrunCount;
+	uint8_t rtr;
 } can_message_t;
 
 
@@ -52,6 +63,8 @@ typedef struct {
 	volatile can_message_t buff[CAN_FIFO_SIZE];
 } can_queue_t;
 
+
+void canISR(void) __attribute__ ((naked));
 void initCANQueues(void);
 int enqueueTxCAN(const enum CAN_Bus bus, can_message_t *msg);
 int dequeueRxCAN(const enum CAN_Bus bus, can_message_t *msg);
