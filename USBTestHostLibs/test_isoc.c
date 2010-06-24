@@ -3,9 +3,27 @@
 #include <string.h>
 #include "./libusb-1.0.8/libusb/libusb.h"
 
+/*
+ * This is a test program, that utilizes libusb 1.0, to do ISOC transfers to and from
+ * the isoc_io_sample.c sample firmware in the LPCUSB target source tree.
+ *
+ * You will need to install libusb-1.0 on your host computer in order for this to work.
+ * It has only been tested under linux.
+ *
+ * It will read data from the device (a increasing counter value) and write
+ * data to the device in order to control the LED on the olimex development board
+ * from the host.
+ *
+ * Due to kernel timing characteristics, ISOC transfers are batched, such that we can get
+ * a transfer every 1ms to/from the device.
+ *
+ * When you run this, you should expect to see it output a hexidecimal value that is constantly
+ * increasing, and you should see the LED on the olimex dev board blink only when this program
+ * is running (because this program will be telling it to blink).
+ */
+
 #define VID_TO_CLAIM    0xFFFF
 #define PID_TO_CLAIM    0x0005
-
 
 
 #define ISOC_OUT_EP     0x06
