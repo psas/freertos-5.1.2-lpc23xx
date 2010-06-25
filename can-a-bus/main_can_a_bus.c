@@ -136,13 +136,13 @@ static void blinkyLightTask(void *pvParameters) {
 			status = 0;
 			x = 0;
 			//printf2("CAN-a-Bus!!!!\r\n");
-			//transmitCAN(CAN_BUS_2, 0x102, 0x12345678, 0x12345678, 4, false);
+			transmitCAN(CAN_BUS_2, 0x102, 0x12345678, 0x12345678, 4, false);
 		}
 		readCanBus();
 
 
 		int c = VCOM_getchar();
-		if (c != EOF) {
+		if ( c != EOF ) {
 			/*
 			if (status) {
 				FIO1CLR = (1 << 19);//turn off led on olimex 2378 Sdev board
@@ -170,6 +170,14 @@ static void blinkyLightTask(void *pvParameters) {
 				printf2("CAN2GSR_TXERR = %d\r\n", ((gsr >> 24) & 0xFF));
 				printf2("g_can_isr_count = %u\r\n", g_can_isr_count);
 				printf2("CAN2IER = 0x%X\r\n", CAN2IER);
+
+				printf2("VICIntEnable = 0x%X\r\n", VICIntEnable);
+				printf2("VICIntSelect = 0x%X\r\n", VICIntSelect);
+				printf2("VICVectAddr23 = 0x%X\r\n", VICVectAddr23);
+				printf2("VICRawIntr = 0x%X\r\n", VICRawIntr);
+				printf2("VICSWPrioMask = 0x%X\r\n", VICSWPrioMask);
+
+
 			} else if( c == 'r' ) {
 				printf2("reseting can2 bus\r\n");
 				// Set CAN into reset mode, allows modification of CAN configuration registers
@@ -253,16 +261,7 @@ int main( void )
 
 	prvSetupHardware();
 
-	//VCOM_init();
 	usbInit();
-
-	//blinkyLightTask(NULL);
-/*
-	j = 1;
-	while( j ) {
-		i++;
-	}
-	*/
 
 
 	enableSerial0();
@@ -296,17 +295,12 @@ int main( void )
 	const bool sam = false;
 #endif
 	initCANQueues();
+
+	PINMODE0 = (PINMODE0 | (1<<9) | (1<<11)) & ~((1<<8) | (1<<10));//disable pullup and pulldown resitors
+	PINSEL0  = (PINSEL0  | (1<<9) | (1<<11)) & ~((1<<8) | (1<<10));//Set P0.4 and P0.5 into RD2 and TD2 mode
+
 	initializeCAN(CAN_BUS_2, brp, sjw, tseg1, tseg2, sam);
 
-
-	VICIntSelect &= ~CAN_VIC_INTERUPT_BITMASK;//Set to IRQ mode
-	VICVectAddr23 = (uint32_t) canISR;
-	//VICVectCntl23 = 8;
-	VICIntEnable |= CAN_VIC_INTERUPT_BITMASK;
-
-	CAN2MOD |= CANxMOD_RM;
-	CAN2IER |=  CANxIER_RIE;
-	CAN2MOD &= ~CANxMOD_RM;
 
 
 

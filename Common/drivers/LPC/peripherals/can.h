@@ -24,6 +24,8 @@
 
 #define CANxIER_RIE     (1<<0)
 #define CANxIER_TEI1    (1<<1)
+#define CANxIER_TEI2    (1<<9)
+#define CANxIER_TEI3    (1<<10)
 
 #define CANxICR_RI      (1<<0)
 #define CANxICR_TI1      (1<<1)

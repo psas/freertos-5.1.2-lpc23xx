@@ -621,7 +621,7 @@ int usbInit(void)
 
 #ifdef LPC214x
 	// init DBG
-	ConsoleInit(60000000 / (16 * BAUD_RATE));
+	//ConsoleInit(60000000 / (16 * BAUD_RATE));
 #else
 	// init DBG
 	//ConsoleInit(48000000 / (16 * BAUD_RATE));

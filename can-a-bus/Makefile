@@ -57,16 +57,16 @@ CFLAGS= $(DEBUG) \
 		-I ../Common/drivers/LPC \
 		-I $(LPCUSB_COMMON_DIR) -D LPC23xx -DLPC2378_PORTB \
 		-D ROWLEY_LPC23xx \
-		-D THUMB_INTERWORK \
+        -D THUMB_INTERWORK \
 		-mcpu=arm7tdmi \
 		-D PACK_STRUCT_END=__attribute\(\(packed\)\) \
 		-D ALIGN_STRUCT_END=__attribute\(\(aligned\(4\)\)\) \
         -fomit-frame-pointer \
         -g3 \
-		-mthumb-interwork
+        -mthumb-interwork
 						
 										
-THUMB_SOURCE= main_can_a_bus.c 
+THUMB_SOURCE=  main_can_a_bus.c 
 		
 ARM_SOURCE= \
         $(RTOS_SOURCE_DIR)/portable/GCC/ARM7_LPC23xx/port.c \

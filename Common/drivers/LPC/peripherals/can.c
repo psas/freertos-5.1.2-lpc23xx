@@ -69,7 +69,7 @@ int dequeueRxCAN(const enum CAN_Bus bus, can_message_t *msg)
 volatile uint32_t g_can_isr_count = 0;
 
 
-void canISR(void)
+__attribute__ ((naked)) void canISR(void)
 {
 
 	/* This ISR can cause a context switch, so the first statement must be a
@@ -190,13 +190,32 @@ void initializeCAN ( const enum CAN_Bus bus,
 	}
 
 	CAN_AFMR = 0x02; //Disable address filtering, Receive all messages
+
+
+
+
+
+	VICIntEnClr = CAN_VIC_INTERUPT_BITMASK;
+	VICIntSelect &= ~CAN_VIC_INTERUPT_BITMASK;//Set to IRQ mode
+	VICVectAddr23 = (uint32_t) canISR;
+	//VICVectCntl23 = 0x04;
+	VICIntEnable |= CAN_VIC_INTERUPT_BITMASK;
+
+	//CAN2MOD |= CANxMOD_RM;
+	//CAN2IER |=  CANxIER_RIE;
+	//CAN2MOD &= ~CANxMOD_RM;
+
+
+
 	
 
 	//Set CAN into operational mode, lock some CAN configuration regs
 	if( bus == CAN_BUS_1 ) {
+		CAN1IER |=  CANxIER_RIE;
 		CAN1MOD |= CANxMOD_STM;
 		CAN1MOD &= ~(CANxMOD_RM);
 	} else {
+		CAN2IER |=  CANxIER_RIE | CANxIER_TEI1 | CANxIER_TEI2 | CANxIER_TEI3;
 		CAN2MOD |= CANxMOD_STM;
 		CAN2MOD &= ~(CANxMOD_RM);
 	}
