@@ -136,9 +136,11 @@ static void blinkyLightTask(void *pvParameters) {
 			status = 0;
 			x = 0;
 			//printf2("CAN-a-Bus!!!!\r\n");
-			transmitCAN(CAN_BUS_2, 0x102, 0x12345678, 0x12345678, 4, false);
+			static uint32_t a_number = 123456;
+			a_number++;
+			transmitCAN(CAN_BUS_2, 0x102, a_number, 0x12345678, 4, false);
 		}
-		readCanBus();
+		//readCanBus();
 
 
 		int c = VCOM_getchar();
@@ -300,8 +302,17 @@ int main( void )
 	PINSEL0  = (PINSEL0  | (1<<9) | (1<<11)) & ~((1<<8) | (1<<10));//Set P0.4 and P0.5 into RD2 and TD2 mode
 
 	initializeCAN(CAN_BUS_2, brp, sjw, tseg1, tseg2, sam);
+	/*
+	VICIntEnClr = CAN_VIC_INTERUPT_BITMASK;
+	VICIntSelect &= ~CAN_VIC_INTERUPT_BITMASK;//Set to IRQ mode
+	VICVectAddr23 = (uint32_t) canISR;
+	//VICVectCntl23 = 0x04;
+	VICIntEnable |= CAN_VIC_INTERUPT_BITMASK;
 
-
+	CAN2MOD |= CANxMOD_RM;
+	CAN2IER |=  CANxIER_RIE;
+	CAN2MOD &= ~CANxMOD_RM;
+	*/
 
 
 	xTaskCreate( blinkyLightTask, ( signed portCHAR * ) "usbCounter", configMINIMAL_STACK_SIZE, NULL, mainCHECK_TASK_PRIORITY - 1, NULL );

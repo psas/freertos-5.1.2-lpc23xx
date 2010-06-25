@@ -69,6 +69,20 @@ int dequeueRxCAN(const enum CAN_Bus bus, can_message_t *msg)
 volatile uint32_t g_can_isr_count = 0;
 
 
+void checkAndFixCANControllerLockup(const enum CAN_Bus bus)
+{
+	//FIXME this is a temporary function and should go away
+	if (bus == CAN_BUS_1) {
+		if (CAN1GSR & CANxGSR_DATA_OVERRUN_STATUS_MASK) {
+			resetCANController(CAN_BUS_1);
+		}
+	} else {
+		if (CAN2GSR & CANxGSR_DATA_OVERRUN_STATUS_MASK) {
+			resetCANController(CAN_BUS_2);
+		}
+	}
+}
+
 __attribute__ ((naked)) void canISR(void)
 {
 
@@ -191,31 +205,11 @@ void initializeCAN ( const enum CAN_Bus bus,
 
 	CAN_AFMR = 0x02; //Disable address filtering, Receive all messages
 
-
-
-
-
-	VICIntEnClr = CAN_VIC_INTERUPT_BITMASK;
-	VICIntSelect &= ~CAN_VIC_INTERUPT_BITMASK;//Set to IRQ mode
-	VICVectAddr23 = (uint32_t) canISR;
-	//VICVectCntl23 = 0x04;
-	VICIntEnable |= CAN_VIC_INTERUPT_BITMASK;
-
-	//CAN2MOD |= CANxMOD_RM;
-	//CAN2IER |=  CANxIER_RIE;
-	//CAN2MOD &= ~CANxMOD_RM;
-
-
-
-	
-
 	//Set CAN into operational mode, lock some CAN configuration regs
 	if( bus == CAN_BUS_1 ) {
-		CAN1IER |=  CANxIER_RIE;
 		CAN1MOD |= CANxMOD_STM;
 		CAN1MOD &= ~(CANxMOD_RM);
 	} else {
-		CAN2IER |=  CANxIER_RIE | CANxIER_TEI1 | CANxIER_TEI2 | CANxIER_TEI3;
 		CAN2MOD |= CANxMOD_STM;
 		CAN2MOD &= ~(CANxMOD_RM);
 	}
@@ -298,6 +292,8 @@ void transmitCAN( const enum CAN_Bus bus,
                   const uint8_t dlc,
                   const bool rtr )
 {
+	checkAndFixCANControllerLockup(bus);//FIXME this needs to be removed after June 28th 2010
+
 	if( bus == CAN_BUS_1 ) {
 		CAN1TFI1 = ((dlc & 0x0F)<<16);//Set the DLC
 		if( rtr ) {
@@ -307,6 +303,15 @@ void transmitCAN( const enum CAN_Bus bus,
 		CAN1TDA1 = payload1;
 		CAN1TDA2 = payload2;
 		CAN1CMR = 0x21; //Select TX buffer 1 and trigger transmission
+
+		if( CAN1SR & CANxSR_TRANSMIT_BUFFER_STATUS_1 ) {
+			CAN1CMR = CANxCMR_TRANSMISSION_REQUEST | CANxCMR_SELECT_TX_BUFFER_1; //Select TX buffer and trigger transmission
+		} else if( CAN1SR & CANxSR_TRANSMIT_BUFFER_STATUS_2 ) {
+			CAN1CMR = CANxCMR_TRANSMISSION_REQUEST | CANxCMR_SELECT_TX_BUFFER_2; //Select TX buffer and trigger transmission
+		} else if( CAN1SR & CANxSR_TRANSMIT_BUFFER_STATUS_3 ) {
+			CAN1CMR = CANxCMR_TRANSMISSION_REQUEST | CANxCMR_SELECT_TX_BUFFER_3; //Select TX buffer and trigger transmission
+		}
+
 	} else {
 		CAN2TFI1 = ((dlc & 0x0F)<<16);//Set the DLC
 		if( rtr ) {
@@ -315,7 +320,14 @@ void transmitCAN( const enum CAN_Bus bus,
 		CAN2TID1 = id;//ID number
 		CAN2TDA1 = payload1;
 		CAN2TDA2 = payload2;
-		CAN2CMR = 0x21; //Select TX buffer 1 and trigger transmission
+
+		if( CAN2SR & CANxSR_TRANSMIT_BUFFER_STATUS_1 ) {
+			CAN2CMR = CANxCMR_TRANSMISSION_REQUEST | CANxCMR_SELECT_TX_BUFFER_1; //Select TX buffer and trigger transmission
+		} else if( CAN2SR & CANxSR_TRANSMIT_BUFFER_STATUS_2 ) {
+			CAN2CMR = CANxCMR_TRANSMISSION_REQUEST | CANxCMR_SELECT_TX_BUFFER_2; //Select TX buffer and trigger transmission
+		} else if( CAN2SR & CANxSR_TRANSMIT_BUFFER_STATUS_3 ) {
+			CAN2CMR = CANxCMR_TRANSMISSION_REQUEST | CANxCMR_SELECT_TX_BUFFER_3; //Select TX buffer and trigger transmission
+		}
 	}
 }
 

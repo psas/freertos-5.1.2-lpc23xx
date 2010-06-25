@@ -14,7 +14,31 @@
 #define CANxGSR_ERROR_STATUS_MASK (1<<6)
 #define CANxGSR_BUS_STATUS_MASK (1<<7)
 
-#define CANxCMR_CLEAR_DATA_OVERRUN_MASK (1<<3)
+
+#define CANxCMR_TRANSMISSION_REQUEST      (1<<0)
+#define CANxCMR_ABORT_TRANSMISSION        (1<<1)
+#define CANxCMR_RELEASE_RECEIVE_BUFFER    (1<<2)
+#define CANxCMR_CLEAR_DATA_OVERRUN_MASK   (1<<3)
+#define CANxCMR_SELECT_TX_BUFFER_1        (1<<5)
+#define CANxCMR_SELECT_TX_BUFFER_2        (1<<6)
+#define CANxCMR_SELECT_TX_BUFFER_3        (1<<7)
+
+
+#define CANxSR_RECEIVE_BUFFER_STATUS          (1<<0)
+#define CANxSR_DATA_OVERRRUN_STATUS           (1<<1)
+#define CANxSR_TRANSMIT_BUFFER_STATUS_1       (1<<2)
+#define CANxSR_TRANSMISSION_COMPLETE_STATUS   (1<<3)
+#define CANxSR_RECEIVE_STATUS                 (1<<4)
+#define CANxSR_TRANSMIT_STATUS_1              (1<<5)
+#define CANxSR_ERROR_STATUS                   (1<<6)
+#define CANxSR_BUS_STATUS                     (1<<7)
+#define CANxSR_RECEIVE_BUFFER_STATUS2         (1<<8)
+#define CANxSR_DATA_OVERRRUN_STATUS2          (1<<9)
+#define CANxSR_TRANSMIT_BUFFER_STATUS_2       (1<<10)
+#define CANxSR_TRANSMIT_BUFFER_STATUS_3       (1<<11)
+
+
+
 
 #define CANxMOD_RM  (1<<0)
 #define CANxMOD_STM  (1<<2)
@@ -66,7 +90,9 @@ typedef struct {
 } can_queue_t;
 
 
-void canISR(void) __attribute__ ((naked));
+void checkAndFixCANControllerLockup(const enum CAN_Bus bus);
+
+__attribute__ ((naked)) void canISR(void);
 void initCANQueues(void);
 int enqueueTxCAN(const enum CAN_Bus bus, can_message_t *msg);
 int dequeueRxCAN(const enum CAN_Bus bus, can_message_t *msg);
