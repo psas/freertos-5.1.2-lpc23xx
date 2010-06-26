@@ -144,7 +144,7 @@ static void blinkyLightTask(void *pvParameters) {
 			can_message_t msg;
 			memset(&msg, 0, sizeof(can_message_t));
 			msg.dataA = a_number;
-			msg.dataB = 0x12345678;
+			msg.dataB = 0xAAAA5555;
 			msg.dataLengthCode = 8;
 			msg.rtr = 0;
 			msg.id = 0x102;
@@ -293,7 +293,7 @@ int main( void )
 	*/
 
 
-#if 1
+#if 0
 	//1mbit CAN settings, tested
 	const uint8_t brp = 1;
 	const uint8_t sjw = 1;
@@ -302,10 +302,19 @@ int main( void )
 	const bool sam = false;
 #else
 	//250kbit CAN settings
-	const uint8_t brp = 0;
+	/*
+	const uint8_t brp = 2;
 	const uint8_t sjw = 0;
 	const uint8_t tseg1 = 7;
 	const uint8_t tseg2 = 2;
+	const bool sam = false;
+	*/
+
+
+	const uint8_t brp = 7;
+	const uint8_t sjw = 1;
+	const uint8_t tseg1 = 15;
+	const uint8_t tseg2 = 5;
 	const bool sam = false;
 #endif
 	initCANQueues();
