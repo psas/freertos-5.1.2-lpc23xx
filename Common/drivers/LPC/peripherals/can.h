@@ -94,6 +94,7 @@ void checkAndFixCANControllerLockup(const enum CAN_Bus bus);
 
 __attribute__ ((naked)) void canISR(void);
 void initCANQueues(void);
+void processCANTxQueue(const enum CAN_Bus bus);
 int enqueueTxCAN(const enum CAN_Bus bus, can_message_t *msg);
 int dequeueRxCAN(const enum CAN_Bus bus, can_message_t *msg);
 //clear queue functions

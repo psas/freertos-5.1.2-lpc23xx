@@ -138,7 +138,19 @@ static void blinkyLightTask(void *pvParameters) {
 			//printf2("CAN-a-Bus!!!!\r\n");
 			static uint32_t a_number = 123456;
 			a_number++;
-			transmitCAN(CAN_BUS_2, 0x102, a_number, 0x12345678, 4, false);
+			//transmitCAN(CAN_BUS_2, 0x102, a_number, 0x12345678, 4, false);
+
+
+			can_message_t msg;
+			memset(&msg, 0, sizeof(can_message_t));
+			msg.dataA = a_number;
+			msg.dataB = 0x12345678;
+			msg.dataLengthCode = 8;
+			msg.rtr = 0;
+			msg.id = 0x102;
+			msg.isPopulated = 1;
+			enqueueTxCAN(CAN_BUS_2, &msg);
+			processCANTxQueue(CAN_BUS_2);
 		}
 		//readCanBus();
 

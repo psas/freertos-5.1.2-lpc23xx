@@ -66,11 +66,46 @@ int dequeueRxCAN(const enum CAN_Bus bus, can_message_t *msg)
 	}
 }
 
+void processCANTxQueue(const enum CAN_Bus bus)
+{
+	static can_message_t msg;
+	int dequeueStatus;
+
+	if (bus == CAN_BUS_1) {
+		for(;;) {
+			if( CAN1SR & (CANxSR_TRANSMIT_BUFFER_STATUS_1 | CANxSR_TRANSMIT_BUFFER_STATUS_2 | CANxSR_TRANSMIT_BUFFER_STATUS_3) ) {
+				dequeueStatus = dequeueTxCAN(CAN_BUS_1, &msg);
+				if (dequeueStatus) {
+					transmitCANMsg(CAN_BUS_1, &msg);
+				} else {
+					break;
+				}
+			} else {
+				break;
+			}
+		}
+	} else {
+		for(;;) {
+			if( CAN2SR & (CANxSR_TRANSMIT_BUFFER_STATUS_1 | CANxSR_TRANSMIT_BUFFER_STATUS_2 | CANxSR_TRANSMIT_BUFFER_STATUS_3) ) {
+				dequeueStatus = dequeueTxCAN(CAN_BUS_2, &msg);
+				if (dequeueStatus) {
+					transmitCANMsg(CAN_BUS_2, &msg);
+				} else {
+					break;
+				}
+			} else {
+				break;
+			}
+		}
+	}
+}
+
 volatile uint32_t g_can_isr_count = 0;
 
 
 void checkAndFixCANControllerLockup(const enum CAN_Bus bus)
 {
+
 	//FIXME this is a temporary function and should go away
 	if (bus == CAN_BUS_1) {
 		if (CAN1GSR & CANxGSR_DATA_OVERRUN_STATUS_MASK) {
