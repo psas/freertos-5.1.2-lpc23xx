@@ -128,12 +128,10 @@
 
 
 
-
-
-
-
-
-
+void putchar2(const int fd, const int ch)
+{
+	xSerialPutChar(0, ch, 1);
+}
 
 static void blinkyLightTask(void *pvParameters) {
 	int x = 0;
