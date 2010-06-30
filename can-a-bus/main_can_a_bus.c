@@ -302,15 +302,6 @@ int main( void )
 	const bool sam = false;
 #else
 	//250kbit CAN settings
-	/*
-	const uint8_t brp = 2;
-	const uint8_t sjw = 0;
-	const uint8_t tseg1 = 7;
-	const uint8_t tseg2 = 2;
-	const bool sam = false;
-	*/
-
-
 	const uint8_t brp = 7;
 	const uint8_t sjw = 1;
 	const uint8_t tseg1 = 15;
