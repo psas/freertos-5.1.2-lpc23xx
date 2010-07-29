@@ -1,0 +1,3 @@
+ lpc21isp -hex -control -PHILIPSARM i2cblinkm.hex /dev/ttyUSB0 115200 12000
+ lpc21isp -hex -control -Verify -PHILIPSARM i2cblinkm.hex /dev/ttyUSB0 115200 12000
+
