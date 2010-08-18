@@ -111,6 +111,8 @@ static void spieepromtask(void *pvParameters) {
     uint32_t  x             = 0;
     uint32_t  cnt           = 0;
     const int interval      = 200000;
+    uint8_t   do_wait       = 0;
+    uint8_t   wait_iters    = 0;
 
     signed    portCHAR      theChar;
     signed    portBASE_TYPE status;
@@ -120,6 +122,7 @@ static void spieepromtask(void *pvParameters) {
     uint8_t   writeCmd[4];
     uint8_t   inPayload[4];
     uint8_t   readCmd[3];
+    uint8_t   readStatusCmd[1];
 
     writeEnableCmd[0]  = 0x06;
 
@@ -132,6 +135,8 @@ static void spieepromtask(void *pvParameters) {
     readCmd[1]         = 0x00;
     readCmd[2]         = 0x00;
 
+    readStatusCmd[0]   = 0x05;
+
     for(;;) {
         x++;
         if (x == interval) {
@@ -141,7 +146,15 @@ static void spieepromtask(void *pvParameters) {
             printf2(" %d \r\n",cnt++);
             spi_transferNBytes(writeEnableCmd, 1,inPayload,1);
             spi_transferNBytes(writeCmd,4,inPayload,4);
-            vTaskDelay(500/portTICK_RATE_MS);
+            //vTaskDelay(500/portTICK_RATE_MS);
+            do{
+                spi_transferNBytes(readStatusCmd,1,inPayload,2);
+                do_wait = (inPayload[1] & 0x01);
+                wait_iters++;
+            }while (do_wait);
+            
+            printf2("Checked Status %d times, now reading..\r\n",wait_iters);
+            wait_iters=0;
             spi_transferNBytes(readCmd,3,inPayload,4);
         }
     }
