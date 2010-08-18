@@ -37,7 +37,7 @@ CC                = arm-elf-gcc
 OBJCOPY           = arm-elf-objcopy
 LDSCRIPT          = lpc2368.ld
 
-PROJECT_NAME      = i2ceeprom
+PROJECT_NAME      = spieeprom
 
 LINKER_FLAGS     = -mthumb -nostartfiles -Xlinker -o$(PROJECT_NAME).elf -Xlinker -M -Xlinker -Map=$(PROJECT_NAME).map
 

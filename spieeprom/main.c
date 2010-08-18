@@ -101,24 +101,48 @@ uint32_t millisecondsToCPUTicks(const uint32_t miliseconds) {
     uint32_t ret = (configCPU_CLOCK_HZ / 1000) * miliseconds;
     return(ret);
 }
-
+/*
+void spi_transferNBytes(const uint8_t *outPayload, const uint8_t outPayloadSize, uint8_t *inPayload, uint8_t inPayloadSize, uint8_t *bytesRead)
+*/
 /*
  * spieepromtask
  */
 static void spieepromtask(void *pvParameters) {
     uint32_t  x             = 0;
     uint32_t  cnt           = 0;
-    const int interval      = 100000;
+    const int interval      = 200000;
 
     signed    portCHAR      theChar;
     signed    portBASE_TYPE status;
+
+    uint8_t   bytesRead;
+    uint8_t   writeEnableCmd[1];
+    uint8_t   writeCmd[4];
+    uint8_t   inPayload[4];
+    uint8_t   readCmd[3];
+
+    writeEnableCmd[0]  = 0x06;
+
+    writeCmd[0]        = 0x02;
+    writeCmd[1]        = 0x00;
+    writeCmd[2]        = 0x00;
+    writeCmd[3]        = 0x0C;
+
+    readCmd[0]         = 0x03;
+    readCmd[1]         = 0x00;
+    readCmd[2]         = 0x00;
 
     for(;;) {
         x++;
         if (x == interval) {
 
         } else if (x >= (2*interval)) {
-            x = 0;          
+            x = 0;  
+            printf2(" %d \r\n",cnt++);
+            spi_transferNBytes(writeEnableCmd, 1,inPayload,1);
+            spi_transferNBytes(writeCmd,4,inPayload,4);
+            vTaskDelay(500/portTICK_RATE_MS);
+            spi_transferNBytes(readCmd,3,inPayload,4);
         }
     }
 }
@@ -188,9 +212,9 @@ int main( void ) {
 
     SCS |= 1; //Configure FIO
 
-
+    spi_init();
     xTaskCreate( spieepromtask, 
-            ( signed portCHAR * ) "spieepromtask",     const int interval      = 100000;
+            ( signed portCHAR * ) "spieepromtask",  
             SPITEST_STACK_SIZE, NULL, 
             mainCHECK_TASK_PRIORITY - 1, 
             NULL );
