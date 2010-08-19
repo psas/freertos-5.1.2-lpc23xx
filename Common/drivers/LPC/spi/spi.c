@@ -4,14 +4,23 @@
 
 #include "spi/spi.h"
 
+/*
+ * spi_init 
+ * ---------------------------------------
+ * must be the first function called when using this library.
+ * This function configures the hardware to be in master mode.
+ * Fast IO is assumed.
+ * SSEL is a GPIO output.
+ */
 void spi_init(void)
 {
+    vSemaphoreCreateBinary( spi_semaphore );
+    
     //Power
     PCONP   |= (1<<8);              //pg.69
     
     //Clock
-    PCLKSEL0 |= (1<<17) | (1<<16);//=48Mhz/8  pg.63
-    
+    PCLKSEL0 |= (1<<17) | (1<<16);//=48Mhz/8  pg.63    
 
     //Pin Function
     PINSEL0 |= (1<<31) | (1<<30);
@@ -26,19 +35,55 @@ void spi_init(void)
     PINMODE1 = (PINMODE1 | (1<<5))  & ~(1<<4);
 
     //SPI Settings
-    S0SPCR = 0x24;//Master Mode, MSB First, 8 Bit transfers, POL=PHA=0.    
+    S0SPCR = 0x24;//Master Mode, MSB First, variable Bit transfers, POL=PHA=0.    
+    
+
+
     S0SPCCR = 0x0C;//500Khz
 
     //Configure SSEL as GPIO Out
     FIO0DIR |= (1<<16);
-    FIO0SET |= (1<<16);    
+    FIO0SET |= (1<<16);   
+
+
+  
 }
 
 /*
- * readSPIStatus
+ * spi_initInt
  * ---------------------------------------
- *  check the flags in the status register
- *  return SPIF value
+ * Must call this before using the interrupt version
+ * of the transfer function.
+ */
+void spi_initInt(void)
+{
+    S0SPCR |= (1<<7);//Turn on SPI Interrupts.pg.462
+    VICIntEnable |= (1<<10);//pg.94
+    VICVectAddr10  = spi_isr;
+}
+
+void spi_isr(void)
+{
+    portSAVE_CONTEXT();
+    static signed portBASE_TYPE xHigherPriorityTaskWoken= pdFALSE;
+    FIO1PIN = FIO1PIN ^ (1<<19);   
+    //Between Boilerplate..
+    S0SPINT |= (1<<0);      //Clear SPI Interrupt Flag by writing a 1 to it.
+    VICVectAddr = 0x0;      // Update VIC hardware
+    xSemaphoreGiveFromISR( spi_semaphore, &xHigherPriorityTaskWoken );
+    if( xHigherPriorityTaskWoken ) {
+	    portYIELD_FROM_ISR();
+    }
+    
+    portRESTORE_CONTEXT();
+}
+
+
+/*
+ * spi_readStatus
+ * ---------------------------------------
+ * check the flags in the status register
+ * return SPIF value
  */
 int8_t spi_readStatus (void) {
 
@@ -78,7 +123,7 @@ int8_t spi_readStatus (void) {
 }
 
 /*
- * setBytesPerTransfer
+ * spi_setBytesPerTransfer
  * -----------------------------------
  * Some transfers are two bytes, some one byte
  * For SPI, this means changing the control register 
@@ -100,78 +145,60 @@ void spi_setBytesPerTransfer(const int8_t numBytes ) {
 }
 
 /*
- * spiTransferNBytes
+ * spi_transferNBytesInt
  * ----------------------------------
  * This function will transfer up to 32 bits
+ * This function utilizes interrupts.
  * in 1 or 2 byte transfers.
  * This function will keep SSEL (chipselect) 
  * low for the entire transfer.
+ * Assumes spi_initInt was called.
+ *
+ * notes:
+ * clocks are generated when S0SPDR is written to. So, if you intend to read, then you must first write.
  */
-/*uint32_t spi_transferNBytes(const int32_t payload, const int8_t numBytes) {
-
-    uint32_t byte0, byte1, byte2, byte3;
-    uint32_t read_data = 0; 
-
-    if(numBytes < 1 || numBytes > 4) {
-        spi_errorMsg("Invalid number of bytes in spiTransferNbytes.\n\r\t1<=numBytes <=4. STOPPING!!\n");
-        for(;;){}
-    }
-
-    FIO0CLR |= (1<<16);
-
-    spi_setBytesPerTransfer(1);
-
-    byte0 = payload & 0xFF;
-    byte1 = (payload & (0xFF << 8))  >> 8;
-    byte2 = (payload & (0xFF << 16)) >> 16;
-    byte3 = (payload & (0xFF << 24)) >> 24;
-
-    switch(numBytes) {
-        case 1: 
-            spi_setBytesPerTransfer(1);
-            S0SPDR    = byte0;
-            WAIT_ON_SPIF;
-            read_data = S0SPDR & 0x000000FF;
-            break;
-        case 2: 
-           spi_setBytesPerTransfer(2);
-            S0SPDR = payload & 0xFFFF; 
-            WAIT_ON_SPIF;
-            read_data = S0SPDR & 0x0000FFFF;
-            break;
-        case 3:
-            spi_setBytesPerTransfer(1);
-            S0SPDR = byte2;
-            WAIT_ON_SPIF;
-            read_data = S0SPDR & 0x000000FF;
-            S0SPDR = byte1;
-            WAIT_ON_SPIF;
-            read_data = (read_data << 8) | (S0SPDR & 0x000000FF);
-            S0SPDR = byte0;
-            WAIT_ON_SPIF;
-            read_data = (read_data << 8) | (S0SPDR & 0x000000FF);
-            break;
-        case 4: 
-            spi_setBytesPerTransfer(2);
-            S0SPDR = ((byte3 << 8) | byte2);
-            WAIT_ON_SPIF;
-            read_data = S0SPDR & 0x0000FFFF;
-            S0SPDR = ((byte1 << 8 ) | byte0);
-            WAIT_ON_SPIF;
-            read_data = (read_data << 16) | (S0SPDR & 0x0000FFFF);
-            break;
-        default:
-            spi_errorMsg("Not an available transfer size...write your own?\n\r");
-            break;
-    }
-    FIO0SET |= (1<<16);
-    return(read_data);
-}*/
-
-void spi_transferNBytes(const uint8_t *outPayload, const uint8_t outPayloadSize, uint8_t *inPayload, uint8_t inPayloadSize) {
+void spi_transferNBytesInt(const uint8_t *outPayload, const uint8_t outPayloadSize, uint8_t *inPayload, uint8_t inPayloadSize) {
 
     uint8_t payloadIndex=0;
+    int8_t spiStatus;
+    FIO0CLR |= (1<<16);
+    spi_setBytesPerTransfer(1);
+    for (payloadIndex=0;payloadIndex < outPayloadSize;payloadIndex++)
+    {
+        S0SPDR = outPayload[payloadIndex];
+        xSemaphoreTake( spi_semaphore, portMAX_DELAY );
+        spiStatus = spi_readStatus();
+        inPayload[payloadIndex] = S0SPDR;
+        //printf2("W: Tx 0x%X, Rx 0x%X\r\n", outPayload[payloadIndex], inPayload[payloadIndex]);
+    }
 
+    for (payloadIndex=outPayloadSize;payloadIndex < inPayloadSize;payloadIndex++)
+    {
+        S0SPDR = 0xAA;//Dummy to generate clock
+        xSemaphoreTake( spi_semaphore, portMAX_DELAY );
+        spiStatus = spi_readStatus();
+        inPayload[payloadIndex] = S0SPDR;
+        //printf2("R: Rx 0x%X\r\n", inPayload[payloadIndex]);       
+    }
+
+    FIO0SET |= (1<<16);
+
+}
+/*
+ * spi_transferNBytesBW
+ * ----------------------------------
+ * This function will transfer up to 32 bits
+ * This function utilizes Busy Waits.
+ * in 1 or 2 byte transfers.
+ * This function will keep SSEL (chipselect) 
+ * low for the entire transfer.
+ *
+ * notes:
+ * clocks are generated when S0SPDR is written to. So, if you intend to read, then you must first write.
+ */
+void spi_transferNBytesBW(const uint8_t *outPayload, const uint8_t outPayloadSize, uint8_t *inPayload, uint8_t inPayloadSize) {
+
+    uint8_t payloadIndex=0;
     FIO0CLR |= (1<<16);
     spi_setBytesPerTransfer(1);
     for (payloadIndex=0;payloadIndex < outPayloadSize;payloadIndex++)
@@ -179,7 +206,7 @@ void spi_transferNBytes(const uint8_t *outPayload, const uint8_t outPayloadSize,
         S0SPDR = outPayload[payloadIndex];
         WAIT_ON_SPIF;
         inPayload[payloadIndex] = S0SPDR;
-        printf2("In Write: Sent 0x%X, Recv 0x%X\r\n", outPayload[payloadIndex], inPayload[payloadIndex]);
+        //printf2("W: Tx 0x%X, Rx 0x%X\r\n", outPayload[payloadIndex], inPayload[payloadIndex]);
     }
 
     for (payloadIndex=outPayloadSize;payloadIndex < inPayloadSize;payloadIndex++)
@@ -187,8 +214,7 @@ void spi_transferNBytes(const uint8_t *outPayload, const uint8_t outPayloadSize,
         S0SPDR = 0xAA;//Dummy to generate clock
         WAIT_ON_SPIF;
         inPayload[payloadIndex] = S0SPDR;
-        printf2("In Read: Recv 0x%X\r\n", inPayload[payloadIndex]);
-       
+        //printf2("R: Rx 0x%X\r\n", inPayload[payloadIndex]);       
     }
 
     FIO0SET |= (1<<16);
@@ -196,9 +222,8 @@ void spi_transferNBytes(const uint8_t *outPayload, const uint8_t outPayloadSize,
 }
 
 
-
 /*
- * SPI0_INFO
+ * spi_infoMsg
  * ---------------------------
  */
 void spi_infoMsg (char *string) {
@@ -209,7 +234,7 @@ void spi_infoMsg (char *string) {
 }
 
 /*
- * SPI0_ERROR
+ * spi_errorMsg
  * ---------------------------
  */
 void spi_errorMsg (char *string) {

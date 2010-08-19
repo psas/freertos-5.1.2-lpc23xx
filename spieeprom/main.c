@@ -56,7 +56,7 @@
 #define mainBLOCK_Q_PRIORITY          ( tskIDLE_PRIORITY + 2 )
 #define mainFLASH_PRIORITY            ( tskIDLE_PRIORITY + 2 )
 #define mainCREATOR_TASK_PRIORITY     ( tskIDLE_PRIORITY + 3 )
-#define mainGEN_QUEUE_TASK_PRIORITY   ( tskIDLE_PRIORITY ) 
+#define mainGEN_QUEUE_TASK_PRIORITY   ( tskIDLE_P            spi_transferNBytes(writeEnableCmd, 1,inPayload,1);RIORITY ) 
 
 /* clock setup */
 #define mainPLL_MUL                   ( ( unsigned portLONG ) ( 11 ) )
@@ -108,35 +108,18 @@ void spi_transferNBytes(const uint8_t *outPayload, const uint8_t outPayloadSize,
  * spieepromtask
  */
 static void spieepromtask(void *pvParameters) {
-    uint32_t  x             = 0;
-    uint32_t  cnt           = 0;
-    const int interval      = 200000;
-    uint8_t   do_wait       = 0;
-    uint8_t   wait_iters    = 0;
-
-    signed    portCHAR      theChar;
-    signed    portBASE_TYPE status;
-
-    uint8_t   bytesRead;
-    uint8_t   writeEnableCmd[1];
-    uint8_t   writeCmd[4];
-    uint8_t   inPayload[4];
-    uint8_t   readCmd[3];
-    uint8_t   readStatusCmd[1];
-
-    writeEnableCmd[0]  = 0x06;
-
-    writeCmd[0]        = 0x02;
-    writeCmd[1]        = 0x00;
-    writeCmd[2]        = 0x00;
-    writeCmd[3]        = 0x0C;
-
-    readCmd[0]         = 0x03;
-    readCmd[1]         = 0x00;
-    readCmd[2]         = 0x00;
-
-    readStatusCmd[0]   = 0x05;
-
+    uint32_t    x                   = 0;
+    uint32_t    cnt                 = 0;
+    const int   interval            = 200000;
+    uint8_t     do_wait             = 0;
+    uint8_t     wait_iters          = 0;
+    uint8_t     inPayload[4];
+    uint8_t     writeEnableCmd[1]   = {0x06};
+    uint8_t     writeCmd[4]         = {0x02, 0x00, 0x02, 0x0D};
+    uint8_t     readCmd[3]          = {0x03, 0x00, 0x02};
+    uint8_t     readStatusCmd[1]    = {0x05};
+    
+    
     for(;;) {
         x++;
         if (x == interval) {
@@ -144,18 +127,21 @@ static void spieepromtask(void *pvParameters) {
         } else if (x >= (2*interval)) {
             x = 0;  
             printf2(" %d \r\n",cnt++);
-            spi_transferNBytes(writeEnableCmd, 1,inPayload,1);
-            spi_transferNBytes(writeCmd,4,inPayload,4);
-            //vTaskDelay(500/portTICK_RATE_MS);
+            spi_transferNBytesInt(writeEnableCmd, 1,inPayload,1);
+            spi_transferNBytesInt(writeCmd,4,inPayload,4);//A successful write cycle will reset the write enable latch
+
             do{
-                spi_transferNBytes(readStatusCmd,1,inPayload,2);
+                spi_transferNBytesInt(readStatusCmd,1,inPayload,2);
                 do_wait = (inPayload[1] & 0x01);
                 wait_iters++;
             }while (do_wait);
             
-            printf2("Checked Status %d times, now reading..\r\n",wait_iters);
+            //printf2("Checked Status %d times, now reading..\r\n",wait_iters);
             wait_iters=0;
-            spi_transferNBytes(readCmd,3,inPayload,4);
+            spi_transferNBytesInt(readCmd,3,inPayload,4);
+            if (inPayload[3] == writeCmd[3]){
+                printf2("Write/Read Success!\r\n");
+            }
         }
     }
 }
@@ -200,6 +186,8 @@ static void prvSetupHardware( void ) {
     PLLFEED = mainPLL_FEED_BYTE2;
     while( !( PLLSTAT & mainPLL_CONNECTED ) ); 
 
+    FIO1DIR |= (1<<19);
+
 }
 
 /*
@@ -226,6 +214,9 @@ int main( void ) {
     SCS |= 1; //Configure FIO
 
     spi_init();
+    spi_initInt();
+
+
     xTaskCreate( spieepromtask, 
             ( signed portCHAR * ) "spieepromtask",  
             SPITEST_STACK_SIZE, NULL, 
