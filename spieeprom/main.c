@@ -39,6 +39,8 @@
 #include "peripherals/pwm.h"
 #include "spi/spi.h"
 
+#define SPI_INTERRUPT_MODE            1
+
 #define SPITEST_STACK_SIZE            1024
 
 // Constants to setup I/O. 
@@ -78,7 +80,7 @@
 #define mainMAM_TIM_3                 ( ( unsigned portCHAR ) 0x03 )
 #define mainMAM_MODE_FULL             ( ( unsigned portCHAR ) 0x02 )
 
-/*
+/*SPI_INTERRUPT_MODE
  * putchar
  */
 void putchar2(const int fd, const int ch) {
@@ -105,9 +107,9 @@ uint32_t millisecondsToCPUTicks(const uint32_t miliseconds) {
 void spi_transferNBytes(const uint8_t *outPayload, const uint8_t outPayloadSize, uint8_t *inPayload, uint8_t inPayloadSize, uint8_t *bytesRead)
 */
 /*
- * spieepromtask
+ * spi_Int_eepromtask
  */
-static void spieepromtask(void *pvParameters) {
+static void spi_Int_eepromtask(void *pvParameters) {
     uint32_t    x                   = 0;
     uint32_t    cnt                 = 0;
     const int   interval            = 200000;
@@ -127,6 +129,7 @@ static void spieepromtask(void *pvParameters) {
         } else if (x >= (2*interval)) {
             x = 0;  
             printf2(" %d \r\n",cnt++);
+#if (SPI_INTERRUPT_MODE)
             spi_transferNBytesInt(writeEnableCmd, 1,inPayload,1);
             spi_transferNBytesInt(writeCmd,4,inPayload,4);//A successful write cycle will reset the write enable latch
 
@@ -142,6 +145,23 @@ static void spieepromtask(void *pvParameters) {
             if (inPayload[3] == writeCmd[3]){
                 printf2("Write/Read Success!\r\n");
             }
+#else
+            spi_transferNBytesBW(writeEnableCmd, 1,inPayload,1);
+            spi_transferNBytesBW(writeCmd,4,inPayload,4);//A successful write cycle will reset the write enable latch
+
+            do{
+                spi_transferNBytesBW(readStatusCmd,1,inPayload,2);
+                do_wait = (inPayload[1] & 0x01);
+                wait_iters++;
+            }while (do_wait);
+            
+            //printf2("Checked Status %d times, now reading..\r\n",wait_iters);
+            wait_iters=0;
+            spi_transferNBytesBW(readCmd,3,inPayload,4);
+            if (inPayload[3] == writeCmd[3]){
+                printf2("Write/Read Success!\r\n");
+            }   
+#endif
         }
     }
 }
@@ -214,11 +234,15 @@ int main( void ) {
     SCS |= 1; //Configure FIO
 
     spi_init();
+#if (SPI_INTERRUPT_MODE)
     spi_initInt();
+    printf2("SPI Interrupt Mode\r\n");
+#else
+    printf2("SPI Busy Wait Mode\r\n");
+#endif
 
-
-    xTaskCreate( spieepromtask, 
-            ( signed portCHAR * ) "spieepromtask",  
+    xTaskCreate( spi_Int_eepromtask, 
+            ( signed portCHAR * ) "spi_Int_eepromtask",  
             SPITEST_STACK_SIZE, NULL, 
             mainCHECK_TASK_PRIORITY - 1, 
             NULL );

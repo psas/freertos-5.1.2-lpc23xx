@@ -13,9 +13,7 @@
  * SSEL is a GPIO output.
  */
 void spi_init(void)
-{
-    vSemaphoreCreateBinary( spi_semaphore );
-    
+{  
     //Power
     PCONP   |= (1<<8);              //pg.69
     
@@ -57,20 +55,21 @@ void spi_init(void)
  */
 void spi_initInt(void)
 {
+    vSemaphoreCreateBinary( spi_IntSemaphore );
     S0SPCR |= (1<<7);//Turn on SPI Interrupts.pg.462
     VICIntEnable |= (1<<10);//pg.94
-    VICVectAddr10  = spi_isr;
+    VICVectAddr10  = (unsigned long)spi_isr;
 }
 
 void spi_isr(void)
 {
     portSAVE_CONTEXT();
     static signed portBASE_TYPE xHigherPriorityTaskWoken= pdFALSE;
-    FIO1PIN = FIO1PIN ^ (1<<19);   
+    //FIO1PIN = FIO1PIN ^ (1<<19);   
     //Between Boilerplate..
     S0SPINT |= (1<<0);      //Clear SPI Interrupt Flag by writing a 1 to it.
     VICVectAddr = 0x0;      // Update VIC hardware
-    xSemaphoreGiveFromISR( spi_semaphore, &xHigherPriorityTaskWoken );
+    xSemaphoreGiveFromISR( spi_IntSemaphore, &xHigherPriorityTaskWoken );
     if( xHigherPriorityTaskWoken ) {
 	    portYIELD_FROM_ISR();
     }
@@ -149,7 +148,6 @@ void spi_setBytesPerTransfer(const int8_t numBytes ) {
  * ----------------------------------
  * This function will transfer up to 32 bits
  * This function utilizes interrupts.
- * in 1 or 2 byte transfers.
  * This function will keep SSEL (chipselect) 
  * low for the entire transfer.
  * Assumes spi_initInt was called.
@@ -166,7 +164,7 @@ void spi_transferNBytesInt(const uint8_t *outPayload, const uint8_t outPayloadSi
     for (payloadIndex=0;payloadIndex < outPayloadSize;payloadIndex++)
     {
         S0SPDR = outPayload[payloadIndex];
-        xSemaphoreTake( spi_semaphore, portMAX_DELAY );
+        xSemaphoreTake( spi_IntSemaphore, portMAX_DELAY );
         spiStatus = spi_readStatus();
         inPayload[payloadIndex] = S0SPDR;
         //printf2("W: Tx 0x%X, Rx 0x%X\r\n", outPayload[payloadIndex], inPayload[payloadIndex]);
@@ -175,7 +173,7 @@ void spi_transferNBytesInt(const uint8_t *outPayload, const uint8_t outPayloadSi
     for (payloadIndex=outPayloadSize;payloadIndex < inPayloadSize;payloadIndex++)
     {
         S0SPDR = 0xAA;//Dummy to generate clock
-        xSemaphoreTake( spi_semaphore, portMAX_DELAY );
+        xSemaphoreTake( spi_IntSemaphore, portMAX_DELAY );
         spiStatus = spi_readStatus();
         inPayload[payloadIndex] = S0SPDR;
         //printf2("R: Rx 0x%X\r\n", inPayload[payloadIndex]);       
