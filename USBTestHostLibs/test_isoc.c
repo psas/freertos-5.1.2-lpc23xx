@@ -39,18 +39,21 @@ struct isoc_trans {
 
 uint8_t isoc_output_buffer[MAX_ISOC_PACKET_SIZE];
 
-#define MAX_ISOC_TRANSFERS   50
-struct isoc_trans transfer_array[MAX_ISOC_TRANSFERS];
+#define MAX_ISOC_IN_TRANSFERS   50
+struct isoc_trans transfer_in_array[MAX_ISOC_IN_TRANSFERS];
 
-void isoc_output_transfer_completion_handler(struct libusb_transfer *transfer)
+#define MAX_ISOC_OUT_TRANSFERS   1
+struct isoc_trans transfer_out_array[MAX_ISOC_OUT_TRANSFERS];
+
+void isoc_output_completion_handler(struct libusb_transfer *transfer)
 {
 	printf("ISOC OUTPUT transfer completed\n");
 }
 
 
-void isoc_transfer_completion_handler(struct libusb_transfer *transfer)
+void isoc_input_completion_handler(struct libusb_transfer *transfer)
 {
-	printf("The isoc transfer has completed, status = %d\n", transfer->status);
+	printf("ISOC INPUT transfer completed, status = %d\n", transfer->status);
 	printf("length = %d\n", transfer->length);
 	printf("actual_length = %d\n", transfer->actual_length);
 	printf("num_iso_packets = %d\n", transfer->num_iso_packets);
