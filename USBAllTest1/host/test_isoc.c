@@ -38,17 +38,20 @@ struct isoc_trans {
 	int is_pending_flag;
 };
 
+int is_write_pending_flag=0;
 uint8_t isoc_output_buffer[MAX_ISOC_PACKET_SIZE];
 
 #define MAX_ISOC_TRANSFERS   50
 struct isoc_trans transfer_array[MAX_ISOC_TRANSFERS];
+
+libusb_context *ctx=NULL;
 
 void isoc_output_transfer_completion_handler(struct libusb_transfer *transfer)
 {
 	printf("ISOC OUTPUT transfer completed\n");
 
      /* ... */
-
+is_write_pending_flag=0;
 }
 int first=1;
 uint32_t last_counter=0;
@@ -96,19 +99,8 @@ pthread_t libusb_internal_event_thread_handle;
 int libusb_internal_event_thread_should_be_done=0;
 
 
-void* libusb_internal_event_thread(void* param)
-{
-    struct timeval poll_timeout;
-	poll_timeout.tv_sec = 0;
-	poll_timeout.tv_usec = 1000;
-    printf("Hello libusb_internal_event_thread.\n");
-    while (!libusb_internal_event_thread_should_be_done){
-        libusb_handle_events_timeout(NULL, &poll_timeout);
-        printf("pump...");
-    }
-    printf("Goodbye libusb_internal_event_thread.\n");
-}
 
+void* libusb_internal_event_thread(void* param);
 int start_libusb_event_pump()
 {
     int ret;
@@ -125,6 +117,17 @@ int start_libusb_event_pump()
     return ret;
 }
 
+void* libusb_internal_event_thread(void* param)
+{
+    struct timeval poll_timeout;
+	poll_timeout.tv_sec = 0;
+	poll_timeout.tv_usec = 100;
+    printf("Hello libusb_internal_event_thread.\n");
+    while (!libusb_internal_event_thread_should_be_done){
+        libusb_handle_events_timeout(ctx, &poll_timeout);
+    }
+    printf("Goodbye libusb_internal_event_thread.\n");
+}
 void stop_libusb_event_pump()
 {
     pthread_join(libusb_internal_event_thread_handle,NULL);
@@ -135,13 +138,13 @@ int main(int argc, char **argv)
 {
 	int current_led_status = 0;
 
-	int r = libusb_init(NULL);
+	int r = libusb_init(&ctx);
 	if (r < 0) {
 		printf("failed to init libusb\n");
 		return (-1);
 	}
 
-	libusb_device_handle *devh = libusb_open_device_with_vid_pid(NULL, VID_TO_CLAIM, PID_TO_CLAIM);
+	libusb_device_handle *devh = libusb_open_device_with_vid_pid(ctx, VID_TO_CLAIM, PID_TO_CLAIM);
 
 	r = libusb_claim_interface(devh, 2);
 	if (r < 0) {
@@ -164,14 +167,12 @@ int main(int argc, char **argv)
 	poll_timeout.tv_sec = 0;
 	poll_timeout.tv_usec = 1000;
 
-
-    //start_libusb_event_pump();
+    int turnstyle=0;
+    start_libusb_event_pump();
+    usleep(500);
 	for (;1;){//int loopLimit = 0; loopLimit < 10000; loopLimit++) {
 	    for(int i = 0; i < MAX_ISOC_TRANSFERS; i++ ) {
 		    if( transfer_array[i].is_pending_flag ) {
-			    libusb_handle_events_timeout(NULL, &poll_timeout);
-			    //printf("pending...\n");
-                usleep(50);
 			    continue;
 		    }
 
@@ -187,32 +188,38 @@ int main(int argc, char **argv)
 		    transfer_array[i].is_pending_flag = 1;
 
 		    r = libusb_submit_transfer(transfer_array[i].transfer_buff);
-if (r != 0){
-   // printf("Submit isoc READ FAILED: %i\n",r);
-}
-            //libusb_handle_events_timeout(NULL, &poll_timeout);
+            if (r != 0){
+                printf("Submit isoc READ FAILED: %i\n",r);
+            }           
+	    }
+        if (is_write_pending_flag){
+            continue;
+        }
+        if ((turnstyle++ % 1000000) == 0){
             printf("Submitting isoc WRITE transfer request\n");
             libusb_fill_iso_transfer(
-					isoc_output_transfer, devh, ISOC_OUT_EP, isoc_output_buffer,
-					MAX_ISOC_PACKET_SIZE, 1, isoc_output_transfer_completion_handler,
-					NULL, 1000);
+                    isoc_output_transfer, devh, ISOC_OUT_EP, isoc_output_buffer,
+                    MAX_ISOC_PACKET_SIZE, 1, isoc_output_transfer_completion_handler,
+                    NULL, 1000);
 
-			libusb_set_iso_packet_lengths(isoc_output_transfer, MAX_ISOC_PACKET_SIZE);
-			isoc_output_transfer->iso_packet_desc[0].actual_length = 1;
-			isoc_output_transfer->iso_packet_desc[0].length = MAX_ISOC_PACKET_SIZE;
+            libusb_set_iso_packet_lengths(isoc_output_transfer, MAX_ISOC_PACKET_SIZE);
+            isoc_output_transfer->iso_packet_desc[0].actual_length = 1;
+            isoc_output_transfer->iso_packet_desc[0].length = MAX_ISOC_PACKET_SIZE;
 
-			isoc_output_buffer[0] ^= 1;
+            isoc_output_buffer[0] ^= 1;
 
-			r= libusb_submit_transfer(isoc_output_transfer);
-if (r != 0){
-   // printf("Submit isoc WRITE FAILED: %i\n",r);
-}
-	    }
+            r= libusb_submit_transfer(isoc_output_transfer);
+
+            if (r != 0){
+                printf("Submit isoc WRITE FAILED: %i\n",r);
+            }else{
+                is_write_pending_flag=1;
+            }
+        }        
     }
 
-
     libusb_internal_event_thread_should_be_done=1;
-    //stop_libusb_event_pump();
+    stop_libusb_event_pump();
    
 
 	//libusb_free_transfer(transfer_buff);
