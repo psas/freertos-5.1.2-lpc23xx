@@ -1,0 +1,829 @@
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Hello libusb_internal_event_thread.
+pump...pump...pump...pump...pump...pump...pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  Dropped->0 != 12436487
+The counter = 12436487
+pump...ISOC OUTPUT transfer completed
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436488
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436489
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436490
+pump...Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436491
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436492
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436493
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436494
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436495
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436496
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436497
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436498
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436499
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436500
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436501
+pump...ISOC OUTPUT transfer completed
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436502
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436503
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436504
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436505
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436506
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436507
+pump...Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436508
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436509
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436510
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436511
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436512
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436513
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436514
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436515
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436516
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436517
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436518
+pump...ISOC OUTPUT transfer completed
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436519
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436520
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436521
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436522
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436523
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436524
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436525
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436526
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436527
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436528
+pump...Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436529
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436530
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436531
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436532
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436533
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436534
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436535
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436536
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436537
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436538
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436539
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436540
+pump...ISOC OUTPUT transfer completed
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436541
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436542
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436543
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436544
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436545
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436546
+pump...Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436547
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436548
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436549
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436550
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436551
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436552
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436553
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436554
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436555
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436556
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436557
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436558
+pump...ISOC OUTPUT transfer completed
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436559
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436560
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436561
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436562
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436563
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436564
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436565
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436566
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436567
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436568
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436569
+pump...Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+Submitting isoc READ transfer request
+Submitting isoc WRITE transfer request
+Submit isoc WRITE FAILED: -6
+The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436570
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_packets = 1
+packet 0 has length 128, actual_length = 4  The counter = 12436571
+pump...The isoc transfer has completed, status = 0
+length = 128
+actual_length = 0
+num_iso_pa
