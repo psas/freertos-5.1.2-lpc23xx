@@ -1,5 +1,5 @@
 PROJ_ROOT=..
-CFLAGS=-I$(PROJ_ROOT)/list/ -std=c99 -g3 -Wl,--verbose -H
+CFLAGS=-I$(PROJ_ROOT)/list/ -std=c99 -g3 #-Wl,--verbose -H
 LDFLAGS=-L/usr/local/lib/ 
 LDLIBS=-pthread -lrt 
 CC=gcc

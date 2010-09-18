@@ -42,15 +42,20 @@ struct isoc_trans {
 	int is_pending_flag;
 };
 
-
+//TODO: implement transfer_in_cqueue
 struct list *transfer_out_list=NULL;
 
 
 pthread_t event_pump_thread_handle;
+pthread_t reader_thread_handle;
+pthread_t writer_thread_handle;
+
 pthread_mutex_t transfer_in_queue_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t transfer_out_list_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 int event_pump_thread_should_stop;
+int reader_thread_should_stop;
+int writer_thread_should_stop;
 struct libusb_context *ctx=NULL;
 struct libusb_device_handle *devh=NULL;
 
@@ -75,15 +80,29 @@ void isoc_input_completion_handler(struct libusb_transfer *transfer);
 void isoc_output_completion_handler(struct libusb_transfer *transfer);
 
 void* event_pump_thread(void *param);
-void start_event_pump();
+int start_event_pump();//TODO: implement these two functions, write now its just code in start_communication()
 void stop_event_pump();
+
+void* reader_thread(void *param);
+int start_reader();
+void stop_reader();
+
+void* writer_thread(void *param);
+int start_writer();
+void stop_writer();
 
 int main(int argc, char **argv)
 {
-    int done=0;    
+    int done=-1000;    
     uint8_t ledStatus=0;
     start_communication();
-    usleep(5000000);
+
+    while (done < 0){
+        write_command(&ledStatus,sizeof(uint8_t));
+        ledStatus ^= 1;
+        usleep((unsigned int)1000000);
+        done++;
+    }
     
     stop_communication();
     return 0;
@@ -116,23 +135,18 @@ int start_communication()
     //cqueue_init(&transfer_in_cqueue);
     list_init(&transfer_out_list);
 
-    event_pump_thread_should_stop=0;
-    ret = pthread_create(&event_pump_thread_handle, 
-                   NULL,
-                   event_pump_thread,
-                   NULL);
-    if (ret <0){//Fail
-        printf("Failed: pthread_create( event pump ).\n");
-        return ret;
-    }    
+    start_event_pump();
+    start_writer();
+    //start_reader();
 
     return ret;
 }
 
 void stop_communication()
 {
-    event_pump_thread_should_stop=1;
-    pthread_join(event_pump_thread_handle,NULL);
+    stop_event_pump();
+    stop_writer();
+    //stop_reader();
 }
 
 int write_command(uint8_t *data, int size)
@@ -141,6 +155,7 @@ int write_command(uint8_t *data, int size)
     int ret=0;
     pthread_mutex_lock(&transfer_out_list_mutex);    
         struct isoc_trans *newTrans = (struct isoc_trans *)malloc(sizeof(struct isoc_trans));
+        newTrans->is_pending_flag = 0;
         newTrans->transfer = libusb_alloc_transfer(NUM_ISOC_PACKETS_TO_TRANSFER);
         int min = MIN(size, MAX_ISOC_PACKET_SIZE * NUM_ISOC_PACKETS_TO_TRANSFER);
         memcpy(newTrans->buffer,data,min);
@@ -172,29 +187,10 @@ void* event_pump_thread(void* param)
     struct timeval poll_timeout;
     struct isoc_trans *trans;
 	poll_timeout.tv_sec = 0;
-	poll_timeout.tv_usec = 0;
+	poll_timeout.tv_usec = 10000;
     printf("Hello event pump thread.\n");
     while (!event_pump_thread_should_stop){
         libusb_handle_events_timeout(ctx, &poll_timeout);
-
-        /* Write Commands */
-        pthread_mutex_lock(&transfer_out_list_mutex);
-        if (list_count(transfer_out_list)>0){
-            struct isoc_trans *submittableTrans;
-            struct list_element *ele = transfer_out_list->front;
-            for (;ele;ele = ele->next){
-                if (!((struct isoc_trans*)ele->data)->is_pending_flag){
-                    ((struct isoc_trans*)ele->data)->is_pending_flag=1;
-                    int ret = libusb_submit_transfer(((struct isoc_trans*)ele->data)->transfer);
-                    if (ret != 0){
-                        printf("Submit isoc WRITE FAILED: %i\n",ret);
-                    }
-                }
-            }           
-        }
-        pthread_mutex_unlock(&transfer_out_list_mutex);   
-
-        /* Read more */        
     }
     printf("Goodbye event pump thread.\n");
 }
@@ -243,7 +239,7 @@ void isoc_output_completion_handler(struct libusb_transfer *transfer)
      /* ... */
    
 	if( transfer->user_data != NULL ) {
-        printf("Write completed...");
+        printf("WRITE completed...");
 		struct isoc_trans *sp = (struct isoc_trans *) transfer->user_data;
 		sp->is_pending_flag = 0;
 
@@ -255,13 +251,97 @@ void isoc_output_completion_handler(struct libusb_transfer *transfer)
             for (;ele;ele = ele->next){
                 if (ele->data == sp){
                     list_del(transfer_out_list,ele);
-                    printf("Discarding Write Request.\n");
+                    printf("Removed From List.\n");
                     break;
                 }
             }
         }else{
-            printf("Went to remove Write request, but didn't find it in list.\n");
+            printf("WRITE completion not Found!\n");
         }
         pthread_mutex_unlock(&transfer_out_list_mutex);
 	}
+}
+
+int start_event_pump()
+{
+    int ret;
+    event_pump_thread_should_stop=0;
+    ret = pthread_create(&event_pump_thread_handle, 
+                   NULL,
+                   event_pump_thread,
+                   NULL);
+    if (ret <0){//Fail
+        printf("Failed: pthread_create( event pump ).\n");
+        return ret;
+    }    
+}
+
+void stop_event_pump()
+{
+    event_pump_thread_should_stop=1;
+    pthread_join(event_pump_thread_handle,NULL);
+}
+
+void* reader_thread(void *param)
+{
+}
+
+int start_reader()
+{
+}
+
+void stop_reader()
+{
+}
+
+void* writer_thread(void *param)
+{
+    printf("Hello writer thread\n");
+    while (!writer_thread_should_stop)
+    {
+        /* Write Commands */
+        pthread_mutex_lock(&transfer_out_list_mutex);
+        if (list_count(transfer_out_list)>0){
+            struct isoc_trans *submittableTrans;
+            struct list_element *ele = transfer_out_list->front;
+            for (;ele;ele = ele->next){
+                if (!((struct isoc_trans*)ele->data)->is_pending_flag){
+                    ((struct isoc_trans*)ele->data)->is_pending_flag=1;
+                    int ret = libusb_submit_transfer(((struct isoc_trans*)ele->data)->transfer);
+                    if (ret != 0){
+                        printf("WRITE NOT Submitted: %i\n",ret);
+                    }else{
+                        printf("WRITE Submitted\n");
+                    }
+                }else{
+                    printf("WRITE pending\n");  
+                }
+            }           
+        }
+        pthread_mutex_unlock(&transfer_out_list_mutex);   
+        usleep(500000);
+    }
+    printf("Goodbye writer thread\n");
+}
+
+int start_writer()
+{
+    int ret;
+    writer_thread_should_stop=0;
+    ret = pthread_create(&writer_thread_handle, 
+                   NULL,
+                   writer_thread,
+                   NULL);
+    if (ret <0){//Fail
+        printf("Failed: pthread_create( writer ).\n");
+        return ret;
+    }    
+
+    return ret;
+}
+
+void stop_writer()
+{
+    writer_thread_should_stop=1;
+    pthread_join(writer_thread_handle,NULL);
 }

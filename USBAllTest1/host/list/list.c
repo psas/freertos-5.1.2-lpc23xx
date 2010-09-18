@@ -36,10 +36,8 @@ int list_push_back(struct list *l, void *data, int size)
         DEBUG("Failed: list_push_back failed to allocate memory.\n");
         return -2;
     }
-    //new_element->data = malloc(size);
-    //memcpy(new_element->data,data, size);
+
     new_element->data = data;
-    //new_element->size = size;
     new_element->next = new_element->prev = NULL;
 
     if (!l->front){//empty list
@@ -65,9 +63,6 @@ int list_back (struct list *l, void *data, int size)
     }
     data = l->back->data;
     int min = MIN(size,l->back->size);
-    //*data = malloc(min);    
-    //memcpy(*data, l->back->data, min);
-    
     return min;
 }
 
@@ -93,8 +88,6 @@ int list_front (struct list *l, void **data, int size)
     }
     *data = l->front->data;
     int min = MIN(size,l->front->size);
-    //*data = malloc(min);    
-    //memcpy(*data, l->front->data, min);
     return min;
 }
 
@@ -123,12 +116,14 @@ int list_pop_front(struct list *l)
 
 int list_del(struct list *l, struct list_element *ele)
 {    
+    struct list_element *dove = ele;
     if (ele->prev){
         ele->prev->next = ele->next;
     }
     if (ele->next){
         ele->next->prev = ele->prev;
     }
+    free(dove);
     l->count--;
 }
 
@@ -151,9 +146,8 @@ int list_get_at(struct list *l, int index, void **data, int size)
         }
         counter++;
     }
+    data = cur->data;
     int min = MIN(size,cur->size);
-    *data = malloc(min);    
-    memcpy(*data, cur->data, min);
     return min;
 }
 

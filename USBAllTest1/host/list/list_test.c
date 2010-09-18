@@ -25,7 +25,7 @@ int main(int argc, char ** argv)
     }
 
     for (int u = 0;u < 4;u++){
-        struct MyStruct *aStruct;
+        struct MyStruct *aStruct=NULL;
         if (!list_front(l,(void**)&aStruct,sizeof(struct MyStruct))){
             printf("%i) aStruct->a=%i\n",u,aStruct->a);
             list_pop_front(l);
