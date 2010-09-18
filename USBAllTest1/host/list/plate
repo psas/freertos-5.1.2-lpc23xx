@@ -1,0 +1,6 @@
+print ((struct MyStruct*)l->front->data)->a
+print ((struct MyStruct*)l->front->next->data)->a
+print ((struct MyStruct*)l->front->next->next->data)->a
+print ((struct MyStruct*)l->front->next->next->next->data)->a
+
+print ((struct MyStruct*)l->back->prev->prev->prev->data)->a
