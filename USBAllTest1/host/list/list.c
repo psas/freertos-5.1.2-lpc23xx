@@ -119,9 +119,13 @@ int list_del(struct list *l, struct list_element *ele)
     struct list_element *dove = ele;
     if (ele->prev){
         ele->prev->next = ele->next;
+    }else{
+        l->front = ele->next;
     }
     if (ele->next){
         ele->next->prev = ele->prev;
+    }else{
+        l->back = ele->prev;
     }
     free(dove);
     l->count--;

@@ -80,7 +80,7 @@ void isoc_input_completion_handler(struct libusb_transfer *transfer);
 void isoc_output_completion_handler(struct libusb_transfer *transfer);
 
 void* event_pump_thread(void *param);
-int start_event_pump();//TODO: implement these two functions, write now its just code in start_communication()
+int start_event_pump();
 void stop_event_pump();
 
 void* reader_thread(void *param);
@@ -96,14 +96,15 @@ int main(int argc, char **argv)
     int done=-1000;    
     uint8_t ledStatus=0;
     start_communication();
-
-    while (done < 0){
-        write_command(&ledStatus,sizeof(uint8_t));
+    write_command(&ledStatus,sizeof(uint8_t));
+    usleep(1000000);
+    while (done < 0){        
         ledStatus ^= 1;
-        usleep((unsigned int)1000000);
+        write_command(&ledStatus,sizeof(uint8_t));
+        usleep(500000);
         done++;
     }
-    
+    usleep(1000000);
     stop_communication();
     return 0;
 }
