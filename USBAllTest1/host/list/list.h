@@ -28,7 +28,7 @@ struct list
 int list_init (struct list **l);
 
 int list_push_back (struct list *l, void *data, int size);
-int list_back (struct list *l, void *data, int size);
+int list_back (struct list *l, void **data, int size);
 int list_pop_back(struct list *l);
 
 int list_push_front (struct list *l, void *data, int size);
@@ -37,6 +37,7 @@ int list_pop_front (struct list *l);
 
 int list_del(struct list *l, struct list_element *ele);
 int list_get_at(struct list *l, int index, void **data, int size);
+int list_get(struct list *l, struct list_element **ele, void *data, int size);
 int list_count (struct list *l);
 
 

@@ -51,7 +51,7 @@ int list_push_back(struct list *l, void *data, int size)
     return 0;
 }
 
-int list_back (struct list *l, void *data, int size)
+int list_back (struct list *l, void **data, int size)
 {
     if (!l){
         DEBUG("Failed: passed a NULL list pointer to list_back.\n");
@@ -61,7 +61,7 @@ int list_back (struct list *l, void *data, int size)
         DEBUG("Failed: list_back invoked on empty list.\n");
         return -2;
     }
-    data = l->back->data;
+    *data = l->back->data;
     int min = MIN(size,l->back->size);
     return min;
 }
@@ -150,9 +150,29 @@ int list_get_at(struct list *l, int index, void **data, int size)
         }
         counter++;
     }
-    data = cur->data;
+    *data = cur->data;
     int min = MIN(size,cur->size);
     return min;
+}
+
+int list_get(struct list *l, struct list_element **ele, void *data, int size)
+{
+    if (!l){
+        DEBUG("Failed: passed a NULL list pointer to list_get_at.\n");
+        return -1;
+    }
+    if (!ele){
+        DEBUG("Failed: ele passed to list_get is NULL.\n");
+        return -2;
+    }
+    struct list_element *cur = l->front;
+    for(;cur;cur = cur->next){
+        if (cur->data == data){
+            *ele = cur;
+            return 1;
+        }
+    }
+    return 0;
 }
 
 int list_count (struct list *l)

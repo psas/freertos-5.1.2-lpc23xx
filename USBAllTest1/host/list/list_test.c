@@ -9,21 +9,23 @@ struct MyStruct
 int main(int argc, char ** argv)
 {
     struct list *l = NULL;
-    int size;
-    int ret;
-    struct MyStruct out;
-    struct MyStruct *in;
-    out.a=0;
-
     list_init(&l);
 
+    struct MyStruct *newStruct[4];
 
     for (int u = 0;u < 4;u++){
-        struct MyStruct *newStruct = malloc(sizeof(struct MyStruct));
-        newStruct->a = u;
-        list_push_back(l,newStruct, sizeof(struct MyStruct));
+        newStruct[u] = malloc(sizeof(struct MyStruct));
+        newStruct[u]->a = u;
+        list_push_back(l,newStruct[u], sizeof(struct MyStruct));
     }
 
+    for (int u = 3;u >= 0;u--){
+        struct MyStruct *aStruct=NULL;
+        struct list_element *ele;
+        list_get(l,&ele, newStruct[u],sizeof(struct MyStruct));
+        printf("%i) ((struct MyStruct*)ele->data)->a=%i\n",u,((struct MyStruct*)ele->data)->a);
+    }
+    printf("---\n");
     for (int u = 0;u < 4;u++){
         struct MyStruct *aStruct=NULL;
         if (!list_front(l,(void**)&aStruct,sizeof(struct MyStruct))){
