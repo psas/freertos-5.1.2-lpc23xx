@@ -1,29 +1,30 @@
 #include "isoc_interface.h"
+#include "debug.h"
 
 int start_communication(struct isoc_context **isoc_ctx)
 {
     int ret=0;
     *isoc_ctx = (struct isoc_context *)malloc(sizeof(struct isoc_context));
     if (!*isoc_ctx){
-        printf("Failed: to allocated isoc context in start_communication().\n");
+        PRINT_DEBUG("Failed: to allocated isoc context in start_communication().\n");
         return -1;
     }
     
     ret = libusb_init(&((*isoc_ctx)->libusb_ctx));
 	if (ret < 0) {
-		printf("Failed: libusb_init\n");
+		PRINT_DEBUG("Failed: libusb_init\n");
 		return -2;
 	}
 
 	(*isoc_ctx)->devh = libusb_open_device_with_vid_pid((*isoc_ctx)->libusb_ctx, VID_TO_CLAIM, PID_TO_CLAIM);
     if (!(*isoc_ctx)->devh){
-        printf("Failed: libusb_open_device_with_vid_pid.\n");
+        PRINT_DEBUG("Failed: libusb_open_device_with_vid_pid.\n");
         return -3;
     }
 
 	ret = libusb_claim_interface((*isoc_ctx)->devh, 2);
 	if (ret < 0) {
-		printf("unable to claim interface 2 on usb device %d\n", ret);
+		PRINT_DEBUG("unable to claim interface 2 on usb device %d\n", ret);
 		libusb_close((*isoc_ctx)->devh);
 		(*isoc_ctx)->devh = NULL;
 		return ret;
@@ -95,7 +96,14 @@ int write_command(struct isoc_context *isoc_ctx, uint8_t *data, int size)
     pthread_mutex_unlock(&isoc_ctx->transfer_out_list_mutex);   
     return min;
 }
-
+int data_available(struct isoc_context *isoc_ctx)
+{
+    int count=0;
+    pthread_mutex_lock(&isoc_ctx->transfer_in_cqueue_mutex);
+        count = cqueue_count(isoc_ctx->transfer_in_cqueue);
+    pthread_mutex_unlock(&isoc_ctx->transfer_in_cqueue_mutex);
+    return count;
+}
 
 int read_data(struct isoc_context *isoc_ctx, uint8_t *data, int size)
 {
@@ -114,11 +122,11 @@ void* event_pump_thread(void* param)
     struct isoc_context *isoc_ctx = (struct isoc_context *)param;
 	poll_timeout.tv_sec = 0;
 	poll_timeout.tv_usec = 10000;
-    printf("Hello event pump thread.\n");
+    PRINT_DEBUG("Hello event pump thread.\n");
     while (!isoc_ctx->event_pump_thread_should_stop){
         libusb_handle_events_timeout(isoc_ctx->libusb_ctx, &poll_timeout);
     }
-    printf("Goodbye event pump thread.\n");
+    PRINT_DEBUG("Goodbye event pump thread.\n");
 }
 
 void reader_completion_handler(struct libusb_transfer *transfer)
@@ -127,19 +135,19 @@ void reader_completion_handler(struct libusb_transfer *transfer)
     if( transfer->user_data != NULL ) {
 		struct isoc_trans *sp = (struct isoc_trans *) transfer->user_data;
 		sp->is_pending_flag = 0;
-	    printf("READ transfer completed, status=%d, length=%d, actual_length=%d, num_iso_packets=%d\n", transfer->status,transfer->length, transfer->actual_length,transfer->num_iso_packets);
+	    PRINT_DEBUG("READ transfer completed, status=%d, length=%d, actual_length=%d, num_iso_packets=%d\n", transfer->status,transfer->length, transfer->actual_length,transfer->num_iso_packets);
 	    unsigned char *pbuf = transfer->buffer;
         int i;
 	    for (i = 0; i < transfer->num_iso_packets; i++) {
 		    struct libusb_iso_packet_descriptor *desc =	&transfer->iso_packet_desc[i];
-		    printf("\tpacket %d has length %d, actual_length = %d  ", i, desc->length, desc->actual_length);
+		    PRINT_DEBUG("\tpacket %d has length %d, actual_length = %d  ", i, desc->length, desc->actual_length);
 		    if (desc->status != 0) {
 			    printf("\t\t\npacket %d has status %d\n", i, desc->status);
 			    continue;
 		    }
             memcpy(&the_counter, pbuf, sizeof(the_counter));
             pbuf += desc->actual_length;
-		    printf("The counter = %u\n", the_counter);
+		    PRINT_DEBUG("The counter = %u\n", the_counter);
 
             pthread_mutex_lock(&sp->isoc_ctx->transfer_in_cqueue_mutex);
                 cqueue_enqueue(sp->isoc_ctx->transfer_in_cqueue,&the_counter,sizeof(the_counter));
@@ -154,7 +162,7 @@ void writer_completion_handler(struct libusb_transfer *transfer)
      /* ... */
    
 	if( transfer->user_data != NULL ) {
-        printf("WRITE completed...");
+        PRINT_DEBUG("WRITE completed...");
 		struct isoc_trans *sp = (struct isoc_trans *) transfer->user_data;
 		sp->is_pending_flag = 0;
 
@@ -166,12 +174,12 @@ void writer_completion_handler(struct libusb_transfer *transfer)
             for (;ele;ele = ele->next){
                 if (ele->data == sp){
                     list_del(sp->isoc_ctx->transfer_out_list,ele);
-                    printf("Removed From List.\n");
+                    PRINT_DEBUG("Removed From List.\n");
                     break;
                 }
             }
         }else{
-            printf("WRITE completion not Found!\n");
+            PRINT_DEBUG("WRITE completion not Found!\n");
         }
         pthread_mutex_unlock(&sp->isoc_ctx->transfer_out_list_mutex);
 	}
@@ -186,7 +194,7 @@ int start_event_pump(struct isoc_context *isoc_ctx)
                    event_pump_thread,
                    isoc_ctx);
     if (ret <0){//Fail
-        printf("Failed: pthread_create( event pump ).\n");
+        PRINT_DEBUG("Failed: pthread_create( event pump ).\n");
         return ret;
     }    
 }
@@ -200,7 +208,7 @@ void stop_event_pump(struct isoc_context *isoc_ctx)
 void* reader_thread(void *param)
 {
     struct isoc_context *isoc_ctx = (struct isoc_context*)param;
-    printf("Hello reader thread\n");
+    PRINT_DEBUG("Hello reader thread\n");
     while (!isoc_ctx->reader_thread_should_stop)
     {
         /* Read Commands */
@@ -212,19 +220,19 @@ void* reader_thread(void *param)
                     ((struct isoc_trans*)ele->data)->is_pending_flag=1;
                     int ret = libusb_submit_transfer(((struct isoc_trans*)ele->data)->transfer);
                     if (ret != 0){
-                        printf("READ NOT Submitted: %i\n",ret);
+                        PRINT_DEBUG("READ NOT Submitted: %i\n",ret);
                     }else{
-                        printf("READ Submitted\n");
+                        PRINT_DEBUG("READ Submitted\n");
                     }
                 }else{
-                    printf("READ pending\n");  
+                    PRINT_DEBUG("READ pending\n");  
                 }
             }           
         }
         pthread_mutex_unlock(&isoc_ctx->in_requests_list_mutex);   
         usleep(500000);
     }
-    printf("Goodbye reader thread\n");
+    PRINT_DEBUG("Goodbye reader thread\n");
 }
 
 
@@ -232,7 +240,7 @@ void* reader_thread(void *param)
 void* writer_thread(void *param)
 {
     struct isoc_context *isoc_ctx = (struct isoc_context*)param;
-    printf("Hello writer thread\n");
+    PRINT_DEBUG("Hello writer thread\n");
     while (!isoc_ctx->writer_thread_should_stop)
     {
         /* Write Commands */
@@ -244,19 +252,19 @@ void* writer_thread(void *param)
                     ((struct isoc_trans*)ele->data)->is_pending_flag=1;
                     int ret = libusb_submit_transfer(((struct isoc_trans*)ele->data)->transfer);
                     if (ret != 0){
-                        printf("WRITE NOT Submitted: %i\n",ret);
+                        PRINT_DEBUG("WRITE NOT Submitted: %i\n",ret);
                     }else{
-                        printf("WRITE Submitted\n");
+                        PRINT_DEBUG("WRITE Submitted\n");
                     }
                 }else{
-                    printf("WRITE pending\n");  
+                    PRINT_DEBUG("WRITE pending\n");  
                 }
             }           
         }
         pthread_mutex_unlock(&isoc_ctx->transfer_out_list_mutex);   
         usleep(500000);
     }
-    printf("Goodbye writer thread\n");
+    PRINT_DEBUG("Goodbye writer thread\n");
 }
 
 int start_writer(struct isoc_context *isoc_ctx)
@@ -269,7 +277,7 @@ int start_writer(struct isoc_context *isoc_ctx)
                    writer_thread,
                    isoc_ctx);
     if (ret <0){//Fail
-        printf("Failed: pthread_create( writer ).\n");
+        PRINT_DEBUG("Failed: pthread_create( writer ).\n");
         return ret;
     }    
 
@@ -293,7 +301,7 @@ int start_reader(struct isoc_context *isoc_ctx)
                    reader_thread,
                    isoc_ctx);
     if (ret <0){//Fail
-        printf("Failed: pthread_create( reader ).\n");
+        PRINT_DEBUG("Failed: pthread_create( reader ).\n");
         return ret;
     }    
 

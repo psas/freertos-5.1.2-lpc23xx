@@ -80,6 +80,7 @@ struct isoc_trans {
 int  start_communication(struct isoc_context **isoc_ctx);
 void stop_communication(struct isoc_context *isoc_ctx);
 int write_command(struct isoc_context *isoc_ctx,uint8_t *data, int size);
+int data_available(struct isoc_context *isoc_ctx);
 int read_data(struct isoc_context *isoc_ctx,uint8_t *data, int size);
 
 /* Internal stuff */

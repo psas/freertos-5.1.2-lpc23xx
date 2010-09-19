@@ -6,7 +6,7 @@
     when enqueing, if tail wraps around to the head, the head must be incremented..
 */
 
-#define CQUEUE_MAX_SIZE             1024*128
+#define CQUEUE_MAX_SIZE             131072
 #define CQUEUE_MAX_PAYLOAD_SIZE     128
 struct cqueue_element
 {

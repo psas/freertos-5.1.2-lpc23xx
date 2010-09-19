@@ -1,14 +1,16 @@
 #include "cqueue.h"
+#include "debug.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 
 #define MIN(x,y)   (x<=y)?x:y
 
 int cqueue_init(struct cqueue **cq){
     *cq = (struct cqueue*)malloc(sizeof(struct cqueue));
     if (!*cq){
-        printf("Failed: cqueue_init unable to allocate memory.\n");
+        PRINT_DEBUG("Failed: cqueue_init unable to allocate memory.\n");
         return -1;//No Memory!
     }
 
@@ -20,7 +22,7 @@ int cqueue_init(struct cqueue **cq){
 void  cqueue_enqueue(struct cqueue *cq, void *data, int size){
     if (cq->tail_index == cq->head_index && cqueue_count(cq) > 0){//full
         cq->head_index = cqueue_get_next_index(cq->head_index);//this overwrites the oldest data
-        printf("Warning: oldest data overwritten.\n");
+        PRINT_DEBUG("Warning: oldest data overwritten.\n");
         cq->enqueued--;//cancel out the auto increment that's below...we're not adding more, just replacing.
     }
     memcpy(&cq->elements[cq->tail_index].data,data,size);
@@ -28,22 +30,22 @@ void  cqueue_enqueue(struct cqueue *cq, void *data, int size){
     cq->tail_index = cqueue_get_next_index(cq->tail_index);    
     
     cq->enqueued++;
-    printf("Enqueued\n");
+    PRINT_DEBUG("Enqueued\n");
 }
 int cqueue_dequeue(struct cqueue *cq){
     if (cqueue_count(cq)==0){
-        printf("Failed: attempted cqueue_dequeue on empty queue.\n");
+        PRINT_DEBUG("Failed: attempted cqueue_dequeue on empty queue.\n");
         return -1;
     }
     cq->elements[cq->head_index].size = 0;
     cq->head_index = cqueue_get_next_index(cq->head_index);
     cq->dequeued++;
-    printf("Dequeued\n");
+    PRINT_DEBUG("Dequeued\n");
     return cq->dequeued;
 }
 int cqueue_front(struct cqueue *cq, void *data, int size){
      if (cqueue_count(cq)==0){
-        printf("Failed: attempted cqueue_front on empty queue.\n");
+        PRINT_DEBUG("Failed: attempted cqueue_front on empty queue.\n");
         return -1;
     }
     int min = MIN(size, cq->elements[cq->head_index].size);
