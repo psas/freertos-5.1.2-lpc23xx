@@ -19,6 +19,7 @@
 #include <stdint.h>
 #include <string.h>
 #include "list.h"
+#include "cqueue.h"
 #include <libusb-1.0/libusb.h>
 #include <pthread.h>
 
@@ -38,9 +39,13 @@
 struct isoc_context
 {
     //TODO: implement transfer_in_cqueue
+    struct cqueue *transfer_in_cqueue;
+    struct list *in_requests_list;
     struct list *transfer_out_list;
 
-    pthread_mutex_t transfer_in_queue_mutex;
+
+    pthread_mutex_t transfer_in_cqueue_mutex;
+    pthread_mutex_t in_requests_list_mutex;
     pthread_mutex_t transfer_out_list_mutex;
     pthread_t event_pump_thread_handle;
     pthread_t reader_thread_handle;
@@ -72,15 +77,14 @@ struct isoc_trans {
 
     *a dedicated thread continuously runs which 
 */
-
 int  start_communication(struct isoc_context **isoc_ctx);
 void stop_communication(struct isoc_context *isoc_ctx);
 int write_command(struct isoc_context *isoc_ctx,uint8_t *data, int size);
 int read_data(struct isoc_context *isoc_ctx,uint8_t *data, int size);
 
 /* Internal stuff */
-void isoc_input_completion_handler(struct libusb_transfer *transfer);
-void isoc_output_completion_handler(struct libusb_transfer *transfer);
+void reader_completion_handler(struct libusb_transfer *transfer);
+void writer_completion_handler(struct libusb_transfer *transfer);
 
 void* event_pump_thread(void *param);
 int start_event_pump(struct isoc_context *isoc_ctx);

@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define MIN(x,y)   (x<=y)?x:y
+
 int cqueue_init(struct cqueue **cq){
     *cq = (struct cqueue*)malloc(sizeof(struct cqueue));
     if (!*cq){
@@ -16,30 +18,39 @@ int cqueue_init(struct cqueue **cq){
     return 0;//Success 
 }
 void  cqueue_enqueue(struct cqueue *cq, void *data, int size){
-    memcpy(&cq->elements[cq->tail_index].payload,data,size);
+    if (cq->tail_index == cq->head_index && cqueue_count(cq) > 0){//full
+        cq->head_index = cqueue_get_next_index(cq->head_index);//this overwrites the oldest data
+        printf("Warning: oldest data overwritten.\n");
+        cq->enqueued--;//cancel out the auto increment that's below...we're not adding more, just replacing.
+    }
+    memcpy(&cq->elements[cq->tail_index].data,data,size);
     cq->elements[cq->tail_index].size = size;
-    cq->tail_index = cqueue_get_next_index(cq->tail_index);
+    cq->tail_index = cqueue_get_next_index(cq->tail_index);    
+    
     cq->enqueued++;
+    printf("Enqueued\n");
 }
-void  cqueue_dequeue(struct cqueue *cq){
+int cqueue_dequeue(struct cqueue *cq){
+    if (cqueue_count(cq)==0){
+        printf("Failed: attempted cqueue_dequeue on empty queue.\n");
+        return -1;
+    }
     cq->elements[cq->head_index].size = 0;
     cq->head_index = cqueue_get_next_index(cq->head_index);
     cq->dequeued++;
+    printf("Dequeued\n");
+    return cq->dequeued;
 }
 int cqueue_front(struct cqueue *cq, void *data, int size){
-    memcpy(data,&cq->elements[cq->head_index],size);
-    return cq->elements[cq->head_index].size;
+     if (cqueue_count(cq)==0){
+        printf("Failed: attempted cqueue_front on empty queue.\n");
+        return -1;
+    }
+    int min = MIN(size, cq->elements[cq->head_index].size);
+    memcpy(data,&cq->elements[cq->head_index],min);
+    return min;
 }
-void cqueue_get_next(struct cqueue *cq, struct *cqueue_next_state){
-    int ret= cq->elements[cqueue_next_state->next_index].size;
-    memcpy(data,&cq->elements[cqueue_next_state->next_index],size);
-    cqueue_next_state->next_index = cqueue_get_next_index(cqueue_next_state->next_index);
-    
-    return ret;
-}
-int cqueue_get_head_index(struct cqueue *cq){
-    return cq->head_index;
-}
+
 int  cqueue_is_empty(struct cqueue *cq){
     return (cq->enqueued - cq->dequeued) ? 0 : 1;
 }

@@ -29,13 +29,35 @@ int start_communication(struct isoc_context **isoc_ctx)
 		return ret;
 	}
 
-    //cqueue_init(&transfer_in_cqueue);
+    
+    cqueue_init(&(*isoc_ctx)->transfer_in_cqueue);
+    list_init(&(*isoc_ctx)->in_requests_list);
     list_init(&(*isoc_ctx)->transfer_out_list);
+
+    /* Submit 50 read requests at a time .*/
+    for (int r =0;r < 50;r++){
+        struct isoc_trans *newTrans = (struct isoc_trans *)malloc(sizeof(struct isoc_trans));
+        newTrans->isoc_ctx = *isoc_ctx;
+        newTrans->is_pending_flag = 0;
+        newTrans->transfer = libusb_alloc_transfer(NUM_ISOC_PACKETS_TO_TRANSFER);
+        libusb_fill_iso_transfer(
+				            newTrans->transfer,
+                            (*isoc_ctx)->devh, 
+                            ISOC_IN_EP, 
+                            newTrans->buffer,
+				            MAX_ISOC_PACKET_SIZE, 
+                            NUM_ISOC_PACKETS_TO_TRANSFER, 
+                            reader_completion_handler,
+				            newTrans, 
+                            1000);
+        libusb_set_iso_packet_lengths(newTrans->transfer, MAX_ISOC_PACKET_SIZE);
+        list_push_back((*isoc_ctx)->in_requests_list,newTrans,sizeof(struct isoc_trans));
+    }
 
     start_event_pump(*isoc_ctx);
     start_writer(*isoc_ctx);
-    //start_reader(*isoc_ctx);
-
+    start_reader(*isoc_ctx);
+    
     return ret;
 }
 
@@ -43,13 +65,13 @@ void stop_communication(struct isoc_context *isoc_ctx)
 {
     stop_event_pump(isoc_ctx);
     stop_writer(isoc_ctx);
-    //stop_reader();
+    stop_reader(isoc_ctx);
     free(isoc_ctx);
 }
 
 int write_command(struct isoc_context *isoc_ctx, uint8_t *data, int size)
 {
-    /*Write a command to the list*/
+    /*Write command to the list*/
     int ret=0;
     pthread_mutex_lock(&isoc_ctx->transfer_out_list_mutex);    
         struct isoc_trans *newTrans = (struct isoc_trans *)malloc(sizeof(struct isoc_trans));
@@ -65,7 +87,7 @@ int write_command(struct isoc_context *isoc_ctx, uint8_t *data, int size)
                             newTrans->buffer,
 				            MAX_ISOC_PACKET_SIZE, 
                             NUM_ISOC_PACKETS_TO_TRANSFER, 
-                            isoc_output_completion_handler,
+                            writer_completion_handler,
 				            newTrans, 
                             1000);
         libusb_set_iso_packet_lengths(newTrans->transfer, MAX_ISOC_PACKET_SIZE);
@@ -74,11 +96,15 @@ int write_command(struct isoc_context *isoc_ctx, uint8_t *data, int size)
     return min;
 }
 
+
 int read_data(struct isoc_context *isoc_ctx, uint8_t *data, int size)
 {
     /*Read data from the cqueue*/
-
-    return -1;
+    pthread_mutex_lock(&isoc_ctx->transfer_in_cqueue_mutex);
+        cqueue_front(isoc_ctx->transfer_in_cqueue,data,size);
+        cqueue_dequeue(isoc_ctx->transfer_in_cqueue);
+    pthread_mutex_unlock(&isoc_ctx->transfer_in_cqueue_mutex);
+    return size;
 }
 
 void* event_pump_thread(void* param)
@@ -95,47 +121,35 @@ void* event_pump_thread(void* param)
     printf("Goodbye event pump thread.\n");
 }
 
-//uint32_t last_counter=0;
-uint32_t the_counter = 0;
-void isoc_input_completion_handler(struct libusb_transfer *transfer)
+void reader_completion_handler(struct libusb_transfer *transfer)
 {
-	printf("ISOC INPUT transfer completed, status = %d\n", transfer->status);
-	printf("length = %d\n", transfer->length);
-	printf("actual_length = %d\n", transfer->actual_length);
-	printf("num_iso_packets = %d\n", transfer->num_iso_packets);
-    /* ... */
-	unsigned char *pbuf = transfer->buffer;
-    int i;
-	for (i = 0; i < transfer->num_iso_packets; i++) {
-		struct libusb_iso_packet_descriptor *desc =	&transfer->iso_packet_desc[i];
-
-		printf("packet %d has length %d, actual_length = %d  ", i, desc->length, desc->actual_length);
-
-		if (desc->status != 0) {
-			printf("\npacket %d has status %d\n", i, desc->status);
-			continue;
-		}
-        
-/*        last_counter = the_counter;
-		memcpy(&the_counter, pbuf, sizeof(the_counter));
-   
-        if (last_counter != the_counter-1){
-            printf("Dropped->%i != %i\n",last_counter, the_counter);
-         }*/
-    
-		printf("The counter = %u\n", the_counter);
-
-		pbuf += desc->actual_length;
-	}
-
-
-	if( transfer->user_data != NULL ) {
+    uint32_t the_counter = 0;
+    if( transfer->user_data != NULL ) {
 		struct isoc_trans *sp = (struct isoc_trans *) transfer->user_data;
 		sp->is_pending_flag = 0;
-	}
+	    printf("READ transfer completed, status=%d, length=%d, actual_length=%d, num_iso_packets=%d\n", transfer->status,transfer->length, transfer->actual_length,transfer->num_iso_packets);
+	    unsigned char *pbuf = transfer->buffer;
+        int i;
+	    for (i = 0; i < transfer->num_iso_packets; i++) {
+		    struct libusb_iso_packet_descriptor *desc =	&transfer->iso_packet_desc[i];
+		    printf("\tpacket %d has length %d, actual_length = %d  ", i, desc->length, desc->actual_length);
+		    if (desc->status != 0) {
+			    printf("\t\t\npacket %d has status %d\n", i, desc->status);
+			    continue;
+		    }
+            memcpy(&the_counter, pbuf, sizeof(the_counter));
+            pbuf += desc->actual_length;
+		    printf("The counter = %u\n", the_counter);
+
+            pthread_mutex_lock(&sp->isoc_ctx->transfer_in_cqueue_mutex);
+                cqueue_enqueue(sp->isoc_ctx->transfer_in_cqueue,&the_counter,sizeof(the_counter));
+            pthread_mutex_unlock(&sp->isoc_ctx->transfer_in_cqueue_mutex);
+		
+	    }
+    }
 }
 
-void isoc_output_completion_handler(struct libusb_transfer *transfer)
+void writer_completion_handler(struct libusb_transfer *transfer)
 {
      /* ... */
    
@@ -185,6 +199,32 @@ void stop_event_pump(struct isoc_context *isoc_ctx)
 
 void* reader_thread(void *param)
 {
+    struct isoc_context *isoc_ctx = (struct isoc_context*)param;
+    printf("Hello reader thread\n");
+    while (!isoc_ctx->reader_thread_should_stop)
+    {
+        /* Read Commands */
+        pthread_mutex_lock(&isoc_ctx->in_requests_list_mutex);
+        if (list_count(isoc_ctx->in_requests_list)>0){
+            struct list_element *ele = isoc_ctx->in_requests_list->front;
+            for (;ele;ele = ele->next){
+                if (!((struct isoc_trans*)ele->data)->is_pending_flag){
+                    ((struct isoc_trans*)ele->data)->is_pending_flag=1;
+                    int ret = libusb_submit_transfer(((struct isoc_trans*)ele->data)->transfer);
+                    if (ret != 0){
+                        printf("READ NOT Submitted: %i\n",ret);
+                    }else{
+                        printf("READ Submitted\n");
+                    }
+                }else{
+                    printf("READ pending\n");  
+                }
+            }           
+        }
+        pthread_mutex_unlock(&isoc_ctx->in_requests_list_mutex);   
+        usleep(500000);
+    }
+    printf("Goodbye reader thread\n");
 }
 
 
@@ -198,7 +238,6 @@ void* writer_thread(void *param)
         /* Write Commands */
         pthread_mutex_lock(&isoc_ctx->transfer_out_list_mutex);
         if (list_count(isoc_ctx->transfer_out_list)>0){
-            struct isoc_trans *submittableTrans;
             struct list_element *ele = isoc_ctx->transfer_out_list->front;
             for (;ele;ele = ele->next){
                 if (!((struct isoc_trans*)ele->data)->is_pending_flag){
@@ -245,10 +284,24 @@ void stop_writer(struct isoc_context *isoc_ctx)
 
 int start_reader(struct isoc_context *isoc_ctx)
 {
-    //pthread_mutex_init(&isoc_ctx->transfer_in_queue_mutex,NULL);
-    return -1;
+    int ret;
+    pthread_mutex_init(&isoc_ctx->transfer_in_cqueue_mutex,NULL);
+    pthread_mutex_init(&isoc_ctx->in_requests_list_mutex,NULL);
+    isoc_ctx->reader_thread_should_stop=0;
+    ret = pthread_create(&isoc_ctx->reader_thread_handle, 
+                   NULL,
+                   reader_thread,
+                   isoc_ctx);
+    if (ret <0){//Fail
+        printf("Failed: pthread_create( reader ).\n");
+        return ret;
+    }    
+
+    return ret;
 }
 
 void stop_reader(struct isoc_context *isoc_ctx)
 {
+    isoc_ctx->reader_thread_should_stop=1;
+    pthread_join(isoc_ctx->reader_thread_handle,NULL);
 }
