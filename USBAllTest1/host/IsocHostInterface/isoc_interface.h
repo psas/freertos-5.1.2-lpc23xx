@@ -77,7 +77,7 @@ struct isoc_trans {
 
     *a dedicated thread continuously runs which 
 */
-int  start_communication(struct isoc_context **isoc_ctx);
+int  start_communication(struct isoc_context **isoc_ctx, int initial_read_requests);
 void stop_communication(struct isoc_context *isoc_ctx);
 int write_command(struct isoc_context *isoc_ctx,uint8_t *data, int size);
 int data_available(struct isoc_context *isoc_ctx);

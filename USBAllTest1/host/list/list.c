@@ -1,8 +1,17 @@
 #include "list.h"
-#include "debug.h"
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+
+//#define INFO
+#define WARNING
+#define ERROR
+#include "debug.h"
+#undef INFO
+#undef WARNING
+#undef ERROR
+
 /*
     Expected Output:
 
@@ -23,7 +32,7 @@ int list_init (struct list **l)
 {
     *l = (struct list*)malloc(sizeof(struct list));
     if (!*l){
-        PRINT_DEBUG("list_init unable to allocate memory.\n");
+        PRINT_ERROR("list_init unable to allocate memory.\n");
         return -1;//NO MEM
     }
 
@@ -37,12 +46,12 @@ int list_init (struct list **l)
 int list_push_back(struct list *l, void *data, int size)
 {
     if (!l){
-        PRINT_DEBUG("Failed: passed a NULL list pointer to list_push_back.\n");
+        PRINT_ERROR("Error: passed a NULL list pointer to list_push_back.\n");
         return -1;
     }
     struct list_element *new_element = (struct list_element*)malloc(sizeof(struct list_element));
     if (!new_element){
-        PRINT_DEBUG("Failed: list_push_back failed to allocate memory.\n");
+        PRINT_ERROR("Error: list_push_back Error to allocate memory.\n");
         return -2;
     }
 
@@ -63,11 +72,11 @@ int list_push_back(struct list *l, void *data, int size)
 int list_back (struct list *l, void **data, int size)
 {
     if (!l){
-        PRINT_DEBUG("Failed: passed a NULL list pointer to list_back.\n");
+        PRINT_ERROR("Error: passed a NULL list pointer to list_back.\n");
         return -1;
     }
     if (!l->back){
-        PRINT_DEBUG("Failed: list_back invoked on empty list.\n");
+        PRINT_WARNING("Warning: list_back invoked on empty list.\n");
         return -2;
     }
     *data = l->back->data;
@@ -88,11 +97,11 @@ int list_push_front (struct list *l, void *data, int size)
 int list_front (struct list *l, void **data, int size)
 {
     if (!l){
-        PRINT_DEBUG("Failed: passed a NULL list pointer to list_front.\n");
+        PRINT_ERROR("Error: passed a NULL list pointer to list_front.\n");
         return -1;
     }
     if (!l->front){
-        PRINT_DEBUG("Failed: list_front invoked on empty list.\n");
+        PRINT_WARNING("Warning: list_front invoked on empty list.\n");
         return -2;
     }
     *data = l->front->data;
@@ -103,11 +112,11 @@ int list_front (struct list *l, void **data, int size)
 int list_pop_front(struct list *l)
 {
     if (!l){
-        PRINT_DEBUG("Failed: passed a NULL list pointer to list_pop_front.\n");
+        PRINT_ERROR("Error: passed a NULL list pointer to list_pop_front.\n");
         return -1;
     }
     if (!l->front){
-        PRINT_DEBUG("Failed: list_pop_front invoked on empty list.\n");
+        PRINT_WARNING("Warning: list_pop_front invoked on empty list.\n");
         return -2;
     }
 
@@ -144,11 +153,11 @@ int list_get_at(struct list *l, int index, void **data, int size)
 {
     int counter=0;
     if (!l){
-        PRINT_DEBUG("Failed: passed a NULL list pointer to list_get_at.\n");
+        PRINT_ERROR("Error: passed a NULL list pointer to list_get_at.\n");
         return -1;
     }
     if (index < 0 || index > (l->count-1)){
-        PRINT_DEBUG("Failed: index passed to list_get_at was out of bounds.\n");
+        PRINT_ERROR("Error: index passed to list_get_at was out of bounds.\n");
         return -2;
     }
 
@@ -167,11 +176,11 @@ int list_get_at(struct list *l, int index, void **data, int size)
 int list_get(struct list *l, struct list_element **ele, void *data, int size)
 {
     if (!l){
-        PRINT_DEBUG("Failed: passed a NULL list pointer to list_get_at.\n");
+        PRINT_ERROR("Error: passed a NULL list pointer to list_get.\n");
         return -1;
     }
     if (!ele){
-        PRINT_DEBUG("Failed: ele passed to list_get is NULL.\n");
+        PRINT_ERROR("Error: ele passed to list_get is NULL.\n");
         return -2;
     }
     struct list_element *cur = l->front;

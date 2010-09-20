@@ -25,6 +25,9 @@ int main(int argc, char ** argv)
         list_get(l,&ele, newStruct[u],sizeof(struct MyStruct));
         printf("%i) ((struct MyStruct*)ele->data)->a=%i\n",u,((struct MyStruct*)ele->data)->a);
     }
+
+    list_get(l,NULL, newStruct[0],sizeof(struct MyStruct));//Cause an error
+
     printf("---\n");
     for (int u = 0;u < 4;u++){
         struct MyStruct *aStruct=NULL;
@@ -34,6 +37,7 @@ int main(int argc, char ** argv)
             free(aStruct);
         }
     }
+    list_front(l,NULL,0); //Cause a warning
     return 0;
 }
 
