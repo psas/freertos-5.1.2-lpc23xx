@@ -37,9 +37,11 @@
 #include "printf/uart0PutChar2.h"
 #include "printf/printf2.h"
 #include "peripherals/pwm.h"
-#include "i2c/i2c.h"
+#include "spi/spi.h"
 
-#define I2CTEST_STACK_SIZE            1024
+#define SPI_INTERRUPT_MODE            1
+
+#define SPITEST_STACK_SIZE            1024
 
 // Constants to setup I/O. 
 #define mainTX_ENABLE                 ( ( unsigned portLONG ) (1<<4) )
@@ -56,7 +58,7 @@
 #define mainBLOCK_Q_PRIORITY          ( tskIDLE_PRIORITY + 2 )
 #define mainFLASH_PRIORITY            ( tskIDLE_PRIORITY + 2 )
 #define mainCREATOR_TASK_PRIORITY     ( tskIDLE_PRIORITY + 3 )
-#define mainGEN_QUEUE_TASK_PRIORITY   ( tskIDLE_PRIORITY ) 
+#define mainGEN_QUEUE_TASK_PRIORITY   ( tskIDLE_P            spi_transferNBytes(writeEnableCmd, 1,inPayload,1);RIORITY ) 
 
 /* clock setup */
 #define mainPLL_MUL                   ( ( unsigned portLONG ) ( 11 ) )
@@ -78,11 +80,7 @@
 #define mainMAM_TIM_3                 ( ( unsigned portCHAR ) 0x03 )
 #define mainMAM_MODE_FULL             ( ( unsigned portCHAR ) 0x02 )
 
-/* blinkm i2c address */
-#define BLINKM_ADDR                   0x09
-#define EEPROM_ADDR                   0x50   // 0b1010 000
-
-/*
+/*SPI_INTERRUPT_MODE
  * putchar
  */
 void putchar2(const int fd, const int ch) {
@@ -105,113 +103,65 @@ uint32_t millisecondsToCPUTicks(const uint32_t miliseconds) {
     uint32_t ret = (configCPU_CLOCK_HZ / 1000) * miliseconds;
     return(ret);
 }
-
 /*
- * i2ceepromtask
+void spi_transferNBytes(const uint8_t *outPayload, const uint8_t outPayloadSize, uint8_t *inPayload, uint8_t inPayloadSize, uint8_t *bytesRead)
+*/
+/*
+ * spi_Int_eepromtask
  */
-static void i2ceepromtask(void *pvParameters) {
-    uint32_t  x             = 0;
-    uint32_t  i             = 0;
-    uint32_t  write         = 1;
-
-    signed    portCHAR      theChar;
-    signed    portBASE_TYPE status;
-
-    const int interval      = 100000;
-
-    i2c_master_xact_t       xact_s;
-
-    FIO0CLR = (1<<6);            // turn off p0.6on olimex 2378 Sdev board
-
-    for(i=0; i<I2C_MAX_BUFFER; i++) {
-        xact_s.I2C_TX_buffer[i]  = 0;
-        xact_s.I2C_RD_buffer[i]  = 0;
-    }
-    xact_s.write_length          = 0;
-    xact_s.read_length           = 0;
-    xact_s.I2Cext_slave_address  = 0;
-
+static void spi_Int_eepromtask(void *pvParameters) {
+    uint32_t    x                   = 0;
+    uint32_t    cnt                 = 0;
+    const int   interval            = 200000;
+    uint8_t     do_wait             = 0;
+    uint8_t     wait_iters          = 0;
+    uint8_t     inPayload[4];
+    uint8_t     writeEnableCmd[1]   = {0x06};
+    uint8_t     writeCmd[4]         = {0x02, 0x00, 0x02, 0x0D};
+    uint8_t     readCmd[3]          = {0x03, 0x00, 0x02};
+    uint8_t     readStatusCmd[1]    = {0x05};
+    
+    
     for(;;) {
         x++;
-
         if (x == interval) {
-            FIO0CLR = (1<<6);    // turn off  p0.6 on olimex 2378 Sdev board
-            FIO1CLR = (1<<19);   // turn off led  on olimex 2378 Sdev board
 
         } else if (x >= (2*interval)) {
-            FIO0SET = (1<<6);    // turn on p0.6 on olimex 2378 Sdev board
-            FIO1SET = (1<<19);   // turn on led on olimex 2378 dev board
+            x = 0;  
+            printf2(" %d \r\n",cnt++);
+#if (SPI_INTERRUPT_MODE)
+            spi_transferNBytesInt(writeEnableCmd, 1,inPayload,1);
+            spi_transferNBytesInt(writeCmd,4,inPayload,4);//A successful write cycle will reset the write enable latch
 
-            x = 0;
-
-            printf2("i2c eeprom 1 read byte...\r\n");
-            xact_s.I2C_TX_buffer[0] =  i2c_create_write_address(EEPROM_ADDR);
-            xact_s.I2C_TX_buffer[1] =  0x0;
-            xact_s.I2C_TX_buffer[2] =  0x0;
-            xact_s.write_length     =  0x3;
-            xact_s.I2C_TX_buffer[3] =  i2c_create_read_address(EEPROM_ADDR);
-//            printf2("read address is: 0x%X\r\n", xact_s.I2C_TX_buffer[4] );
-            xact_s.read_length      =  0x1;
-            I2C0_master_xact(&xact_s);
-
-            I2C0_get_read_data(&xact_s);
-
-            printf2("Read data is 0x%X\n\r",xact_s.I2C_RD_buffer[0]);
-
-
-            /*
-            printf2("i2c write byte task...\r\n");
-
-            xact_s.I2C_TX_buffer[0] =  i2c_create_write_address(EEPROM_ADDR);
-            xact_s.I2C_TX_buffer[1] =  0x0;
-            xact_s.I2C_TX_buffer[2] =  0x0;
-            xact_s.I2C_TX_buffer[3] =  0x0b;
-            xact_s.write_length     =  0x4;
-            xact_s.read_length      =  0x0;
-            I2C0_master_xact(&xact_s);
-
-            printf2("i2c write bytes task...\r\n");
-
-            xact_s.I2C_TX_buffer[0] =  i2c_create_write_address(EEPROM_ADDR);
-            xact_s.I2C_TX_buffer[1] =  0x0;
-            xact_s.I2C_TX_buffer[2] =  0x0;
-            xact_s.I2C_TX_buffer[3] =  0x0b;
-            xact_s.I2C_TX_buffer[4] =  0x0c;
-            xact_s.I2C_TX_buffer[5] =  0x0d;
-            xact_s.I2C_TX_buffer[6] =  0x0e;
-            xact_s.I2C_TX_buffer[7] =  0x0f;
-            xact_s.write_length     =  0x8;
-            xact_s.read_length      =  0x0;
-            I2C0_master_xact(&xact_s);
-
-
-            printf2("i2c eeprom read byte using repeated start...\r\n");
-            xact_s.I2C_TX_buffer[0] =  i2c_create_write_address(EEPROM_ADDR);
-            xact_s.I2C_TX_buffer[1] =  0x0;
-            xact_s.I2C_TX_buffer[2] =  0x0;
-            xact_s.write_length     =  0x3;
-            xact_s.I2C_TX_buffer[3] =  i2c_create_read_address(EEPROM_ADDR);
-            printf2("read address is: 0x%X\r\n", xact_s.I2C_TX_buffer[3] );
-            xact_s.read_length      =  0x1;
-            I2C0_master_xact(&xact_s);
-
-            I2C0_get_read_data(&xact_s);
-
-            printf2("Read data is 0x%X\n\r",xact_s.I2C_RD_buffer[0]);
-
-            printf2("i2c sequential read\r\n");
-            xact_s.I2C_TX_buffer[0] =  i2c_create_read_address(EEPROM_ADDR);
-            xact_s.write_length     =  0x1;
-            printf2("read address is: 0x%X\r\n", xact_s.I2C_TX_buffer[3] );
-            xact_s.read_length      =  0x10;
-            I2C0_master_xact(&xact_s);
+            do{
+                spi_transferNBytesInt(readStatusCmd,1,inPayload,2);
+                do_wait = (inPayload[1] & 0x01);
+                wait_iters++;
+            }while (do_wait);
             
-            I2C0_get_read_data(&xact_s);
-
-            for (i=0; i<0x10; i++){
-                printf2("Read data is 0x%X\n\r",xact_s.I2C_RD_buffer[i]);
+            //printf2("Checked Status %d times, now reading..\r\n",wait_iters);
+            wait_iters=0;
+            spi_transferNBytesInt(readCmd,3,inPayload,4);
+            if (inPayload[3] == writeCmd[3]){
+                printf2("Write/Read Success!\r\n");
             }
-            */
+#else
+            spi_transferNBytesBW(writeEnableCmd, 1,inPayload,1);
+            spi_transferNBytesBW(writeCmd,4,inPayload,4);//A successful write cycle will reset the write enable latch
+
+            do{
+                spi_transferNBytesBW(readStatusCmd,1,inPayload,2);
+                do_wait = (inPayload[1] & 0x01);
+                wait_iters++;
+            }while (do_wait);
+            
+            //printf2("Checked Status %d times, now reading..\r\n",wait_iters);
+            wait_iters=0;
+            spi_transferNBytesBW(readCmd,3,inPayload,4);
+            if (inPayload[3] == writeCmd[3]){
+                printf2("Write/Read Success!\r\n");
+            }   
+#endif
         }
     }
 }
@@ -256,18 +206,8 @@ static void prvSetupHardware( void ) {
     PLLFEED = mainPLL_FEED_BYTE2;
     while( !( PLLSTAT & mainPLL_CONNECTED ) ); 
 
-    // debugging pins
     FIO1DIR |= (1<<19);
-    FIO1DIR |= (1<<20);
-    FIO1DIR |= (1<<22);
-    FIO1DIR |= (1<<24);
-    FIO1DIR |= (1<<25);
-    FIO1DIR |= (1<<26);
-    FIO1DIR |= (1<<27);
-    FIO1DIR |= (1<<28);
-    FIO1DIR |= (1<<31);
 
-    FIO0DIR |= (1<<6);
 }
 
 /*
@@ -293,12 +233,17 @@ int main( void ) {
 
     SCS |= 1; //Configure FIO
 
-    // Initialize I2C0
-    I2Cinit(I2C0);
+    spi_init();
+#if (SPI_INTERRUPT_MODE)
+    spi_initInt();
+    printf2("SPI Interrupt Mode\r\n");
+#else
+    printf2("SPI Busy Wait Mode\r\n");
+#endif
 
-    xTaskCreate( i2ceepromtask, 
-            ( signed portCHAR * ) "i2ceepromtask", 
-            I2CTEST_STACK_SIZE, NULL, 
+    xTaskCreate( spi_Int_eepromtask, 
+            ( signed portCHAR * ) "spi_Int_eepromtask",  
+            SPITEST_STACK_SIZE, NULL, 
             mainCHECK_TASK_PRIORITY - 1, 
             NULL );
 

@@ -83,6 +83,14 @@
 #define EEPROM_ADDR                   0x50  // 0b0101_000
 
 /*
+ * putchar
+ */
+void putchar2(const int fd, const int ch) {
+    xSerialPutChar(0, ch, 1);
+}
+
+
+/*
  * microsecondsToCPUTicks
  */
 uint32_t microsecondsToCPUTicks(const uint32_t microseconds) {
