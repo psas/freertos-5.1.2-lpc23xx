@@ -108,9 +108,10 @@ void putchar2(const int fd, const int ch)
 
 volatile int32_t g_target_step_position = 0;
 volatile int32_t g_current_step_postion = 0;
-volatile int32_t g_direction = 1;
+volatile int32_t g_current_direction = 0;
+volatile int32_t g_target_direction = 0;
 volatile uint32_t g_pwm_output_value = 0;
-volatile uint8_t g_min_step_period = 40;
+volatile uint8_t g_min_step_period = 1;
 
 char readline_buffer[1024];
 
@@ -185,6 +186,7 @@ void clearScreen(void)
 		cursorUp();
 	}
 }
+
 #define MICROSTEPPING            4
 #define STEPS_PER_REVOLUTION     200
 #define TABLE_DEGREES_PER_MOTOR_ROTATION     5
@@ -195,27 +197,70 @@ const int32_t degrees_per_motor_revolution = TABLE_DEGREES_PER_MOTOR_ROTATION;
 const int32_t pulses_per_table_rotation = (MICROSTEPPING * STEPS_PER_REVOLUTION * (360 / TABLE_DEGREES_PER_MOTOR_ROTATION) );
 
 
-
+/*
 int32_t tableDegreesToSteps(const double degrees)
 {
 	int32_t ret = (int32_t) ((degrees * ((double)pulses_per_table_rotation)) / 360.0);
 	return(ret);
 }
+*/
 
+int32_t tableDegreesX1000ToSteps(const int32_t degrees_x_1000)
+{
+	int32_t ret = ((degrees_x_1000 * pulses_per_table_rotation) / (360 * 1000));
+	return(ret);
+}
+
+int32_t stepsToTableDegreesX1000(const int64_t steps)
+{
+	//const double pulses_per_table_degree =  pulses_per_table_rotation / degrees_per_motor_revolution;
+	int64_t ret = ((steps * ((int64_t) 1000) * (int64_t) 360)) / ((int64_t) pulses_per_table_rotation);
+	return(ret);
+}
+
+int32_t degreesX1000ToDegreesInteger(const int32_t degrees_x_1000)
+{
+	int32_t ret = degrees_x_1000/1000;
+	return(ret);
+}
+
+int32_t degreesX1000ToDegreesFractional(const int32_t degrees_x_1000)
+{
+	int32_t ret = degrees_x_1000 % 1000;
+	return(ret);
+}
+
+
+/*
 double stepsToTableDegrees(const int32_t steps)
 {
 	//const double pulses_per_table_degree =  pulses_per_table_rotation / degrees_per_motor_revolution;
 	double ret = (((double)steps) / pulses_per_table_rotation) * 360.0;
 	return(ret);
 }
+*/
+
+void printDegrees(const uint32_t steps)
+{
+	const int32_t degrees_x_1000 = stepsToTableDegreesX1000(steps);
+	const int32_t degrees = degreesX1000ToDegreesInteger(degrees_x_1000);
+	const int32_t degrees_fract = degreesX1000ToDegreesFractional(degrees_x_1000);
+	fprintf2(VCOM_FD, "%d.", degrees);
+	if( degrees_fract < 10 ) {
+		fprintf2(VCOM_FD, "00");
+	} else if( degrees_fract < 100 ){
+		fprintf2(VCOM_FD, "0");
+	}
+	fprintf2(VCOM_FD, "%d", degrees_fract);
+}
 
 static void cncRotaryTableTask(void *pvParameters)
 {
-	int32_t index_step_size = tableDegreesToSteps(11.25);
+	int32_t index_step_size = tableDegreesX1000ToSteps(11250);
 
 	const int interval = 20000;
 	const int interval2 = 40000;
-	double deg;
+	int32_t deg;
 	//const int interval = 3;
 	int status = 0;
 
@@ -245,19 +290,33 @@ static void cncRotaryTableTask(void *pvParameters)
 			fprintf2(VCOM_FD, "Pulses Per Table Rotation: %d                \r\n", pulses_per_table_rotation);
 			fprintf2(VCOM_FD, "Target Step Position:      %d                \r\n", g_target_step_position);
 			fprintf2(VCOM_FD, "Current Step Position:     %d                \r\n", g_current_step_postion);
-			fprintf2(VCOM_FD, "Target Angular Position:   %f                \r\n", stepsToTableDegrees(g_target_step_position));
-			fprintf2(VCOM_FD, "Current Angular Position:  %f                \r\n", stepsToTableDegrees(g_current_step_postion));
+
+			fprintf2(VCOM_FD, "Target Angular Position:   ");
+			printDegrees(g_target_step_position);
+			fprintf2(VCOM_FD, "                \r\n");
+
+			fprintf2(VCOM_FD, "Current Angular Position:  ");
+			printDegrees(g_current_step_postion);
+			fprintf2(VCOM_FD, "                \r\n");
+
 			fprintf2(VCOM_FD, "Index Step Size:           %d                \r\n", index_step_size);
-			fprintf2(VCOM_FD, "Index Step Size (angular): %f                \r\n", stepsToTableDegrees(index_step_size));
-			fprintf2(VCOM_FD, "Direction:                 %d                \r\n", g_direction);
+
+			fprintf2(VCOM_FD, "Index Step Size (angular): ");
+			printDegrees(index_step_size);
+			fprintf2(VCOM_FD, "                \r\n");
+
+			fprintf2(VCOM_FD, "Current Direction:          %d                \r\n", g_current_direction);
+			fprintf2(VCOM_FD, "Target Direction:           %d                \r\n", g_target_direction);
 			fprintf2(VCOM_FD, "\r\n");
 			fprintf2(VCOM_FD, "Commands:\r\n");
 			fprintf2(VCOM_FD, "   's': set index step size                \r\n");
-			fprintf2(VCOM_FD, "   'n': move by index-step-size degrees                \r\n");
+			fprintf2(VCOM_FD, "   'f': move by index-step-size degrees                \r\n");
+			fprintf2(VCOM_FD, "   'b': move by index-step-size degrees back           \r\n");
 			fprintf2(VCOM_FD, "   'z': rotate zero                \r\n");
 			fprintf2(VCOM_FD, "   'R': reset zero                \r\n");
 			fprintf2(VCOM_FD, "   'g': goto specific position                \r\n");
 			fprintf2(VCOM_FD, "   'd': toggle direction                \r\n");
+			fprintf2(VCOM_FD, "   'esc': halt                \r\n");
 
 
 		}
@@ -274,14 +333,14 @@ static void cncRotaryTableTask(void *pvParameters)
 						fprintf2(VCOM_FD, "What step-index size would you like to use (degrees * 1000)? : \r\n");
 						readline(readline_buffer, sizeof(readline_buffer));
 						end_ptr = NULL;
-
 						//double deg = strtod(readline_buffer, &end_ptr);
 						//deg = atof(readline_buffer);
 						deg = strtol(readline_buffer, &end_ptr, 10);
 						if( deg == 0 && readline_buffer == end_ptr ) {
 							fprintf2(VCOM_FD, "Failed to convert number!            \r\n");
 						} else {
-							index_step_size = tableDegreesToSteps(deg/1000.0);
+							//index_step_size = tableDegreesToSteps(deg/1000.0);
+							index_step_size = tableDegreesX1000ToSteps(deg);
 							clearScreen();
 						}
 
@@ -297,8 +356,11 @@ static void cncRotaryTableTask(void *pvParameters)
 
 					}
 					break;
-				case 'n':
+				case 'f':
 					g_target_step_position = ((g_target_step_position + index_step_size) % pulses_per_table_rotation);
+					break;
+				case 'b':
+					g_target_step_position = ((g_target_step_position + pulses_per_table_rotation - index_step_size) % pulses_per_table_rotation);
 					break;
 				case 'z':
 					g_target_step_position = 0;
@@ -315,7 +377,8 @@ static void cncRotaryTableTask(void *pvParameters)
 						if( deg == 0 && readline_buffer == end_ptr ) {
 							fprintf2(VCOM_FD, "Failed to convert number!            \r\n");
 						} else {
-							g_target_step_position = tableDegreesToSteps(deg / 1000.0);
+							//g_target_step_position = tableDegreesToSteps(deg / 1000.0);
+							g_target_step_position = tableDegreesX1000ToSteps(deg);
 							clearScreen();
 						}
 					}
@@ -338,13 +401,6 @@ static void cncRotaryTableTask(void *pvParameters)
 						}
 					}
 					break;
-				case 'd':
-					if (g_direction) {
-						g_direction = 0;
-					} else {
-						g_direction = 1;
-					}
-					break;
 				case 'R':
 					g_current_step_postion = g_target_step_position = 0;
 					break;
@@ -352,9 +408,16 @@ static void cncRotaryTableTask(void *pvParameters)
 					g_target_step_position = ((g_target_step_position + 1) % pulses_per_table_rotation);
 					redisplay = 0;
 					break;
+				case '-':
+					g_target_step_position = ((g_target_step_position + pulses_per_table_rotation - 1) % pulses_per_table_rotation);
+					redisplay = 0;
+					break;
 				case 0x1B:
 					//Esc character
 					g_target_step_position = g_current_step_postion;
+					break;
+				case 'd':
+					g_target_direction = ! g_target_direction;
 					break;
 			}
 
@@ -553,8 +616,14 @@ int main( void )
     //vStartQueuePeekTasks();   
     //vStartDynamicPriorityTasks();
 	
-	FIO0DIR |= 0x01; //Set P0.0 to output mode
 	FIO0CLR |= 0x01; //clear P0.0
+	FIO0DIR |= 0x01; //Set P0.0 to output mode
+
+
+	FIO0CLR |= 0x02; //clear P0.1
+	FIO0DIR |= 0x02; //Set P0.1 to output mode
+
+
 	g_pwm_output_value = 0;
 	xTaskCreate( cncRotaryTableTask, ( signed portCHAR * ) "usbCounter", 2048, NULL, mainCHECK_TASK_PRIORITY - 1, NULL );
 	//xTaskCreate( cncRotaryTableTask, ( signed portCHAR * ) "usbCounter", configMINIMAL_STACK_SIZE, NULL, mainCHECK_TASK_PRIORITY - 1, NULL );
@@ -576,18 +645,40 @@ void vApplicationTickHook(void)
 
 	if (hook_counter == 0) {
 		if (g_target_step_position != g_current_step_postion) {
-			if (g_pwm_output_value) {
-				FIO0CLR = 0x01;
-				g_pwm_output_value = 0;
-			} else {
-				FIO0SET = 0x01;
-				g_pwm_output_value = 1;
+			int do_step = 1;
+
+			static int32_t direction_delay = 0;
+
+			if ( g_current_direction && ! g_target_direction ) {
+				do_step = 0;
+				g_current_direction = 0;
+				FIO0CLR = (1<<1);
+				direction_delay = 50;
+			} else if ( !g_current_direction && g_target_direction ) {
+				do_step = 0;
+				g_current_direction = 1;
+				FIO0SET = (1<<1);
+				direction_delay = 50;
+			} else if( direction_delay > 0 ) {
+				do_step = 0;
+				direction_delay--;
 			}
 
-			if (g_target_step_position > g_current_step_postion) {
-				g_current_step_postion++;
-			} else {
-				g_current_step_postion--;
+
+			if( do_step ) {
+				if (g_pwm_output_value) {
+					FIO0CLR = 0x01;
+					g_pwm_output_value = 0;
+				} else {
+					FIO0SET = 0x01;
+					g_pwm_output_value = 1;
+				}
+
+				if( g_current_direction ) {
+					g_current_step_postion = (g_current_step_postion + 1) % pulses_per_table_rotation;
+				} else {
+					g_current_step_postion = (g_current_step_postion + pulses_per_table_rotation - 1) % pulses_per_table_rotation;
+				}
 			}
 		}
 	}
