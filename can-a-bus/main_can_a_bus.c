@@ -125,6 +125,7 @@ static void blinkyLightTask(void *pvParameters) {
 	const int interval = 2000;
 	
 	int status = 0;
+	bool enable_can_tx = true;
 	for(;;) {
 		x++;
 
@@ -136,21 +137,26 @@ static void blinkyLightTask(void *pvParameters) {
 			status = 0;
 			x = 0;
 			//printf2("CAN-a-Bus!!!!\r\n");
-			static uint32_t a_number = 123456;
-			a_number++;
-			//transmitCAN(CAN_BUS_2, 0x102, a_number, 0x12345678, 4, false);
+			if( enable_can_tx ) {
+				static uint32_t a_number = 123456;
+				a_number++;
+				//transmitCAN(CAN_BUS_2, 0x102, a_number, 0x12345678, 4, false);
 
 
-			can_message_t msg;
-			memset(&msg, 0, sizeof(can_message_t));
-			msg.dataA = a_number;
-			msg.dataB = 0xAAAA5555;
-			msg.dataLengthCode = 8;
-			msg.rtr = 0;
-			msg.id = 0x102;
-			msg.isPopulated = 1;
-			enqueueTxCAN(CAN_BUS_2, &msg);
-			processCANTxQueue(CAN_BUS_2);
+				can_message_t msg;
+				memset(&msg, 0, sizeof(can_message_t));
+				msg.dataA = a_number;
+				msg.dataB = 0xAAAA5555;
+				msg.dataLengthCode = 8;
+				msg.rtr = 0;
+				msg.id = 0x102;
+				msg.isPopulated = 1;
+				//enqueueTxCAN(CAN_BUS_2, &msg);
+				//processCANTxQueue(CAN_BUS_2);
+
+				enqueueTxCAN(CAN_BUS_1, &msg);
+				processCANTxQueue(CAN_BUS_1);
+			}
 		}
 		//readCanBus();
 
@@ -177,13 +183,15 @@ static void blinkyLightTask(void *pvParameters) {
 
 			if( c == '?' ) {
 				printf2("CAN-a-Bus!\r\n");
-				const uint32_t gsr = CAN2GSR;
-				printf2("CAN2GSR = 0x%X\r\n", gsr);
-				printf2("CAN2GSR_RS = %d\r\n", ((gsr >> 4) & 0x1));
-				printf2("CAN2GSR_RXERR = %d\r\n", ((gsr >> 16) & 0xFF));
-				printf2("CAN2GSR_TXERR = %d\r\n", ((gsr >> 24) & 0xFF));
+				//const uint32_t gsr = CAN2GSR;
+				const uint32_t gsr = CAN1GSR;
+				printf2("CANxGSR = 0x%X\r\n", gsr);
+				printf2("CANxGSR_RS = %d\r\n", ((gsr >> 4) & 0x1));
+				printf2("CANxGSR_RXERR = %d\r\n", ((gsr >> 16) & 0xFF));
+				printf2("CANxGSR_TXERR = %d\r\n", ((gsr >> 24) & 0xFF));
 				printf2("g_can_isr_count = %u\r\n", g_can_isr_count);
-				printf2("CAN2IER = 0x%X\r\n", CAN2IER);
+				printf2("CAN1IER = 0x%X\r\n", CAN1IER);
+				//printf2("CAN2IER = 0x%X\r\n", CAN2IER);
 
 				printf2("VICIntEnable = 0x%X\r\n", VICIntEnable);
 				printf2("VICIntSelect = 0x%X\r\n", VICIntSelect);
@@ -191,6 +199,9 @@ static void blinkyLightTask(void *pvParameters) {
 				printf2("VICRawIntr = 0x%X\r\n", VICRawIntr);
 				printf2("VICSWPrioMask = 0x%X\r\n", VICSWPrioMask);
 
+			} else if( c == 't' ) {
+				enable_can_tx = ! enable_can_tx;
+				printf2("Toggled can tx to be %d\n", enable_can_tx);
 
 			} else if( c == 'r' ) {
 				printf2("reseting can2 bus\r\n");
@@ -292,7 +303,6 @@ int main( void )
 	          5
 	*/
 
-
 #if 0
 	//1mbit CAN settings, tested
 	const uint8_t brp = 1;
@@ -302,18 +312,35 @@ int main( void )
 	const bool sam = false;
 #else
 	//250kbit CAN settings
-	const uint8_t brp = 7;
-	const uint8_t sjw = 1;
-	const uint8_t tseg1 = 15;
-	const uint8_t tseg2 = 5;
-	const bool sam = false;
+//	const uint8_t brp = 7;
+//	const uint8_t sjw = 1;
+//	const uint8_t tseg1 = 15;
+//	const uint8_t tseg2 = 5;
+//	const bool sam = false;
+
+        // settings to match with datalogger board
+	const uint8_t brp   = 2;
+	const uint8_t sjw   = 1;
+	const uint8_t tseg1 = 10;
+	const uint8_t tseg2 = 3;
+	const bool    sam   = false;
+
 #endif
+
 	initCANQueues();
 
+	/*
 	PINMODE0 = (PINMODE0 | (1<<9) | (1<<11)) & ~((1<<8) | (1<<10));//disable pullup and pulldown resitors
 	PINSEL0  = (PINSEL0  | (1<<9) | (1<<11)) & ~((1<<8) | (1<<10));//Set P0.4 and P0.5 into RD2 and TD2 mode
-
 	initializeCAN(CAN_BUS_2, brp, sjw, tseg1, tseg2, sam);
+	*/
+
+	FIO0DIR |= (1<<4);//Set P0.4 to an output pin to allow for enabling of the CAN tranceiver
+	FIO0CLR = (1<<4);//Turn on the can tranceiver
+
+	PINMODE0 = (PINMODE0 | (1<<0) | (1<<2)) & ~((1<<1) | (1<<3));//disable pullup and pulldown resitors
+	PINSEL0  = (PINSEL0  | (1<<0) | (1<<2)) & ~((1<<1) | (1<<3));//Set P0.0 and P0. into RD1 and TD1 mode
+	initializeCAN(CAN_BUS_1, brp, sjw, tseg1, tseg2, sam);
 	/*
 	VICIntEnClr = CAN_VIC_INTERUPT_BITMASK;
 	VICIntSelect &= ~CAN_VIC_INTERUPT_BITMASK;//Set to IRQ mode
@@ -327,7 +354,7 @@ int main( void )
 	*/
 
 
-	xTaskCreate( blinkyLightTask, ( signed portCHAR * ) "usbCounter", configMINIMAL_STACK_SIZE, NULL, mainCHECK_TASK_PRIORITY - 1, NULL );
+	xTaskCreate( blinkyLightTask, ( signed portCHAR * ) "usbCounter", 1024, NULL, mainCHECK_TASK_PRIORITY - 1, NULL );
 
 	/* Start the scheduler. */
 	vTaskStartScheduler();

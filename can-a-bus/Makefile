@@ -55,7 +55,7 @@ CFLAGS= $(DEBUG) \
 		-I $(RTOS_SOURCE_DIR)/portable/GCC/ARM7_LPC23xx \
 		-I $(DEMO_INCLUDE_DIR) \
 		-I ../Common/drivers/LPC \
-		-I $(LPCUSB_COMMON_DIR) -D LPC23xx -DLPC2378_PORTB \
+		-I $(LPCUSB_COMMON_DIR) -D LPC23xx \
 		-D ROWLEY_LPC23xx \
         -D THUMB_INTERWORK \
 		-mcpu=arm7tdmi \
